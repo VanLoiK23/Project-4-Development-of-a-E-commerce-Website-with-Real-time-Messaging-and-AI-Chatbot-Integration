@@ -1,0 +1,22 @@
+﻿# 1. API Framework (Dùng để triển khai Chatbot)
+fastapi
+uvicorn[standard]
+
+# 2. Database Connector
+mysql-connector-python
+
+#keyword search
+rank_bm25
+
+# 3. Quản lý Môi trường
+python-dotenv
+
+# 4. LangChain (Cần thiết cho RAG)
+langchain-core
+langchain-community
+langchain-chroma
+langchain-openai  # Vẫn nên giữ lại cho việc chuyển đổi sau này
+
+# 5. Các Thư viện cho Mô hình Cục bộ (Free Solution)
+# torch
+sentence-transformers
