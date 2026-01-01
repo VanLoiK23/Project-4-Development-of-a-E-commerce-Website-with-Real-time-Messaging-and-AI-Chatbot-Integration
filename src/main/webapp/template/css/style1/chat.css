@@ -379,6 +379,23 @@
     background: #e64a19;
 }
 
+.product-card .btn-payment {
+    background: #a50064; 
+    box-shadow: 0 2px 5px rgba(165, 0, 100, 0.3);
+    animation: pulse 2s infinite; /* Hiệu ứng nhấp nháy nhẹ để gây chú ý */
+}
+
+.product-card .btn-payment:hover {
+    background: #d60082;
+}
+
+/* Hiệu ứng nhịp đập cho nút thanh toán */
+@keyframes pulse {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.02); }
+	100% { transform: scale(1); }
+}
+
 
 /* --- 1. Làm đẹp nội dung Markdown (Sau khi marked.js xử lý) --- */
 .bot-message p { margin: 0 0 5px 0; } /* Cách dòng các đoạn văn */

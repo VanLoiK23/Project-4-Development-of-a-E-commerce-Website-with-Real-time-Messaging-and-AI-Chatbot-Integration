@@ -46,8 +46,8 @@ public class ProductAPI {
 	@Autowired
 	private ICommentAndRateService commentAndRateService;
 	
-	@Autowired
-	private FirebaseService firebaseService;
+//	@Autowired
+//	private FirebaseService firebaseService;
 //	@RequestMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
 
 	@PostMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
@@ -61,7 +61,7 @@ public class ProductAPI {
 
 				return ResponseEntity.ok().contentType(MediaType.valueOf("text/html; charset=UTF-8"))
 						.body("<div class=\"review-item\">\r\n" + "  <div class=\"review-images\">\r\n"
-								+ "    <img src=\"https://img.upanh.tv/2024/11/23/download.jpg\" style=\"width:100%;\" alt=\"Review Image\">\r\n"
+								+ "    <img src=\"https://i.ibb.co/1fjWK3sC/images.jpg\" style=\"width:100%;\" alt=\"Review Image\">\r\n"
 								+ "  </div>\r\n</div>");
 			}
 
@@ -199,8 +199,8 @@ public class ProductAPI {
 				cartItemDTO.setSoluong(numberPurchase);
 				
 				//update cart in firebase
-				firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
-				firebaseService.insertCartItem(idCartIsExist, cartItemDTO);
+//				firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
+//				firebaseService.insertCartItem(idCartIsExist, cartItemDTO);
 				
 				Integer existQuantityVersionProduct=cartService.getQuantityExistInCartByIdVersionAndClientId(phienBanSanPhamDTO.getMaPhienbansanpham().intValue(), userDTO.getId().intValue());
 

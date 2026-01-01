@@ -15,6 +15,7 @@ public class PaymentSavePending {
 	private List<String> color;
 	
 	//info address shipping
+	private String customerId;
 	private String username;
 	private String email;
 	private String phone;

@@ -30,8 +30,8 @@ public class RegisterController {
 	@Autowired
 	private IKhachHangService khachHangService;
 
-	@Autowired
-	private FirebaseService firebaseService;
+//	@Autowired
+//	private FirebaseService firebaseService;
 
 	@RequestMapping(value = "/dang-ki", method = RequestMethod.GET)
 	public ModelAndView showFormRegister(@ModelAttribute("message") String message) {
@@ -111,14 +111,14 @@ public class RegisterController {
 		userSaveDto.setLastName(last_name);
 		userSaveDto.setPasswordRaw(password);
 
-		String uuid = firebaseService.saveUserToFirebase(userSaveDto, true, false, false,false);
+//		String uuid = firebaseService.saveUserToFirebase(userSaveDto, true, false, false,false);
 
 		// save uuid to DB
-		if (uuid != null) {
-			userSaveDto.setFirebaseUid(uuid);
+//		if (uuid != null) {
+//			userSaveDto.setFirebaseUid(uuid);
 
 			khachHangService.save(userSaveDto);
-		}
+//		}
 
 		if (userSaveDto != null) {
 			KhachHangDTO khachHangDTO = new KhachHangDTO();

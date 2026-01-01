@@ -35,6 +35,7 @@ import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
+import com.thuongmaidientu.dto.VNPayDTO;
 import com.thuongmaidientu.service.EmailService;
 import com.thuongmaidientu.service.FirebaseService;
 import com.thuongmaidientu.service.ICartService;
@@ -47,6 +48,7 @@ import com.thuongmaidientu.service.IPhienbanspService;
 import com.thuongmaidientu.service.IPhieuXuatService;
 import com.thuongmaidientu.service.IProductService;
 import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.IVNPayService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -72,6 +74,9 @@ public class CartController {
 	private IMomoService momoService;
 
 	@Autowired
+	private IVNPayService vnPayService;
+
+	@Autowired
 	private IPhieuXuatService phieuXuatService;
 
 	@Autowired
@@ -83,8 +88,8 @@ public class CartController {
 	@Autowired
 	private IChiTietPNService chiTietPNService;
 
-	@Autowired
-	private FirebaseService firebaseService;
+//	@Autowired
+//	private FirebaseService firebaseService;
 
 	@Autowired
 	private EmailService emailService;
@@ -125,7 +130,7 @@ public class CartController {
 				// delete cartItem in Firebase
 				Integer idCartExist = cartService.getIdCartActiveByClient(userDTO.getId().intValue());
 
-				firebaseService.deleteCartItemByMaphienbansp(idCartExist, maPb);
+//				firebaseService.deleteCartItemByMaphienbansp(idCartExist, maPb);
 			} else {
 				mapResultMap.put("result", false);
 			}
@@ -181,9 +186,10 @@ public class CartController {
 				// update cart in firebase
 				CartItemDTO cartItemFindById = cartService
 						.getCartItemDTOsByClientIdAndIdVersion(userDTO.getId().intValue(), maPb);
-//				firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
+//			bỏ	firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
 				cartItemFindById.setSoluong(newQuantity);
-				firebaseService.insertCartItem(cartItemFindById.getCart_id(), cartItemFindById);
+				// firebaseService.insertCartItem(cartItemFindById.getCart_id(),
+				// cartItemFindById);
 
 				mapResultMap.put("result", "Cập nhật giỏ hàng thành công.");
 
@@ -359,7 +365,8 @@ public class CartController {
 			@RequestParam(value = "ship", required = false) Integer shipId,
 			@RequestParam(value = "select", required = false) Integer discountId, @RequestParam("total") Integer total,
 			@RequestParam("feeTransport") Integer feeTransport, @RequestParam("tax") Integer tax,
-			@RequestParam("urlReturnByMomo") String urlReturnByMomo, HttpSession session) {
+			@RequestParam("methodPayment") String method, @RequestParam("urlReturnByMomo") String urlReturnByMomo,
+			HttpSession session) throws ExecutionException, InterruptedException {
 		Map<String, Object> mapInfoPaymentUser = new HashMap<String, Object>();
 
 		mapInfoPaymentUser.put("city", city);
@@ -382,24 +389,181 @@ public class CartController {
 		System.out.println("Redirecting to: " + urlReturnByMomo);
 		System.out.println("Map to: " + mapInfoPaymentUser);
 
+		if (urlReturnByMomo == null || urlReturnByMomo.isEmpty()) {
+			return "redirect:http://localhost:8080/Spring-mvc/Cart/momo/thankyou";
+		}
+
 		return "redirect:" + urlReturnByMomo;
 
 	}
 
-	@GetMapping("/thankyou")
-	public ModelAndView handlePyamentSusscess(@RequestParam("partnerCode") String partnerCode,
-			@RequestParam("orderId") Long orderId, @RequestParam("amount") Integer amount,
-			@RequestParam("orderInfo") String orderInfo, @RequestParam("orderType") String orderType,
-			@RequestParam("transId") Long transId, @RequestParam("payType") String payType, HttpSession session,
-			@RequestParam("resultCode") Integer resultCode, // Kiểm tra thành công hay thất bại
-			@RequestParam("extraData") String extraData) throws ExecutionException, InterruptedException {
+	@PostMapping("/saveOrderFirst")
+	public ResponseEntity<Integer> saveOrderBeforePayment(@RequestParam("city") String city,
+			@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName,
+			@RequestParam("district") String district, @RequestParam("street") String street,
+			@RequestParam("email") String email, @RequestParam("phone") String phone, @RequestParam("note") String note,
+			@RequestParam(value = "ship", required = false) Integer shipId,
+			@RequestParam(value = "select", required = false) Integer discountId, @RequestParam("total") Integer total,
+			@RequestParam("feeTransport") Integer feeTransport, @RequestParam("tax") Integer tax, HttpSession session)
+			throws ExecutionException, InterruptedException {
+		Map<String, Object> mapInfoPaymentUser = new HashMap<String, Object>();
 
-//		UserDTO userDTO = (UserDTO) session.getAttribute("user");
-//
+		mapInfoPaymentUser.put("city", city);
+		mapInfoPaymentUser.put("firstName", firstName);
+		mapInfoPaymentUser.put("lastName", lastName);
+		mapInfoPaymentUser.put("district", district);
+		mapInfoPaymentUser.put("street", street);
+		mapInfoPaymentUser.put("email", email);
+		mapInfoPaymentUser.put("phone", phone);
+		mapInfoPaymentUser.put("note", note);
+		mapInfoPaymentUser.put("total", total);
+		mapInfoPaymentUser.put("feeTransport", feeTransport);
+		mapInfoPaymentUser.put("tax", tax);
+		mapInfoPaymentUser.put("shipId", shipId);
+		mapInfoPaymentUser.put("discountId", discountId);
+
+		session.setAttribute("InfoPaymentUser", mapInfoPaymentUser);
+		session.removeAttribute("discountId");
+
+		System.out.println("Map to: " + mapInfoPaymentUser);
+
+		return ResponseEntity.ok(handleSaveOrder(session));
+
+	}
+
+	private Integer handleSaveOrder(HttpSession session) throws ExecutionException, InterruptedException {
+		UserDTO userDTO = (UserDTO) session.getAttribute("user");
+
+		Random random = new Random();
+		Integer codeCart = random.nextInt(10000);
+
+		return handleSaveOrderAndUpdateQuantityInStock(session, userDTO, "pending", codeCart);
+	}
+
+	@GetMapping("/vn_pay/thankyou")
+	public ModelAndView handlePaymentVNPaySuccess(
+			@RequestParam(value = "vnp_TmnCode", required = false) String vnp_TmnCode,
+			@RequestParam(value = "vnp_TxnRef", required = false) String vnp_TxnRef,
+			@RequestParam(value = "vnp_Amount", required = false) Long vnp_Amount,
+			@RequestParam(value = "vnp_OrderInfo", required = false) String vnp_OrderInfo,
+			@RequestParam(value = "vnp_OrderType", required = false) String vnp_OrderType,
+			@RequestParam(value = "vnp_TransactionNo", required = false) Long vnp_TransactionNo,
+			@RequestParam(value = "vnp_CardType", required = false) String vnp_CardType,
+			@RequestParam(value = "vnp_ResponseCode", required = false) String vnp_ResponseCode, HttpSession session)
+			throws ExecutionException, InterruptedException {
+
+		// check status payment
+		if (!"00".equals(vnp_ResponseCode)) {
+			return new ModelAndView("redirect:/trang-chu");
+		}
+
+		Long orderIdUpdate = Long.parseLong(vnp_TxnRef);
+
+		Integer amount = (int) (vnp_Amount / 100);
+
+		if (orderIdUpdate != null) {
+			PhieuXuatDTO phieuXuatDTO = phieuXuatService.findById(orderIdUpdate);
+
+			if (phieuXuatDTO != null) {
+				phieuXuatDTO.setPayment("vn-pay");// set status paid success
+				phieuXuatService.updatePaymentStatus(orderIdUpdate.intValue(),phieuXuatDTO.getPayment());
+
+				// save VNPay
+				VNPayDTO vnPayDTO = new VNPayDTO();
+				vnPayDTO.setVnp_TmnCode(vnp_TmnCode);
+				vnPayDTO.setVnp_TxnRef(Long.valueOf(vnp_TxnRef));
+				vnPayDTO.setVnp_Amount(amount.toString());
+				vnPayDTO.setVnp_OrderInfo(vnp_OrderInfo);
+				vnPayDTO.setVnp_OrderType("billpayment");
+				vnPayDTO.setVnp_TransactionNo(vnp_TransactionNo);
+				vnPayDTO.setVnp_CardType(vnp_CardType);
+				vnPayDTO.setCodeCart(phieuXuatDTO.getCodeCart());
+
+				vnPayService.insertVNPay(vnPayDTO);
+
+				List<ChiTietPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate.intValue());
+				List<OrderItem> orderItemList = new ArrayList<OrderItem>();
+				// for send email
+				if (chitietPXList != null && !chitietPXList.isEmpty()) {
+					for (ChiTietPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
+						OrderItem orderItem = new OrderItem();
+						orderItem.setPrice(chiTietPhieuXuatDTO.getDonGia());
+						orderItem.setQuantity(chiTietPhieuXuatDTO.getSoLuong());
+						orderItem.setProductName(productService
+								.findInfoProductForOrderInWeb(chiTietPhieuXuatDTO.getPhienBanSanPhamXuatId())
+								.getTenSanPham());
+
+						orderItemList.add(orderItem);
+					}
+
+					emailService.sendOrderEmail("huynhvanloi956@gmail.com", orderItemList, amount);
+				}
+
+				return new ModelAndView("web/checkout/camon");
+			}
+
+		}
+
 //		if (userDTO == null) {
 //			return new ModelAndView("redirect:/trang-chu");
 //		}
-		
+//
+//		Map<String, Object> mapInfoPaymentUser = (Map<String, Object>) session.getAttribute("InfoPaymentUser");
+//
+//		if (mapInfoPaymentUser == null || mapInfoPaymentUser.isEmpty()) {
+//			return new ModelAndView("redirect:/trang-chu");
+//		}
+//
+//		Random random = new Random();
+//		Integer codeCart = random.nextInt(10000);
+//
+//		VNPayDTO vnPayDTO = new VNPayDTO();
+//		vnPayDTO.setVnp_TmnCode(vnp_TmnCode);
+//		vnPayDTO.setVnp_TxnRef(Long.valueOf(vnp_TxnRef));
+//		vnPayDTO.setVnp_Amount(amount.toString());
+//		vnPayDTO.setVnp_OrderInfo(vnp_OrderInfo);
+//		vnPayDTO.setVnp_OrderType(vnp_OrderType);
+//		vnPayDTO.setVnp_TransactionNo(vnp_TransactionNo);
+//		vnPayDTO.setVnp_CardType(vnp_CardType);
+//		vnPayDTO.setCodeCart(codeCart.toString());
+//
+//		vnPayService.insertVNPay(vnPayDTO);
+//
+//		handleSaveOrderAndUpdateQuantityInStock(session, userDTO, "vn-pay", codeCart);
+
+		return new ModelAndView("redirect:/trang-chu");
+	}
+
+	@GetMapping("/momo/thankyou")
+	public ModelAndView handlePaymentMomoSusscess(
+			@RequestParam(value = "partnerCode", required = false) String partnerCode,
+			@RequestParam(value = "orderId", required = false) Long orderId,
+			@RequestParam(value = "amount", required = false) Integer amount,
+			@RequestParam(value = "orderInfo", required = false) String orderInfo,
+			@RequestParam(value = "orderType", required = false) String orderType,
+			@RequestParam(value = "transId", required = false) Long transId,
+			@RequestParam(value = "payType", required = false) String payType,
+			@RequestParam(value = "resultCode", required = false) Integer resultCode, // Kiểm tra thành công hay thất
+																						// bại
+			@RequestParam(value = "extraData", required = false) String extraData, HttpSession session)
+			throws ExecutionException, InterruptedException {
+
+		// COD
+		if (partnerCode == null || orderId == null || amount == null || orderInfo == null || orderType == null
+				|| transId == null || payType == null) {
+
+			UserDTO userDTO = (UserDTO) session.getAttribute("user");
+
+			if (userDTO == null) {
+				return new ModelAndView("redirect:/trang-chu");
+			}
+
+			handleSaveOrderAndUpdateQuantityInStock(session, userDTO, null, null);
+
+			return new ModelAndView("web/checkout/camon");
+		}
+
+		// check status payment
 		if (resultCode != 0) {
 			return new ModelAndView("redirect:/trang-chu");
 		}
@@ -429,7 +593,7 @@ public class CartController {
 
 			if (phieuXuatDTO != null) {
 				phieuXuatDTO.setPayment("momo");// set status paid success
-				phieuXuatService.updatePaymentStatus(orderIdUpdate);
+				phieuXuatService.updatePaymentStatus(orderIdUpdate,phieuXuatDTO.getPayment());
 
 				// save momo
 				MomoDTO momoDTO = new MomoDTO();
@@ -466,32 +630,42 @@ public class CartController {
 			return new ModelAndView("web/checkout/camon");
 		}
 
-		UserDTO userDTO = (UserDTO) session.getAttribute("user");
+//		UserDTO userDTO = (UserDTO) session.getAttribute("user");
+//
+//		if (userDTO == null) {
+//			return new ModelAndView("redirect:/trang-chu");
+//		}
+//
+//		Map<String, Object> mapInfoPaymentUser = (Map<String, Object>) session.getAttribute("InfoPaymentUser");
+//
+//		if (mapInfoPaymentUser == null || mapInfoPaymentUser.isEmpty()) {
+//			return new ModelAndView("redirect:/trang-chu");
+//		}
+//
+//		Random random = new Random();
+//		Integer codeCart = random.nextInt(10000);
+//
+//		MomoDTO momoDTO = new MomoDTO();
+//		momoDTO.setPartnerCode(partnerCode);
+//		momoDTO.setOrderId(orderId);
+//		momoDTO.setAmount(amount.toString());
+//		momoDTO.setOrderInfo(orderInfo);
+//		momoDTO.setOrderType(orderType);
+//		momoDTO.setTransId(transId);
+//		momoDTO.setPayType(payType);
+//		momoDTO.setCodeCart(codeCart.toString());
+//
+//		momoService.insertMomo(momoDTO);
+//
+//		handleSaveOrderAndUpdateQuantityInStock(session, userDTO, "momo", codeCart);
 
-		if (userDTO == null) {
-			return new ModelAndView("redirect:/trang-chu");
-		}
+		return new ModelAndView("redirect:/trang-chu");
+	}
+
+	private Integer handleSaveOrderAndUpdateQuantityInStock(HttpSession session, UserDTO userDTO, String payment,
+			Integer codeCart) throws ExecutionException, InterruptedException {
 
 		Map<String, Object> mapInfoPaymentUser = (Map<String, Object>) session.getAttribute("InfoPaymentUser");
-
-		if (mapInfoPaymentUser == null || mapInfoPaymentUser.isEmpty()) {
-			return new ModelAndView("redirect:/trang-chu");
-		}
-
-		Random random = new Random();
-		Integer codeCart = random.nextInt(10000);
-
-		MomoDTO momoDTO = new MomoDTO();
-		momoDTO.setPartnerCode(partnerCode);
-		momoDTO.setOrderId(orderId);
-		momoDTO.setAmount(amount.toString());
-		momoDTO.setOrderInfo(orderInfo);
-		momoDTO.setOrderType(orderType);
-		momoDTO.setTransId(transId);
-		momoDTO.setPayType(payType);
-		momoDTO.setCodeCart(codeCart.toString());
-
-		momoService.insertMomo(momoDTO);
 
 		String city = (String) mapInfoPaymentUser.get("city");
 		String firstName = (String) mapInfoPaymentUser.get("firstName");
@@ -567,16 +741,24 @@ public class CartController {
 
 		phieuXuatDTO.setTongTien(total);
 		phieuXuatDTO.setIDKhachHang(userDTO.getId().intValue());
-		phieuXuatDTO.setPayment("momo");
+		phieuXuatDTO.setPayment(payment);
 		phieuXuatDTO.setCartShipping(saveThongTinGiaoHangDTO.getId().intValue());
 		phieuXuatDTO.setDiscountCode(discountId);
 		phieuXuatDTO.setFeeTransport((feeTransport > 0) ? 1 : 0);
-		phieuXuatDTO.setCodeCart(codeCart.toString());
-		phieuXuatDTO.setStatus(0);
+		if (payment == null) {
+			phieuXuatDTO.setCodeCart("");
+			phieuXuatDTO.setPayment("");
+		} else {
+			phieuXuatDTO.setCodeCart(codeCart.toString());
+		}
+
+		phieuXuatDTO.setStatus(0); // status pending confirm
 
 		if (discountId != null) {
 			discountService.decrese(discountId);
 		}
+
+		System.out.println("Save PhieuXuat " + phieuXuatDTO);
 
 		PhieuXuatDTO savePhieuXuatDTO = phieuXuatService.save(phieuXuatDTO);
 
@@ -590,7 +772,7 @@ public class CartController {
 				cartDTO.setStatus("completed");
 
 				// completed in firebase
-				firebaseService.updateCartCompleted(cartDTO.getStatus(), cartDTO.getId().toString());
+//				firebaseService.updateCartCompleted(cartDTO.getStatus(), cartDTO.getId().toString());
 
 				cartService.updateCart(cartDTO);
 			}
@@ -605,7 +787,11 @@ public class CartController {
 				list_mapbspIntegers.add(ma_pbsp);
 
 				ChiTietPhieuXuatDTO chiTietPhieuXuatDTO = new ChiTietPhieuXuatDTO();
-				chiTietPhieuXuatDTO.setCodeCart(codeCart.toString());
+				if (payment == null) {
+					chiTietPhieuXuatDTO.setCodeCart("");
+				} else {
+					chiTietPhieuXuatDTO.setCodeCart(codeCart.toString());
+				}
 				chiTietPhieuXuatDTO.setPhieuXuatId(savePhieuXuatDTO.getId().intValue());
 				chiTietPhieuXuatDTO.setPhienBanSanPhamXuatId(ma_pbsp);
 				chiTietPhieuXuatDTO.setDonGia(priceSale);
@@ -642,22 +828,6 @@ public class CartController {
 				Integer masp = entry.getKey();
 				List<Integer> mapbspList = entry.getValue();
 
-//				int soluongnhap = 0;
-//				int soluongban = 0;
-//
-//				if (masp != null) {
-////					for (int i : mapbspList) {
-////						soluongnhap += chiTietPNService.countNumberProductNhap(i);
-////						soluongban += chiTietPXService.countNumberProductSold(i);
-////					}
-//
-//					for (int i : phienbanspService.selectAllMaPBSPByMaSP(masp)) {
-//						soluongnhap += chiTietPNService.countNumberProductNhap(i);
-//						soluongban += chiTietPXService.countNumberProductSold(i);
-//					}
-//				}
-//				productService.updateSLProduct(soluongnhap, soluongban, masp);
-
 				Integer quantityInStock = chiTietSPService.getQuantityProductByStatus(masp, 0);
 				Integer quantityExport = chiTietSPService.getQuantityProductByStatus(masp, 1);
 
@@ -670,17 +840,14 @@ public class CartController {
 			session.removeAttribute("purchaseWithoutCart");
 
 			// after completed send email to notify client
-			emailService.sendOrderEmail("huynhvanloi956@gmail.com", orderItems, totalInt);
+			if (!payment.equals("pending")) {
+				emailService.sendOrderEmail("huynhvanloi956@gmail.com", orderItems, totalInt);
+			}
+
+			return savePhieuXuatDTO.getId().intValue();
 		}
 
-//		mapAttribute.put("maphienbansp", phienBanSanPhamDTO.getMaPhienbansanpham().toString());
-//		mapAttribute.put("total", (totalInteger).toString());
-//		mapAttribute.put("price_sale", phienBanSanPhamDTO.getPriceSale().toString());
-//		mapAttribute.put("soluong", numberPurchase.toString());
-//		mapAttribute.put("idClient", userDTO.getId().toString());
-
-		return new ModelAndView("web/checkout/camon");
-
+		return null;
 	}
 
 	// split firstName and lastName

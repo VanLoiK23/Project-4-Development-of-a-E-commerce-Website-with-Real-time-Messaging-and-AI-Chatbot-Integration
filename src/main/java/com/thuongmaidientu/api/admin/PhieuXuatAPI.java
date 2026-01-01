@@ -1,8 +1,12 @@
 package com.thuongmaidientu.api.admin;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +43,6 @@ import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.EmailRequest;
 import com.thuongmaidientu.dto.MomoDTO;
 import com.thuongmaidientu.dto.PaymentSavePending;
-import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.PurchaseRequest;
@@ -113,9 +116,9 @@ public class PhieuXuatAPI {
 	private final String partnerCode = "MOMOBKUN20180529";
 	private final String accessKey = "klm05TvNBzhg7h7j";
 	private final String secretKey = "at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa";
-	private final String redirectUrl = "http://localhost:8080/Spring-mvc/Cart/thankyou";
+	private final String redirectUrl = "https://renetta-untransported-briana.ngrok-free.dev/Spring-mvc/Cart/momo/thankyou";
 //	private final String ipnUrl = "http://localhost:8080/Spring-mvc/quan-tri/don-hang/thankyou";
-	private final String ipnUrl = "http://localhost:8080/Spring-mvc/Cart/thankyou";
+	private final String ipnUrl = "https://renetta-untransported-briana.ngrok-free.dev/Spring-mvc/Cart/momo/thankyou";
 
 	@PostMapping("/atm/{total}")
 	public ResponseEntity<?> createPaymentATM(@PathVariable("total") Double total,
@@ -171,6 +174,95 @@ public class PhieuXuatAPI {
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tạo yêu cầu thanh toán.");
 		}
+	}
+
+	@PostMapping("/vnpay/{total}")
+	public ResponseEntity<?> createPaymentVNPay(@PathVariable("total") Double total,
+			@RequestParam(value = "orderId", required = false) Integer orderIdUpdate) throws Exception {
+
+		// Config
+		String vnp_TmnCode = "NPQQGSND";
+		String vnp_HashSecret = "8YI0EV9YDE5RC1981VZQCW05450TB76V";
+		String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+		String vnp_ReturnUrl = "https://renetta-untransported-briana.ngrok-free.dev/Spring-mvc/Cart/vn_pay/thankyou";
+
+		// Order data
+		String vnp_TxnRef = (orderIdUpdate != null) ? String.valueOf(orderIdUpdate)
+				: String.valueOf(System.currentTimeMillis());
+		String vnp_OrderInfo = "Thanh toan don hang qua VNPay";
+		String vnp_OrderType = "other";
+		String vnp_IpAddr = "127.0.0.1";
+		String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+
+		long amount = total.longValue() * 100;
+		
+		System.out.println("Amount " + total);
+
+		Map<String, String> vnp_Params = new HashMap<>();
+		vnp_Params.put("vnp_Version", "2.1.0");
+		vnp_Params.put("vnp_Command", "pay");
+		vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+		vnp_Params.put("vnp_Amount", String.valueOf(amount));
+		vnp_Params.put("vnp_CurrCode", "VND");
+		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+		vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
+		vnp_Params.put("vnp_OrderType", vnp_OrderType);
+		vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
+		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+		vnp_Params.put("vnp_Locale", "vn");
+
+		// Build hashData
+		List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+		Collections.sort(fieldNames);
+		StringBuilder hashData = new StringBuilder();
+		StringBuilder query = new StringBuilder();
+		for (int i = 0; i < fieldNames.size(); i++) {
+		    String fieldName = fieldNames.get(i);
+		    String fieldValue = vnp_Params.get(fieldName);
+		    if ((fieldValue != null) && (fieldValue.length() > 0)) {
+		        // hashData: encode
+		        hashData.append(fieldName)
+		                .append("=")
+		                .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
+		        // query:  encode
+		        query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()))
+		             .append("=")
+		             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+
+		        if (i < fieldNames.size() - 1) {
+		            hashData.append("&");
+		            query.append("&");
+		        }
+		    }
+		}
+		
+		// Create signature
+		String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData.toString());
+		query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+
+		String paymentUrl = vnp_Url + "?" + query.toString();
+
+		System.out.println("HashData: " + hashData.toString());
+		System.out.println("SecureHash: " + vnp_SecureHash);
+		System.out.println("Secret length: " + vnp_HashSecret.length());
+		System.out.println("Payment URL: " + paymentUrl);
+
+		return ResponseEntity.ok(Map.of("payUrl", paymentUrl));
+	}
+
+	// HMAC SHA512
+	private String hmacSHA512(String key, String data) throws Exception {
+		Mac hmac512 = Mac.getInstance("HmacSHA512");
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+		hmac512.init(secretKeySpec);
+		byte[] result = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
+		StringBuilder sb = new StringBuilder();
+		for (byte b : result) {
+			sb.append(String.format("%02x", b));
+		}
+		return sb.toString();
 	}
 
 	@PostMapping("/visa/{total}")
@@ -230,14 +322,12 @@ public class PhieuXuatAPI {
 	// save pending payment Info call by chat AI
 	@PostMapping("/save_order_by_tool")
 	public Integer saveOrderByToolWithPendingStatus(@RequestBody PaymentSavePending paymentInfo, HttpSession session) {
-		UserDTO userDTO = (UserDTO) session.getAttribute("user");
 
-		userDTO = new UserDTO();
-		userDTO.setId(Long.valueOf(5));
+		UserDTO userDTO = khachHangService.findUserDTOById(Integer.parseInt(paymentInfo.getCustomerId()));
 
-//		if (userDTO == null || paymentInfo == null) {
-//			return null;
-//		}
+		if (userDTO == null || paymentInfo == null) {
+			return null;
+		}
 
 		System.out.println(paymentInfo);
 
@@ -298,23 +388,31 @@ public class PhieuXuatAPI {
 
 		boolean checkIsSameInfoAddress = false;
 
-		ThongTinGiaoHangDTO thongTinGiaoHangDTO = (shipId != null) ? thongTinGiaoHangService.findById(shipId) : null;
+		List<ThongTinGiaoHangDTO> thongTinGiaoHangDTOs = thongTinGiaoHangService
+				.getAllByIdkh(userDTO.getId().intValue());
 
-		if (thongTinGiaoHangDTO != null) {
-			checkIsSameInfoAddress = (thongTinGiaoHangDTO.getCity().equals(city))
-					&& (thongTinGiaoHangDTO.getHoVaTen().equals(username))
-					&& (thongTinGiaoHangDTO.getDistrict().equals(district))
-					&& (thongTinGiaoHangDTO.getStreetName().equals(street))
-					&& (thongTinGiaoHangDTO.getEmail().equals(email))
-					&& (thongTinGiaoHangDTO.getSoDienThoai().equals(phone));
-		} else {
-			thongTinGiaoHangDTO = new ThongTinGiaoHangDTO();
+		ThongTinGiaoHangDTO thongTinGiaoHangDTO = new ThongTinGiaoHangDTO();
+
+		if (thongTinGiaoHangDTOs != null && !thongTinGiaoHangDTOs.isEmpty()) {
+			for (ThongTinGiaoHangDTO info : thongTinGiaoHangDTOs) {
+
+				boolean isCitySame = compareStrings(info.getCity(), city);
+				boolean isNameSame = compareStrings(info.getHoVaTen(), username);
+				boolean isDistSame = compareStrings(info.getDistrict(), district);
+				boolean isStreetSame = compareStrings(info.getStreetName(), street);
+				boolean isEmailSame = compareStrings(info.getEmail(), email);
+				boolean isPhoneSame = compareStrings(info.getSoDienThoai(), phone);
+
+				if (isCitySame && isNameSame && isDistSame && isStreetSame && isPhoneSame) {
+					checkIsSameInfoAddress = true;
+					thongTinGiaoHangDTO = info;
+					break;
+				}
+			}
 		}
 
 		// if info shipping haven't yet or change info
 		if (!checkIsSameInfoAddress) {
-			thongTinGiaoHangDTO = new ThongTinGiaoHangDTO();
-
 			thongTinGiaoHangDTO.setCity(city);
 			thongTinGiaoHangDTO.setHoVaTen(username);
 			thongTinGiaoHangDTO.setDistrict(district);
@@ -392,6 +490,15 @@ public class PhieuXuatAPI {
 		}
 
 		return null;
+	}
+
+	private boolean compareStrings(String dbValue, String inputValue) {
+		if (dbValue == null && inputValue == null)
+			return true;
+		if (dbValue == null || inputValue == null)
+			return false;
+
+		return dbValue.trim().equalsIgnoreCase(inputValue.trim());
 	}
 
 	/*

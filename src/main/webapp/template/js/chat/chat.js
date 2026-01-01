@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	if (myUserId) {
 		console.log("🔄 Trang vừa load lại, đang đồng bộ lịch sử từ Server...");
 		loadChatHistoryFromServer();
+
+		connectWebSocket();
 	}
 });
 
@@ -60,12 +62,17 @@ async function loadChatHistoryFromServer() {
 chatToggle.onclick = () => {
 	if (chatBox.style.display === "flex") {
 		chatBox.style.display = "none";
+
 	} else {
 		chatBox.style.display = "flex";
 		if (!currentMode) {
 			document.getElementById('chatOptions').style.display = 'flex';
 			document.getElementById('chatMain').style.display = 'none';
 			chatBack.style.display = 'none';
+		}
+		
+		if (currentMode === "ADMIN") {
+			document.getElementById('chatMessages').innerHTML = chatHistoryStorage["ADMIN"] || '';
 		}
 	}
 };
@@ -92,7 +99,7 @@ function selectMode(newMode) {
 
 	if (newMode === 'AI') {
 		btnImage.style.display = 'none';
-		document.getElementById('chatTitle').innerText = '🤖 Trợ lý AI NVP';
+		document.getElementById('chatTitle').innerText = '🤖 Trợ lý AI HVL';
 
 		// Nếu chưa có tin nhắn nào (lần đầu vào), thì hiện lời chào
 		if (!hasWelcomed['AI'] && msgContainer.innerHTML.trim() === "") {
@@ -144,11 +151,45 @@ function connectWebSocket() {
 		const msgObj = JSON.parse(event.data);
 		console.log("Received from Admin:", msgObj);
 
-		// Chỉ hiện tin nhắn nếu đang ở chế độ Admin
-		if (currentMode === 'ADMIN' && msgObj.senderId === "admin") {
+		/*if (currentMode === 'ADMIN' && msgObj.senderId === "admin") {
 			const isImage = (msgObj.type === "image");
 
 			addMessage('bot', msgObj.content, false, isImage);
+		}*/
+
+		const currentUrl = window.location.pathname;
+		const isOnChatPage = currentUrl.includes("/trang-chu") || currentUrl === "/Spring-mvc/";
+
+		const isChatOpen = (document.getElementById('chatBox').style.display === 'flex');
+
+		// Chỉ hiện tin nhắn nếu đang ở chế độ Admin
+		if (isChatOpen && isOnChatPage && currentMode === 'ADMIN' && msgObj.senderId === "admin") {
+			const isImage = (msgObj.type === "image");
+
+			addMessage('bot', msgObj.content, false, isImage);
+		} else {
+			var isImage = msgObj.type === "image";
+			var content = msgObj.content;
+
+			showNotification("Nhân viên tư vấn", isImage ? "Đã gửi một ảnh" : content);
+			playNotificationSound();
+
+			//lưu vào lịch sử TN
+			let msgHTML = "";
+			const msgId = 'msg-' + new Date().getTime();
+
+			if (isImage) {
+				msgHTML = `<div class="message bot-message" id="${msgId}">
+			                        <img src="${content}" 
+			                             style="max-width: 250px; border-radius: 10px; border: 1px solid #ddd; cursor: zoom-in;" 
+			                             onclick="openImageModal(this.src)">
+			                   </div>`;
+			} else {
+				msgHTML = `<div class="message bot-message" id="${msgId}">${content}</div>`;
+			}
+
+			chatHistoryStorage["ADMIN"] = (chatHistoryStorage["ADMIN"] || "") + msgHTML;
+
 		}
 	};
 
@@ -156,6 +197,48 @@ function connectWebSocket() {
 	socket.onerror = (e) => console.error("⚠️ WebSocket Error", e);
 }
 
+function showNotification(sender, content) {
+	if (!("Notification" in window)) return;
+
+	if (Notification.permission === "granted") {
+		const notif = new Notification(`Tin nhắn từ ${sender}`, {
+			body: content,
+			icon: 'https://i.ibb.co/hFgPSs76/download.png',
+			silent: true
+		});
+
+		notif.onclick = function() {
+			window.focus();
+
+			if (!window.location.pathname.includes("/trang-chu")) {
+				window.location.href = "http://localhost:8080/Spring-mvc/trang-chu";
+			}
+
+			document.getElementById("chatBox").style.display = "flex";
+
+			document.getElementById('chatMessages').innerHTML = chatHistoryStorage["ADMIN"] || '';
+			
+			selectMode('ADMIN');
+		};
+	} else if (Notification.permission !== "denied") {
+		// Xin quyền nếu chưa có
+		Notification.requestPermission().then(permission => {
+			if (permission === "granted") {
+				showNotification(sender, content);
+			}
+		});
+	}
+}
+
+const audioNotifier = new Audio("http://localhost:8080/Spring-mvc/template/audio/notification.mp3");
+
+function playNotificationSound() {
+	audioNotifier.currentTime = 0;
+
+	audioNotifier.play().catch(function(error) {
+		console.log("Trình duyệt chặn tự động phát âm thanh (User chưa tương tác):", error);
+	});
+}
 
 sendMessageBtn.onclick = handleUserSend;
 messageInput.addEventListener("keypress", (e) => {
@@ -232,7 +315,7 @@ async function sendToAI(question) {
 			body: JSON.stringify({
 				session_id: aiSessionId,
 				message: question,
-				userId : myUserId
+				userId: myUserId
 			})
 		});
 
@@ -308,7 +391,7 @@ function handleImageSelect() {
 	const reader = new FileReader();
 
 	reader.onload = function(event) {
-		const base64String = event.target.result; 
+		const base64String = event.target.result;
 
 		if (socket.readyState === WebSocket.OPEN) {
 			const msgSent = {
@@ -331,33 +414,42 @@ function handleImageSelect() {
 
 //zoom img
 function openImageModal(src) {
-    const modal = document.getElementById("imageModal");
-    const modalImg = document.getElementById("fullImage");
-    
-    modal.style.display = "flex"; // Hoặc "block"
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    
-    modalImg.src = src; 
+	const modal = document.getElementById("imageModal");
+	const modalImg = document.getElementById("fullImage");
+
+	modal.style.display = "flex"; // Hoặc "block"
+	modal.style.justifyContent = "center";
+	modal.style.alignItems = "center";
+
+	modalImg.src = src;
 }
 
 function closeImageModal() {
-    document.getElementById("imageModal").style.display = "none";
+	document.getElementById("imageModal").style.display = "none";
 }
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === "Escape") {
-        closeImageModal();
-    }
+	if (event.key === "Escape") {
+		closeImageModal();
+	}
 });
 
 function addCard(cardData) {
+	let btnText = "Xem chi tiết & Mua ngay";
+	let btnClass = "btn"; // Class mặc định
+	let link = cardData.product_link.toLowerCase();
+
+	if (link.includes("vnpay.vn") || link.includes("vnpayment.vn") || link.includes("payment")) {
+		btnText = "💸 Thanh toán ngay";
+		btnClass = "btn btn-payment";
+	}
+
 	const cardHTML = `
         <div class="product-card">
             <img src="${cardData.image_url}" alt="${cardData.product_name}" onerror="this.style.display='none'" style="width: 100%; height: 150px; object-fit: cover; object-position: center;">
             <div class="body">
                 <h4>${cardData.product_name}</h4>
-                <a href="${cardData.product_link}" class="btn" target="_blank">Xem chi tiết & Mua ngay</a>
+                <a href="${cardData.product_link}" class="${btnClass}" target="_blank">${btnText}</a>
             </div>
         </div>
     `;

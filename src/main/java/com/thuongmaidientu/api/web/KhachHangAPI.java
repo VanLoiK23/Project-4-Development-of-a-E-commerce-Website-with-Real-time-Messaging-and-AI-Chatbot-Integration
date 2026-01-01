@@ -65,9 +65,9 @@ public class KhachHangAPI {
 	}
 
 	@GetMapping("/getInfoShipping")
-	public ResponseEntity<?> getInfoShippingByUser(HttpSession session) {
+	public ResponseEntity<?> getInfoShippingByUser(@RequestParam("userId") String userId) {
 		try {
-			UserDTO userDTO = (UserDTO) session.getAttribute("user");
+			UserDTO userDTO = khachHangService.findUserDTOById(Integer.parseInt(userId));
 
 			if (userDTO == null) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không tìm thấy người dùng");
@@ -75,16 +75,7 @@ public class KhachHangAPI {
 			List<ThongTinGiaoHangDTO> thongTinGiaoHangDTOs = thongTinGiaoHangService
 					.getAllByIdkh(userDTO.getId().intValue());
 
-			ThongTinGiaoHangDTO thongTinGiaoHangDTO = new ThongTinGiaoHangDTO();
-
-			if (thongTinGiaoHangDTO == null || thongTinGiaoHangDTOs.isEmpty()) {
-
-				thongTinGiaoHangDTO = null;
-			} else {
-				thongTinGiaoHangDTO = thongTinGiaoHangDTOs.get(0);// first address
-			}
-
-			return ResponseEntity.ok(thongTinGiaoHangDTO);
+			return ResponseEntity.ok(thongTinGiaoHangDTOs);
 		} catch (Exception e) {
 			e.printStackTrace(); // ✅ In ra lỗi đầy đủ
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server: " + e.getMessage());

@@ -45,13 +45,13 @@ public class PhieuXuatController {
 
 	@Autowired
 	private IPhieuXuatService phieuXuatService;
-	
+
 	@Autowired
 	private IChiTietPXService chiTietPXService;
 
 	@Autowired
 	private IProductService productService;
-	
+
 	@Autowired
 	private IThongTinGiaoHangService thongTinGiaoHangService;
 
@@ -60,6 +60,7 @@ public class PhieuXuatController {
 			@RequestParam(value = "page", defaultValue = "1") int page,
 			@RequestParam(value = "limit", defaultValue = "7") int limit,
 			@RequestParam(value = "timeFilter", required = false, defaultValue = "all") String timeFilter,
+			@RequestParam(value = "statusPaymentFilter", required = false) String statusPaymentFilter,
 			@RequestParam(value = "statusFilter", required = false) Integer statusFilter,
 			@ModelAttribute("message") String message) {
 
@@ -94,20 +95,24 @@ public class PhieuXuatController {
 		List<PhieuXuatDTO> list;
 		int totalItem;
 
-		if (fromDate != null || statusFilter != null) {
+		if (fromDate != null || statusFilter != null || statusPaymentFilter !=null) {
 			if (fromDate != null) {
-				list = phieuXuatService.findAllByDateAndStatus(Date.valueOf(fromDate), statusFilter, pageable);
-				totalItem = phieuXuatService.getTotalItemByDateAndStatus(Date.valueOf(fromDate), statusFilter);
+				list = phieuXuatService.findAllByDateAndStatusAndStatusPayment(Date.valueOf(fromDate), statusFilter,
+						statusPaymentFilter, pageable);
+				totalItem = phieuXuatService.getTotalItemByDateAndStatusAndStatusPayment(Date.valueOf(fromDate),
+						statusFilter, statusPaymentFilter);
 			} else {
-				list = phieuXuatService.findAllByDateAndStatus(null, statusFilter, pageable);
-				totalItem = phieuXuatService.getTotalItemByDateAndStatus(null, statusFilter);
+				list = phieuXuatService.findAllByDateAndStatusAndStatusPayment(null, statusFilter, statusPaymentFilter,
+						pageable);
+				totalItem = phieuXuatService.getTotalItemByDateAndStatusAndStatusPayment(null, statusFilter,
+						statusPaymentFilter);
 			}
 		} else {
 			list = phieuXuatService.findAll(pageable);
 			totalItem = phieuXuatService.getTotalItem();
 		}
 
-		if (timeFilter == "all" && statusFilter == null) {
+		if (timeFilter == "all" && statusFilter == null && statusPaymentFilter == null) {
 			list = phieuXuatService.findAll(pageable);
 			totalItem = phieuXuatService.getTotalItem();
 		}
@@ -125,7 +130,8 @@ public class PhieuXuatController {
 		}
 		mav.addObject("timeFilter", timeFilter);
 		mav.addObject("statusFilter", statusFilter);
-		if(statusFilter==null) {
+		mav.addObject("statusPaymentFilter", statusPaymentFilter);
+		if (statusFilter == null) {
 			mav.addObject("statusFilter", null);
 		}
 
@@ -163,36 +169,35 @@ public class PhieuXuatController {
 		PhieuXuatDTO dto = phieuXuatService.findById(id.intValue());
 
 		List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
-		
 
-    	List<Map<String, Object>> saveObjects = new ArrayList<>();
+		List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-    	for (ChiTietPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
-    	    Object[] productData = productService
-    	        .findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())
-    	        .get(0);
+		for (ChiTietPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
+			Object[] productData = productService
+					.findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())
+					.get(0);
 
-    	    List<Long> imeisList = new ArrayList<>();
-    	    for (Object[] result : productService
-    	            .findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())) {
-    	        imeisList.add((Long) result[6]); // hoặc: Long.parseLong(result[6].toString())
-    	    }
+			List<Long> imeisList = new ArrayList<>();
+			for (Object[] result : productService.findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(),
+					dto.getId().intValue())) {
+				imeisList.add((Long) result[6]); // hoặc: Long.parseLong(result[6].toString())
+			}
 
-    	    Map<String, Object> productInfo = new HashMap<>();
-    	    productInfo.put("product_info", productData);
-    	    productInfo.put("imeis", imeisList);
+			Map<String, Object> productInfo = new HashMap<>();
+			productInfo.put("product_info", productData);
+			productInfo.put("imeis", imeisList);
 
-    	    saveObjects.add(productInfo);
-    	}
-    	ThongTinGiaoHangDTO addressDto=thongTinGiaoHangService.findById(dto.getCartShipping());
+			saveObjects.add(productInfo);
+		}
+		ThongTinGiaoHangDTO addressDto = thongTinGiaoHangService.findById(dto.getCartShipping());
 
-    	dto.setProduct_info(saveObjects);
-    	dto.setDiaChi(addressDto.getStreetName()+" - "+addressDto.getDistrict()+" - "+addressDto.getCity()+" - "+addressDto.getCountry());
-
+		dto.setProduct_info(saveObjects);
+		dto.setDiaChi(addressDto.getStreetName() + " - " + addressDto.getDistrict() + " - " + addressDto.getCity()
+				+ " - " + addressDto.getCountry());
 
 		// Cấu hình response để tải file Word
-		String fileName = "Phieu_Xuat_San_Pham_" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date())
-				+ ".doc";
+		String fileName = "Phieu_Xuat_San_Pham_" + id + "_"
+				+ new SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date()) + ".doc";
 		response.setContentType("application/msword");
 		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
@@ -218,18 +223,20 @@ public class PhieuXuatController {
 		writer.println("</tr>");
 		writer.println("</table><br><br>");
 
-		
 		writer.println("<h2 style='text-align:center;'>THÔNG TIN PHIẾU XUẤT</h2>");
 
 		writer.println("<div style='margin-left:50px;'>");
 		writer.println("<p><strong>Mã phiếu:</strong> PX-" + dto.getId() + "</p>");
-		writer.println("<p><strong>Khách hàng:</strong> " + dto.getKhachHangName() + " -       "+ dto.getDiaChi() +"</p>");
-		writer.println("<p><strong>Nhân viên in hóa đơn:</strong> " + "Gia Huy" + " - <strong>Mã NV: NV1</strong> </p>");
+		writer.println(
+				"<p><strong>Khách hàng:</strong> " + dto.getKhachHangName() + " -       " + dto.getDiaChi() + "</p>");
+		writer.println(
+				"<p><strong>Nhân viên in hóa đơn:</strong> " + "Gia Huy" + " - <strong>Mã NV: NV1</strong> </p>");
 		writer.println("<p><strong>Thời gian xuất:</strong> " + dto.getThoiGian() + "</p>");
 		writer.println("</div>");
 
 		// Bảng sản phẩm
-		writer.println("<table border='1' style='width:100%; margin: 30px 50px; text-align:center; white-space: nowrap;'>");
+		writer.println(
+				"<table border='1' style='width:100%; margin: 30px 50px; text-align:center; white-space: nowrap;'>");
 		writer.println(
 				"<tr><th>Tên sản phẩm</th><th>Phiên bản</th><th>Giá</th><th>Số lượng</th><th>Tổng tiền</th></tr>");
 
@@ -238,42 +245,46 @@ public class PhieuXuatController {
 		NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 		for (Map<String, Object> item : dto.getProduct_info()) {
 
-		    Object[] product = (Object[]) item.get("product_info");
-		    List<Long> imeis = (List<Long>) item.get("imeis");
+			Object[] product = (Object[]) item.get("product_info");
+			List<Long> imeis = (List<Long>) item.get("imeis");
 
-		    // Lấy các thông tin sản phẩm
-		    String tenSanPham = (String) product[1];
-		    Integer ram = (Integer) product[2];
-		    Integer rom = (Integer) product[3];
-		    String mauSac = (String) product[4];
-		    Number priceNumber = (Number) product[5];
-		    Double giaNhap = priceNumber.doubleValue();
+			// Lấy các thông tin sản phẩm
+			String tenSanPham = (String) product[1];
+			Integer ram = (Integer) product[2];
+			Integer rom = (Integer) product[3];
+			String mauSac = (String) product[4];
+			Number priceNumber = (Number) product[5];
+			Double giaNhap = priceNumber.doubleValue();
 
+			String formattedGia = formatter.format(giaNhap) + " ₫";
 
-		    String formattedGia = formatter.format(giaNhap) + " ₫";
+			Double total = giaNhap * imeis.size();
+			totalDouble += total;
 
-		    Double total = giaNhap * imeis.size();
-		    totalDouble += total;
-
-		    writer.println("<tr>");
-		    writer.println("<td>" + tenSanPham + "</td>");
-		    writer.println("<td>" + ram + " GB - " + rom + " GB - " + mauSac + "</td>");
-		    writer.println("<td>" + formattedGia + "</td>");
-		    writer.println("<td>" + imeis.size() + "</td>");
-		    writer.println("<td>" + formatter.format(total) + " ₫" + "</td>");
-		    writer.println("</tr>");
+			writer.println("<tr>");
+			writer.println("<td>" + tenSanPham + "</td>");
+			writer.println("<td>" + ram + " GB - " + rom + " GB - " + mauSac + "</td>");
+			writer.println("<td>" + formattedGia + "</td>");
+			writer.println("<td>" + imeis.size() + "</td>");
+			writer.println("<td>" + formatter.format(total) + " ₫" + "</td>");
+			writer.println("</tr>");
 		}
 
 		writer.println("</table>");
-		
-		writer.println("<p style='margin-left:50px; font-size:24px;'><strong>Thành tiền: <span style='color:red;font-size: 28px;'>" + formatter.format(dto.getTongTien()) + " ₫  </span></strong></p>");
+
+		writer.println(
+				"<p style='margin-left:50px; font-size:24px;'><strong>Thành tiền: <span style='color:red;font-size: 28px;'>"
+						+ formatter.format(dto.getTongTien()) + " ₫  </span></strong></p>");
 
 		// Bảng chữ ký
 		writer.println("<table style='width:100%; margin: 50px auto 0 auto; text-align:center;'>");
 		writer.println("<tr>");
-		writer.println("<td><strong>Người chủ quyền công ty</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
-		writer.println("<td><strong>Người lập phiếu</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
-		writer.println("<td><strong>Khách hàng</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
+		writer.println(
+				"<td><strong>Người chủ quyền công ty</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
+		writer.println(
+				"<td><strong>Người lập phiếu</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
+		writer.println(
+				"<td><strong>Khách hàng</strong><br/><span style='font-size: 12px;'>(Ký và ghi rõ họ tên)</span></td>");
 		writer.println("</tr>");
 		writer.println("</table>");
 

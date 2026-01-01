@@ -48,7 +48,7 @@ public class SecurityConfig {
 						.requestMatchers("/quan-tri/thong-ke").permitAll()
 						.requestMatchers("/quan-tri/thong-ke/**").permitAll()
 						.requestMatchers("/quan-tri/don-hang").permitAll()
-
+						
 						.requestMatchers("/quan-tri/**").hasRole("ADMIN").anyRequest().permitAll())
 				.formLogin(form -> form.loginPage("/dang-nhap").loginProcessingUrl("/process-login")
 						.successHandler(successHandler).failureHandler(failureHandler).permitAll())

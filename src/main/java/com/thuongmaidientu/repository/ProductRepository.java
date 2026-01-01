@@ -92,7 +92,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 	List<Object[]> findInfoSP(@Param("mapb") Integer maPhienBanSp);
 
 	@Query(value = "  SELECT sp.tensp AS product_name, sp.soluongban AS total_sold,sp.hinhanh AS img "
-			+ "        FROM sanpham sp" + "        ORDER BY total_sold DESC " + "        LIMIT 5;", nativeQuery = true)
+			+ "        FROM sanpham sp" + "  ORDER BY total_sold DESC LIMIT 5;", nativeQuery = true)
 	List<Object[]> getStatisticalBuySellingProduct();
 
 	@Query(value = """

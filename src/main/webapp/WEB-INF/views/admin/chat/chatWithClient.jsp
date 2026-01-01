@@ -54,7 +54,6 @@
 			id="fullImage">
 	</div>
 
-	<script src="<c:url value='/template/js/chat/chatClient.js' />"></script>
 </body>
 </html>
 

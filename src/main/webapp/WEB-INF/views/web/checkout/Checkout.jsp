@@ -252,8 +252,8 @@
 											</c:forEach>
 										</c:when>
 										<c:otherwise>
-											<option value="" disabled selected hidden>Chưa
-												có mã giảm giá nào</option>
+											<option value="" disabled selected hidden>Chưa có mã
+												giảm giá nào</option>
 										</c:otherwise>
 									</c:choose>
 
@@ -281,9 +281,18 @@
 													</button>
 												</div> -->
 												<div class="form-group mt-3">
+													<button type="button" onclick="submitPayment('cod')"
+														class="btn flosun-button secondary-btn black-color rounded-0 w-100">
+														Thanh toán khi nhận hàng <i style="color: white"
+															class="fa-solid fa-basket-shopping"></i>
+													</button>
+												</div>
+
+												<div class="form-group mt-3">
 													<button type="button" onclick="submitPayment('atm')"
 														class="btn flosun-button secondary-btn black-color rounded-0 w-100">
-														Thanh toán bằng thẻ ngân hàng <i style="color: white"
+														Thanh toán bằng thẻ ngân hàng (momo) <i
+															style="color: white"
 															class="fa-solid fa-money-check-dollar"></i>
 													</button>
 												</div>
@@ -291,8 +300,18 @@
 												<div class="form-group mt-3">
 													<button type="button" onclick="submitPayment('visa')"
 														class="btn flosun-button secondary-btn black-color rounded-0 w-100">
-														Thanh toán bằng thẻ VISA <i style="color: white"
+														Thanh toán bằng thẻ VISA (momo)<i style="color: white"
 															class="fa-brands fa-cc-visa"></i>
+													</button>
+												</div>
+
+												<div class="form-group mt-3">
+													<button type="button" onclick="submitPayment('vnpay')" id="vnpay_btn"
+														class="btn flosun-button secondary-btn black-color rounded-0 w-100"
+														style="background-color: #0066CC; border-color: #0066CC; font-weight: bold;">
+														Thanh toán bằng thẻ ngân hàng (vn-pay)<i
+															class="fa-solid fa-money-check-dollar"
+															style="color: white; margin-left: 8px;"></i>
 													</button>
 												</div>
 											</form>
@@ -311,12 +330,9 @@
 
 	<script>
 		(function() {
-
 			var user = "${user}";
 			if (user == null) {
-
 				window.location.href = "http://localhost:8080/Spring-mvc/trang-chu";
-
 			}
 		})();
 
@@ -350,59 +366,58 @@
 
 			// Tạo một form ẩn để gửi dữ liệu
 			var form = document.getElementById('paymentForm');
-			/*   if (method === 'momo') {
-			      form.action = "http://localhost:8080/Spring-mvc/Cart/handlePay?type=momo";
-			  } else  */
-			/* if (method === 'atm') {
-			form.action = "http://localhost:8080/Spring-mvc/Cart/handlePay?type=atm";
-			} else {
-			form.action = "http://localhost:8080/Spring-mvc/Cart/handlePay?type=visa";
-			}  */
+			
 			form.action = "http://localhost:8080/Spring-mvc/Cart/handlePay";
 
-			$.ajax({
-				url : 'http://localhost:8080/Spring-mvc/quan-tri/don-hang/'
-						+ method + '/' + total,
-				type : 'POST',
-				success : function(response) {
-					urlReturnByMomo = response.payUrl;
 
-					// Thêm các trường ẩn với dữ liệu thu thập được giống cú pháp jstl nên rỗng 
-					/*  form.innerHTML += `<input type="hidden" name="city" value="${city}">
-					                <input type="hidden" name="firstName" value="${firstName}">
-					                <input type="hidden" name="lastName" value="${lastName}">
-					                <input type="hidden" name="district" value="${district}">
-					                <input type="hidden" name="street" value="${street}">
-					                <input type="hidden" name="email" value="${email}">
-					                <input type="hidden" name="phone" value="${phone}">
-					                <input type="hidden" name="note" value="${note}">
-					                <input type="hidden" name="ship" value="${ship}">
-					                <input type="hidden" name="select" value="${discount}">
-					                <input type="hidden" name="urlReturnByMomo" value="${response.payUrl}">
-					                `; */
+			//add attribute essential
+			addHiddenInput(form, "city", city);
+			addHiddenInput(form, "firstName", firstName);
+			addHiddenInput(form, "lastName", lastName);
+			addHiddenInput(form, "district", district);
+			addHiddenInput(form, "street", street);
+			addHiddenInput(form, "email", email);
+			addHiddenInput(form, "phone", phone);
+			addHiddenInput(form, "note", note);
+			addHiddenInput(form, "ship", ship);
+			addHiddenInput(form, "select", discount);
+			addHiddenInput(form, "methodPayment", method);
 
-					// Thêm input ẩn bằng cách an toàn
-					addHiddenInput(form, "city", city);
-					addHiddenInput(form, "firstName", firstName);
-					addHiddenInput(form, "lastName", lastName);
-					addHiddenInput(form, "district", district);
-					addHiddenInput(form, "street", street);
-					addHiddenInput(form, "email", email);
-					addHiddenInput(form, "phone", phone);
-					addHiddenInput(form, "note", note);
-					addHiddenInput(form, "ship", ship);
-					addHiddenInput(form, "select", discount);
-					addHiddenInput(form, "urlReturnByMomo", urlReturnByMomo);
+			
+			//without payment online
+			if (method === 'cod') {
+				addHiddenInput(form, "urlReturnByMomo", null);
+				
+				form.submit();
+			} else {
 
-					// Gửi form
-					console.log("Redirecting to:", urlReturnByMomo);
+					fetch("/Spring-mvc/Cart/saveOrderFirst", {
+						  method: "POST",
+						  body: new FormData(document.getElementById("paymentForm"))
+						})
+						.then(res => res.json())
+						.then(orderId => {
+						  console.log("Order ID:", orderId);
 
-					// Gửi form
-					console.log("${response.payUrl}");
-					form.submit();
-				}
-			});
+						  $.ajax({
+								url : 'http://localhost:8080/Spring-mvc/quan-tri/don-hang/'
+										+ method + '/' + total+'?orderId='+orderId,
+								type : 'POST',
+								success : function(response) {
+									urlReturnByMomo = response.payUrl;
 
+									addHiddenInput(form, "urlReturnByMomo", urlReturnByMomo);
+
+									console.log("Redirecting to:", urlReturnByMomo);
+
+									// Gửi form
+									console.log("${response.payUrl}");
+									form.submit();
+								}
+							});
+						  
+						});
+			}
 		}
 
 		$(document).ready(function() {
@@ -427,24 +442,6 @@
 		                window.location.href = 'http://localhost:8080/Spring-mvc/Cart/checkout';
 		            }
 		        });
-
-			
-
-				/* const url='http://localhost:8080/Spring-mvc/Cart/checkout?discount='+discountId;
-
-				window.location.href=url; */
-
-				// Gửi AJAX đến PHP để cập nhật total
-				/* $.ajax({
-					url : 'http://localhost:8080/Spring-mvc/Cart/checkout',
-					type : 'GET',
-					data : {
-						discount : discountAmount
-					},
-					success : function(response) {
-						/* $('#total').text(response); // Cập nhật total hiển thị 
-					}
-				}); */
 			});
 
 			if (sessionStorage.getItem("city")) {

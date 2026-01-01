@@ -11,7 +11,7 @@
 	</decorator>
 
 	<decorator name="thankU" page="thankU.jsp">
-		<pattern>/Cart/thankyou</pattern>
+		<pattern>/Cart/*/thankyou</pattern>
 	</decorator>
 
 	<decorator name="login" page="login.jsp">

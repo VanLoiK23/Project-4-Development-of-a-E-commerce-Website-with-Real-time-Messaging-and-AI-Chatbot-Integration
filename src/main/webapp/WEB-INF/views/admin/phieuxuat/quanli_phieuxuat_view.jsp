@@ -28,7 +28,7 @@
 
 	<div class="main-content">
 
-			<%@ include file="show_phieuxuat.jsp"%>
+		<%@ include file="show_phieuxuat.jsp"%>
 
 		<form action="<c:url value='/quan-tri/donhang/danh-sach'/>"
 			id="formSubmit" method="get">
@@ -36,7 +36,8 @@
 			<section id="wrapper">
 
 			<div class="p-4">
-				<button type="button" class="bt-trash" style="background-color: #ADD8E6;">
+				<button type="button" class="bt-trash"
+					style="background-color: #ADD8E6;">
 					<a style="color: white;"
 						href="<c:url value='/quan-tri/donhang/save'/>"> <i
 						class="fa-solid fa-floppy-disk"></i> <span class="trash-count">
@@ -54,10 +55,11 @@
 							<p>Thời gian:</p>
 
 							<select id="timeFilter" name="timeFilter">
-<!-- 								onchange="submitFormWithFilter()"
- -->								
- 
-								<option value="" ${empty param.timeFilter ? 'selected' : ''} >Bỏ lọc</option>
+								<!-- 								onchange="submitFormWithFilter()"
+ -->
+
+								<option value="" ${empty param.timeFilter ? 'selected' : ''}>Bỏ
+									lọc</option>
 								<option value="today"
 									${param.timeFilter == 'today' ? 'selected' : ''}>Hôm
 									nay</option>
@@ -77,8 +79,10 @@
 						<div class="filter-container">
 							<p>Trạng thái:</p>
 							<select id="statusFilter" name="statusFilter">
-<!-- 								onchange="submitFormWithFilter()">
- -->								<option value="" ${empty param.statusFilter ? 'selected' : ''} >Bỏ lọc</option>
+								<!-- 								onchange="submitFormWithFilter()">
+ -->
+								<option value="" ${empty param.statusFilter ? 'selected' : ''}>Bỏ
+									lọc</option>
 								<option value="0" ${statusFilter == 0 ? 'selected' : ''}>Chưa
 									duyệt</option>
 								<option value="1" ${statusFilter == 1 ? 'selected' : ''}>Chưa
@@ -98,7 +102,28 @@
 							</select>
 						</div>
 
-						<button id="applyFilters" type="button" onclick="submitFormWithFilter()">Lọc</button>
+						<div class="filter-container">
+							<p>Thanh toán:</p>
+							<select id="statusPaymentFilter" name="statusPaymentFilter">
+								<!-- 								onchange="submitFormWithFilter()">
+ -->
+								<option value=""
+									${empty param.statusPaymentFilter ? 'selected' : ''}>Bỏ
+									lọc</option>
+								<option value="null"
+									${param.statusPaymentFilter == 'null' ? 'selected' : ''}>Thanh
+									toán khi nhận hàng</option>
+								<option value="pending"
+									${param.statusPaymentFilter == 'pending' ? 'selected' : ''}>Đang
+									chờ thanh toán</option>
+								<option value="momo"
+									${param.statusPaymentFilter == 'success' ? 'selected' : ''}>Đã
+									thanh toán</option>
+							</select>
+						</div>
+
+						<button id="applyFilters" type="button"
+							onclick="submitFormWithFilter()">Lọc</button>
 
 					</div>
 					<div id="table">
@@ -111,9 +136,10 @@
 									<th style="width: 130px">Điện thoại</th>
 									<th style="width: 145px">Tổng tiền</th>
 									<th style="width: 170px">Ngày tạo đơn hàng</th>
+									<th style="width: 185px">Thanh toán</th>
 									<th style="width: 185px">Trạng thái</th>
 									<th style="width: 385px">Xử lý đơn</th>
-									<th>Hành động</th>
+									<th style="width: 300px">Hành động</th>
 								</tr>
 								</thread>
 								<tbody id="ds">
@@ -139,6 +165,35 @@
 													<td><fmt:formatDate value="${item.thoiGian}"
 															pattern="dd-MM-yyyy" /></td>
 
+													<c:choose>
+
+														<c:when test="${item.payment == 'momo' or item.payment == 'vn-pay'}">
+															<td>
+																<button type="button"
+																	class="status_payment status_payment-paid" disabled>
+																	<i class="fa fa-check-circle"></i> Đã thanh toán
+																</button>
+															</td>
+														</c:when>
+
+														<c:when test="${item.payment == 'pending'}">
+															<td>
+																<button type="button"
+																	class="status_payment status_payment-pending" disabled>
+																	<i class="fa-regular fa-clock"></i>Chờ thanhtoán
+																</button>
+															</td>
+														</c:when>
+														<c:otherwise>
+															<td>
+																<button type="button"
+																	class="status_payment status_payment-cod" disabled>
+																	<i class="fa fa-truck"></i> COD - Chưa thu tiền
+																</button>
+															</td>
+														</c:otherwise>
+
+													</c:choose>
 
 													<c:choose>
 														<c:when test="${item.status == 0}">
@@ -151,7 +206,8 @@
 																	onclick="change_status(${item.id},1)">
 																	<a style="color: white"> Duyệt đơn hàng </a>
 																</button>
-																<button type="button" class="status canceled" id="status_${item.id}"
+																<button type="button" class="status canceled"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},-1)">
 																	<a style="color: white"> Hủy đơn </a>
 																</button></td>
@@ -162,11 +218,13 @@
 																lấy hàng</td>
 
 															<td id="process_${item.id}">
-																<button type="button" class="status pending" id="status_${item.id}"
+																<button type="button" class="status pending"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},2)">
 																	<a style="color: white"> Lấy hàng </a>
 																</button>
-																<button type="button" class="status canceled" id="status_${item.id}"
+																<button type="button" class="status canceled"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},-1)">
 																	<a style="color: white"> Hủy đơn </a>
 																</button>
@@ -179,11 +237,13 @@
 
 															<td id="process_${item.id}">
 
-																<button type="button" class="status shipped" id="status_${item.id}"
+																<button type="button" class="status shipped"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},3)">
 																	<a style="color: white"> Giao hàng </a>
 																</button>
-																<button type="button" class="status canceled" id="status_${item.id}"
+																<button type="button" class="status canceled"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},-1)">
 																	<a style="color: white"> Hủy đơn </a>
 																</button>
@@ -198,11 +258,13 @@
 
 
 															<td id="process_${item.id}">
-																<button type="button" class="status delivered" id="status_${item.id}"
+																<button type="button" class="status delivered"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},4)">
 																	<a style="color: white"> Xác nhận giao hàng </a>
 																</button>
-																<button type="button" class="status canceled" id="status_${item.id}"
+																<button type="button" class="status canceled"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},-1)">
 																	<a style="color: white"> Hủy đơn </a>
 																</button>
@@ -229,11 +291,13 @@
 																hàng gửi đơn hủy</td>
 
 															<td id="process_${item.id}">
-																<button type="button" class="status delivered" id="status_${item.id}"
+																<button type="button" class="status delivered"
+																	id="status_${item.id}"
 																	onclick="cancle(${item.id}, '${fn:escapeXml(item.feeback)}')">
 																	<a style="color: white"> Xem lý do </a>
 																</button>
-																<button type="button" class="status canceled" id="status_${item.id}"
+																<button type="button" class="status canceled"
+																	id="status_${item.id}"
 																	onclick="change_status(${item.id},-3)">
 																	<a style="color: white"> Xác nhận đơn hủy </a>
 																</button>
@@ -248,29 +312,25 @@
 														</c:otherwise>
 													</c:choose>
 
+													<td><c:if
+															test="${item.status != -1 && item.status != -3 }">
+															<button type="button" onclick='show(${item.id});'>
+																<a style='color: white'> <i class='fa-solid fa-eye'></i>
+																</a>
+															</button>
+														</c:if>
 
-													<td>
-													<c:if test="${item.status != -1 && item.status != -3 }">
-													<button  type="button" onclick='show(${item.id});'>
-															<a style='color: white'> <i class='fa-solid fa-eye'></i>
-															</a>
-														</button>
-													</c:if>
-														
 														<button type="button" onclick='Delete(${item.id});'
 															style='background-color: blue'>
 															<i class='fa-solid fa-cloud'></i>
-														</button>
-														<c:if test="${item.status != -1 && item.status != -3 }">
-														<button type="button" style='background-color: orange'>
-															<a style='color: white'
-																href='http://localhost:8080/Spring-mvc/quan-tri/donhang/export/${item.id}'>
-																<i class='fa-solid fa-file-export'></i>
-															</a>
-														</button>
-														</c:if>
-														
-													</td>
+														</button> <c:if test="${item.status != -1 && item.status != -3 }">
+															<button type="button" style='background-color: orange'>
+																<a style='color: white'
+																	href='http://localhost:8080/Spring-mvc/quan-tri/donhang/export/${item.id}'>
+																	<i class='fa-solid fa-file-export'></i>
+																</a>
+															</button>
+														</c:if></td>
 
 												</tr>
 											</c:forEach>

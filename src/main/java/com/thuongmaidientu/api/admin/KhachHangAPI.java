@@ -45,9 +45,9 @@ public class KhachHangAPI {
 
 	@Autowired
 	private IKhachHangService khachHangService;
-	
-	@Autowired
-	private FirebaseService firebaseService;
+//	
+//	@Autowired
+//	private FirebaseService firebaseService;
 	
 	@Autowired
 	private JavaMailSenderImpl mailSender;
@@ -141,7 +141,7 @@ public class KhachHangAPI {
 				
 				UserDTO userDTO=khachHangService.findUserDTOById(User.getId().intValue());
 				
-				firebaseService.saveUserToFirebase(userDTO,false,true,false,true);
+//				firebaseService.saveUserToFirebase(userDTO,false,true,false,true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -35,8 +35,8 @@ public class LoginController {
 	@Autowired
 	private JavaMailSenderImpl mailSender;
 	
-	@Autowired
-	private FirebaseService firebaseService;
+//	@Autowired
+//	private FirebaseService firebaseService;
 
 	@RequestMapping(value = "/dang-nhap", method = RequestMethod.GET)
 	public ModelAndView showFormLogin(@ModelAttribute("message") String message, HttpSession session) {
@@ -230,7 +230,7 @@ public class LoginController {
 		
 		userDTO.setPasswordRaw(password);
 		
-		firebaseService.saveUserToFirebase(userDTO,false,false,true,false);
+//		firebaseService.saveUserToFirebase(userDTO,false,false,true,false);
 
 		redirectAttributes.addFlashAttribute("message", "Password reset succesfull.Now you can login again");
 

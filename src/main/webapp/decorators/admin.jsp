@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@include file="/common/taglib.jsp"%>
- <%@ page session="true" %>
+<%@ page session="true"%>
 
 <!DOCTYPE html>
 <html>
@@ -82,8 +82,8 @@
 	</div>
 
 
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script>
+	<!-- <script
+		src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script> -->
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.jshttps://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -95,7 +95,7 @@
 	<script
 		src="<c:url value='/template/admin/paging/jquery.twbsPagination.min.js' />"></script>
 
-   
+
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
@@ -116,6 +116,8 @@
 	<!-- page specific plugin scripts -->
 	<%-- <script
 		src="<c:url value='/template/admin/assets/js/jquery-ui.min.js'/>"></script> --%>
+
+	<script src="<c:url value='/template/js/chat/chatClient.js' />"></script>
 
 	<dec:getProperty property="meta.scripts" />
 </body>

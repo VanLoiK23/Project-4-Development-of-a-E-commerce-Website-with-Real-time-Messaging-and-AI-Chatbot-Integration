@@ -1,10 +1,15 @@
 package com.thuongmaidientu.service.impl;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -112,7 +117,7 @@ public class PhieuNhapService implements IPhieuNhapService {
 
 		return (int) (numTotal - numTrash);
 	}
-	
+
 	public int getAllTotal() {
 		int numTotal = (int) phieuNhapRepository.count();
 
@@ -124,7 +129,6 @@ public class PhieuNhapService implements IPhieuNhapService {
 		return (int) phieuNhapRepository.countBySave("disable");
 	}
 
-
 	@Override
 	public void updateTrash(int id, String trash) {
 		phieuNhapRepository.updateSaveById(id, trash);
@@ -133,14 +137,72 @@ public class PhieuNhapService implements IPhieuNhapService {
 	@Override
 	public List<PhieuNhapDTO> findAllByDate(Date fromDate, Pageable pageable) {
 		// TODO Auto-generated method stub
-		
+
 		List<PhieuNhapEntity> entities = phieuNhapRepository.findAllByDate(fromDate, pageable);
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 	@Override
 	public int getTotalItemByDate(Date fromDate) {
-	    return phieuNhapRepository.countByDate(fromDate);
+		return phieuNhapRepository.countByDate(fromDate);
+	}
+
+	@Override
+	public List<String> getImportFinancingStatisticalByTimeFilter(String timeFilter) {
+		List<Object[]> results = new ArrayList<Object[]>();
+		List<String> fullDates;
+
+		switch (timeFilter) {
+		case "week": {
+			results = phieuNhapRepository.getImportFinancingStatisticalFollowWeek();
+
+			fullDates = List.of("Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7");
+
+			break;
+		}
+		case "month": {
+			results = phieuNhapRepository.getImportFinancingStatisticalFollowMonth();
+
+			fullDates = List.of("Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5");
+
+			break;
+		}
+		case "quarter": {
+			results = phieuNhapRepository.getImportFinancingStatisticalFollowQuarter();
+
+			fullDates = List.of("1", "2", "3", "4");
+
+			break;
+		}
+		default:
+			results = phieuNhapRepository.getImportFinancingStatisticalFollowYear();
+
+			fullDates = List.of("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+					"Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
+
+			break;
+		}
+
+		List<String> dataList = new ArrayList<String>();
+		Map<String, Double> dataMap = new HashMap<>();
+
+		for (Object[] record : results) {
+			String dayOf = (String) (record[0]).toString();
+			Double total = ((Number) record[1]).doubleValue();
+			dataMap.put(dayOf, total);
+		}
+
+		for (String date : fullDates) {
+			dataList.add(formatCurrency(dataMap.getOrDefault(date, 0.0)));
+		}
+
+		return dataList;
+	}
+
+	public String formatCurrency(double amount) {
+		Locale localeVN = new Locale("vi", "VN");
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+		return currencyFormatter.format(amount);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.thuongmaidientu.service.impl;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +27,8 @@ import com.thuongmaidientu.entity.PhieuXuatEntity;
 import com.thuongmaidientu.repository.PhieuNhapRepository;
 import com.thuongmaidientu.repository.PhieuXuatRepository;
 import com.thuongmaidientu.service.IPhieuXuatService;
+
+import org.springframework.data.util.Pair;
 
 @Service
 public class PhieuXuatService implements IPhieuXuatService {
@@ -122,8 +126,14 @@ public class PhieuXuatService implements IPhieuXuatService {
 	}
 
 	@Override
-	public PhieuXuatDTO findById(int masp) {
-		Optional<PhieuXuatEntity> entity = phieuXuatRepository.findById((long) masp);
+	public PhieuXuatDTO findById(int mapx) {
+		Optional<PhieuXuatEntity> entity = phieuXuatRepository.findById((long) mapx);
+		return entity.map(this::convertToDTO).orElse(null);
+	}
+
+	@Override
+	public PhieuXuatDTO findById(long mapx) {
+		Optional<PhieuXuatEntity> entity = phieuXuatRepository.findById(mapx);
 		return entity.map(this::convertToDTO).orElse(null);
 	}
 
@@ -149,7 +159,7 @@ public class PhieuXuatService implements IPhieuXuatService {
 
 	@Override
 	public List<OrderByWeekOrMonthDTO> getStatisticalFollowWeek() {
-		List<Object[]> results = phieuXuatRepository.getStatisticalFollowWeek();
+		List<Object[]> results = phieuXuatRepository.getOrderStatisticalFollowWeek(null);
 
 		// Map chứa dữ liệu thực tế
 		Map<String, Integer> dataMap = new HashMap<>();
@@ -175,7 +185,7 @@ public class PhieuXuatService implements IPhieuXuatService {
 
 	@Override
 	public List<OrderByWeekOrMonthDTO> getStatisticalFollowMonth() {
-		List<Object[]> results = phieuXuatRepository.getStatisticalFollowMonth();
+		List<Object[]> results = phieuXuatRepository.getOrderStatisticalFollowMonth(null);
 
 		Map<String, Integer> dataMap = new HashMap<>();
 		for (Object[] record : results) {
@@ -200,7 +210,7 @@ public class PhieuXuatService implements IPhieuXuatService {
 
 	@Override
 	public List<DoanhThuByWeekOrMonthDTO> getStatisticalDoanhThuFollowWeek() {
-		List<Object[]> results = phieuXuatRepository.getStatisticalDoanhThuFollowWeek();
+		List<Object[]> results = phieuXuatRepository.getRevenueStatisticalFollowWeek();
 
 		// Tạo map từ kết quả SQL
 		Map<String, Double> dataMap = new HashMap<>();
@@ -227,7 +237,7 @@ public class PhieuXuatService implements IPhieuXuatService {
 
 	@Override
 	public List<DoanhThuByWeekOrMonthDTO> getStatisticalDoanhThuFollowMonth() {
-		List<Object[]> results = phieuXuatRepository.getStatisticalDoanhThuFollowMonth();
+		List<Object[]> results = phieuXuatRepository.getRevenueStatisticalFollowMonth();
 
 		Map<String, Double> dataMap = new HashMap<>();
 		for (Object[] record : results) {
@@ -248,6 +258,129 @@ public class PhieuXuatService implements IPhieuXuatService {
 		}
 
 		return dtoList;
+	}
+
+	@Override
+	public List<String> getRevenueStatisticalByTimeFilter(String timeFilter) {
+		List<Object[]> results = new ArrayList<Object[]>();
+		List<String> fullDates;
+
+		switch (timeFilter) {
+		case "week": {
+			results = phieuXuatRepository.getRevenueStatisticalFollowWeek();
+
+			fullDates = List.of("Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7");
+
+			break;
+		}
+		case "month": {
+			results = phieuXuatRepository.getRevenueStatisticalFollowMonth();
+
+			fullDates = List.of("Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5");
+
+			break;
+		}
+		case "quarter": {
+			results = phieuXuatRepository.getRevenueStatisticalFollowQuarter();
+
+			fullDates = List.of("1", "2", "3", "4");
+
+			break;
+		}
+		default:
+			results = phieuXuatRepository.getRevenueStatisticalFollowYear();
+
+			fullDates = List.of("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+					"Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
+
+			break;
+		}
+
+		List<String> dataList = new ArrayList<String>();
+		Map<String, Double> dataMap = new HashMap<>();
+
+		for (Object[] record : results) {
+			String dayOf = (String) (record[0]).toString();
+			Double total = ((Number) record[1]).doubleValue();
+			dataMap.put(dayOf, total);
+		}
+
+		for (String date : fullDates) {
+			dataList.add(formatCurrency(dataMap.getOrDefault(date, 0.0)));
+		}
+
+		return dataList;
+	}
+
+	public String formatCurrency(double amount) {
+		Locale localeVN = new Locale("vi", "VN");
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+		return currencyFormatter.format(amount);
+	}
+
+	@Override
+	public List<Integer> getOrderStatisticalByTimeFilter(String timeFilter, Integer statusOptinal) {
+		List<Object[]> results = new ArrayList<Object[]>();
+		List<String> fullDates;
+
+		switch (timeFilter) {
+		case "week": {
+			results = phieuXuatRepository.getOrderStatisticalFollowWeek(statusOptinal);
+			fullDates = List.of("Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7");
+			break;
+		}
+		case "month": {
+			results = phieuXuatRepository.getOrderStatisticalFollowMonth(statusOptinal);
+			fullDates = List.of("Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5");
+
+			break;
+		}
+		case "quarter": {
+			results = phieuXuatRepository.getOrderStatisticalFollowQuarter(statusOptinal);
+			fullDates = List.of("1", "2", "3", "4");
+
+			break;
+		}
+		default:
+			results = phieuXuatRepository.getOrderStatisticalFollowYear(statusOptinal);
+			fullDates = List.of("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+					"Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
+			break;
+		}
+
+		List<Integer> dataList = new ArrayList<Integer>();
+		Map<String, Integer> dataMap = new HashMap<>();
+
+		for (Object[] record : results) {
+			int count = ((Number) record[1]).intValue();
+			String dayOf = (String) (record[0]).toString();
+			dataMap.put(dayOf, count);
+		}
+
+		for (String date : fullDates) {
+			dataList.add(dataMap.getOrDefault(date, 0));
+		}
+
+		return dataList;
+	}
+
+	@Override
+	public Integer getStatusOrderFollowDoughnutChart(Integer statusOptinal) {
+		return phieuXuatRepository.getOrderStatisticalFollowQuarterAndDoughnutChart(statusOptinal);
+	}
+
+	@Override
+	public List<Pair<String, Integer>> getTopSellingByTimeFilter(String timeFilter) {
+		List<Object[]> results = phieuXuatRepository.getTopSellingProductStatistical(timeFilter);
+
+		List<Pair<String, Integer>> dataList = new ArrayList<Pair<String, Integer>>();
+		for (Object[] record : results) {
+			String nameProduct = (String) record[0];
+			Integer totalSold = ((Number) record[1]).intValue();
+			dataList.add(Pair.of(nameProduct, totalSold));
+		}
+
+		return dataList;
 	}
 
 	@Override
@@ -304,16 +437,36 @@ public class PhieuXuatService implements IPhieuXuatService {
 	}
 
 	@Override
-	public List<PhieuXuatDTO> findAllByDateAndStatus(Date fromDate, Integer st, Pageable pageable) {
-		// TODO Auto-generated method stub
+	public List<PhieuXuatDTO> findAllByDateAndStatusAndStatusPayment(Date fromDate, Integer st, String statusPayment,
+			Pageable pageable) {
 
-		List<PhieuXuatEntity> entities = phieuXuatRepository.findAllByOptionalFilters(fromDate, st, pageable);
+		List<PhieuXuatEntity> entities = null;
+
+		if (statusPayment != null && statusPayment.equals("null")) {
+			statusPayment = "";
+		} else if (statusPayment == "") {
+			statusPayment = null;
+		}
+
+		if (statusPayment == "success") {
+			entities = phieuXuatRepository.findOrdersSuccessByOptionalFilters(fromDate, st, pageable);
+		} else {
+			entities = phieuXuatRepository.findAllByOptionalFilters(fromDate, st, statusPayment, pageable);
+		}
+
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 	@Override
-	public int getTotalItemByDateAndStatus(Date fromDate, Integer st) {
-		return phieuXuatRepository.countByOptionalFilters(fromDate, st);
+	public int getTotalItemByDateAndStatusAndStatusPayment(Date fromDate, Integer st, String statusPayment) {
+
+		if (statusPayment != null && statusPayment.equals("null")) {
+			statusPayment = "";
+		} else if (statusPayment == "") {
+			statusPayment = null;
+		}
+
+		return phieuXuatRepository.countByOptionalFilters(fromDate, st, statusPayment);
 	}
 
 	@Override
@@ -322,8 +475,8 @@ public class PhieuXuatService implements IPhieuXuatService {
 	}
 
 	@Override
-	public void updatePaymentStatus(Integer id) {
-		phieuXuatRepository.updateStatusPayment(id, "momo");
+	public void updatePaymentStatus(Integer id, String paymentStatus) {
+		phieuXuatRepository.updateStatusPayment(id, paymentStatus);
 	}
 
 	@Override
@@ -366,6 +519,17 @@ public class PhieuXuatService implements IPhieuXuatService {
 	public List<PhieuXuatDTO> selectAll() {
 		List<PhieuXuatEntity> entities = phieuXuatRepository.findBySave("active");
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<PhieuXuatDTO> getOrdersForStatiscal() {
+		List<PhieuXuatEntity> entities = phieuXuatRepository.selectOrderFollowEarlyDate();
+		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Integer> getHistoryPayemnt(Integer maKH) {
+		return phieuXuatRepository.selectOrderFollowEarlyDate(maKH);
 	}
 
 }

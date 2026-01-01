@@ -52,7 +52,7 @@
 			<div class="logo">
 
 				<a href="http://localhost:8080/Spring-mvc/trang-chu"> <img
-					src="https://i.ibb.co/HpRWyCDC/download.png"
+					src="https://i.ibb.co/xKsy4vRR/large.png"
 					alt="Trang chủ Smartphone Store"
 					title="Trang chủ Smartphone
 					Store">
@@ -130,7 +130,7 @@
 						style="transition: 0.45s; width: 17235px; transform: translate3d(-10303px, 0px, 0px);">
 
 
-						<div class="owl-item"
+			<!-- 			<div class="owl-item"
 							style="width: 649.333px; margin-right: 100px;">
 							<div class="item">
 								<a target="_blank"
@@ -139,10 +139,10 @@
 									src="https://res.cloudinary.com/deynh1vvv/image/upload/v1753843699/b7c7d55a5d2fe0c2b78e29e11064d7c2_xz9hvc.jpg">
 								</a>
 							</div>
-						</div>
+						</div> -->
 						
 					
-						<div class="owl-item"
+						<!-- <div class="owl-item"
 							style="width: 649.333px; margin-right: 100px;">
 							<div class="item">
 								<a target="_blank"
@@ -152,7 +152,7 @@
 								</a>
 							</div>
 						</div>
-						
+						 -->
 						
 						 <c:forEach var="item" items="${slides.listResult}">
 

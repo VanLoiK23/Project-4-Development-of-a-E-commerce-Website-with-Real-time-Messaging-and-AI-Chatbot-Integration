@@ -171,7 +171,7 @@ public class InfoIndividualAccountAPI {
 					return ResponseEntity.badRequest().body("Tham số filter không hợp lệ.");
 				}
 
-				list = phieuXuatService.findAllByDateAndStatus(java.sql.Date.valueOf(fromDate), null,
+				list = phieuXuatService.findAllByDateAndStatusAndStatusPayment(java.sql.Date.valueOf(fromDate), null,null,
 						Pageable.unpaged());
 			}
 

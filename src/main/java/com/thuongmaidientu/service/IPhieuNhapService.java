@@ -26,6 +26,7 @@ public interface IPhieuNhapService {
 	List<PhieuNhapDTO> findAllByDate(Date fromDate, Pageable pageable);
 	int getTotalItemByDate(Date fromDate);
 	
+	List<String> getImportFinancingStatisticalByTimeFilter(String timeFilter);
 //	List<E>
 
 }

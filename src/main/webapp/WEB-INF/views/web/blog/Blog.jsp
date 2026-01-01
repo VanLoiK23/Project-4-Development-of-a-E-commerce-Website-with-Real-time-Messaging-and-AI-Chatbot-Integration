@@ -409,7 +409,7 @@
 				function() {
 					const selectedValue = this.value;
 
-					// Đảm bảo PHP giá trị được chèn chính xác vào JavaScript
+					
 					const idsp = document.getElementById("idBlog").value;
 
 					// Gửi dữ liệu đã chọn đến server

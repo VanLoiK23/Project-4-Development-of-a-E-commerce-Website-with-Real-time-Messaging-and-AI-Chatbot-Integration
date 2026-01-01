@@ -52,5 +52,7 @@ public interface IKhachHangService {
 	UserDTO findByEmail(String email);
 	
 	UserDTO findByTokenHash(String tokenHash);
+	
+	Integer getQuantityRegisterByTimeFilter(String timeFilter);
 
 }

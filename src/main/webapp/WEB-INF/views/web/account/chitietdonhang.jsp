@@ -19,7 +19,7 @@
 <body>
 
 	<h2 class="header" id="header">Chi tiết đơn hàng</h2>
-	
+
 	<div class="frame-19522" id="frame-19522">
 		<div class="frame-195211">
 			<div class="frame-19520">
@@ -30,13 +30,14 @@
 					</div>
 					<div class="frame-19551">
 						<p class="content-left">
-							<fmt:formatDate value="${order.thoiGian}" pattern="yyyy-MM-dd HH:mm:ss" />
+							<fmt:formatDate value="${order.thoiGian}"
+								pattern="yyyy-MM-dd HH:mm:ss" />
 						</p>
 
 					</div>
 				</div>
-				
-				<c:set var="status" value="${order.status}"/>
+
+				<c:set var="status" value="${order.status}" />
 
 				<c:choose>
 					<c:when test="${status eq 0}">
@@ -216,20 +217,26 @@
                   <p class="_-10000000">10.000.000 đ</p>
                 </div> -->
 						<div class="frame-838">
+							<c:set var="paymentStatus" value="${order.payment}" />
 							<c:choose>
-								<c:when test="${not empty order.payment }">
+								<c:when test="${(paymentStatus eq 'momo') or (paymentStatus eq 'vn-pay')}">
 									<p class="vnpayqr">${order.payment }</p>
+								</c:when>
+								<c:when test="${paymentStatus eq 'pending'}">
+									<p class="vnpayqr">Đang chờ thanh toán</p>
 								</c:when>
 								<c:otherwise>
 									<p class="ti-nmt">Tiền mặt</p>
 								</c:otherwise>
 							</c:choose>
 
-							<p class="_-6000000">
-								<fmt:formatNumber value="${order.tongTien}" type="number"
-									pattern="#,##0" />
-								đ
-							</p>
+							<c:if test="${paymentStatus ne 'pending'}">
+								<p class="_-6000000">
+									<fmt:formatNumber value="${order.tongTien}" type="number"
+										pattern="#,##0" />
+									đ
+								</p>
+							</c:if>
 						</div>
 					</div>
 				</div>
@@ -257,10 +264,6 @@
 							đ
 						</p>
 					</div>
-					<!-- <div class="frame-661">
-            <p class="khuy-nmi">Khuyến mãi</p>
-            <p class="_-30000">-30.000 đ</p>
-          </div> -->
 					<div class="frame-662">
 
 						<p class="ph-vnchuy-n">Phí vận chuyển</p>
@@ -306,9 +309,13 @@
 
 					<div class="frame-6602">
 						<div class="frame-836">
+					
 							<c:choose>
-								<c:when test="${not empty order.payment }">
+								<c:when test="${(paymentStatus eq 'momo') or (paymentStatus eq 'vn-pay')}">
 									<p class="cnthanh-to-n">Đã thanh toán</p>
+								</c:when>
+								<c:when test="${paymentStatus eq 'pending'}">
+									<p class="cnthanh-to-n">Chưa thanh toán</p>
 								</c:when>
 								<c:otherwise>
 									<p class="cnthanh-to-n">Vui lòng thanh toán khi nhận hàng</p>
@@ -352,7 +359,7 @@
 							</div>
 						</div>
 					</c:if>
-					
+
 				</div>
 				<div class="frame-19550">
 					<div class="button-3">
@@ -367,18 +374,14 @@
 			</div>
 		</div>
 	</div>
-	<?php
-    }
-  }
-  ?>
 
 	<div class="overlay" id="popup" style="display: none;"
 		onclick="closeForm()">
 		<form class="form-popup" id="updateDataForm"
 			onclick="event.stopPropagation()" method="POST">
 			<button type="button" class="close-btn" onclick="closeForm()">X</button>
-			<input type="hidden" value="${shipping.id}"
-				id="id_shipping" name="id_shipping">
+			<input type="hidden" value="${shipping.id}" id="id_shipping"
+				name="id_shipping">
 			<textarea placeholder="Nhập ghi chú..." id="note" name="note">${shipping.note}</textarea>
 			<button type="submit">Xác nhận</button>
 		</form>

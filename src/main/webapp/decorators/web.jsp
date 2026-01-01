@@ -43,7 +43,7 @@
 	href="<c:url value='/template/css/style1/banner.css' />" />
 
 <link rel="stylesheet"
-	href="<c:url value='/template/css/style1/footerFPT.css' />" />
+	href="<c:url value='/template/css/style1/footerFPT.css' />" /> 
 	
 <link rel="stylesheet"
 	href="<c:url value='/template/css/style1/chat.css' />" />

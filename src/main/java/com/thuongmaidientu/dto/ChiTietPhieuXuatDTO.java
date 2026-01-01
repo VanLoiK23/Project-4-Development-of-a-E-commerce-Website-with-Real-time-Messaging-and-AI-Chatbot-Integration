@@ -21,5 +21,10 @@ public class ChiTietPhieuXuatDTO {
 	private String config;
 	private String srcImage;
 	private Integer maSP;
+	
+	//display order side admin web
+	private Integer ram;
+	private Integer rom;
+	private String color;
 }
 

@@ -174,3 +174,7 @@
 		font-size: 14px !important;
 	}
 }
+
+#vnpay_btn:hover{
+	background-color:#0066CC !important;
+}

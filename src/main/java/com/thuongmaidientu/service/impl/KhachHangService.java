@@ -276,4 +276,9 @@ public class KhachHangService implements IKhachHangService {
 		List<UserEntity> entities = userRepository.findByResetTokenHash(tokenHash);
 		return (entities != null && !entities.isEmpty()) ? convertToUserDTO(entities.get(0)) : null;
 	}
+
+	@Override
+	public Integer getQuantityRegisterByTimeFilter(String timeFilter) {
+		return userRepository.getQuantityRegisterByTimeFilter(timeFilter);
+	}
 }

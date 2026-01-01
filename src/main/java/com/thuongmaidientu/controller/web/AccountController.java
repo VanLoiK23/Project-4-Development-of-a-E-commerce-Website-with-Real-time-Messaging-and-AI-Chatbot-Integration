@@ -67,8 +67,8 @@ public class AccountController {
 	@Autowired
 	private IDiscountService discountService;
 
-	@Autowired
-	private FirebaseService firebaseService;
+//	@Autowired
+//	private FirebaseService firebaseService;
 
 	@GetMapping
 	public ModelAndView showAccountView(HttpSession session, @ModelAttribute("message") String message) {
@@ -150,7 +150,7 @@ public class AccountController {
 			UserDTO userSaveChangedPass = khachHangService.save(userDTO);
 			userSaveChangedPass.setPasswordRaw(newpassword);
 
-			firebaseService.saveUserToFirebase(userSaveChangedPass, false, false, true, false);
+//			firebaseService.saveUserToFirebase(userSaveChangedPass, false, false, true, false);
 
 			redirectAttributes.addFlashAttribute("message", "Mật khẩu đổi mới thành công!");
 			return "redirect:/account";
@@ -184,7 +184,7 @@ public class AccountController {
 		userSaveDto.setFirstName(firstName);
 		userSaveDto.setLastName(lastName);
 
-		firebaseService.saveUserToFirebase(userSaveDto, false, true, false, false);
+//		firebaseService.saveUserToFirebase(userSaveDto, false, true, false, false);
 
 		if (userSaveDto != null) {
 			khachHangDTO.setHoTen(fullname);
@@ -255,15 +255,6 @@ public class AccountController {
 							phieuXuatFindByIDto.getId().intValue(), userDTO.getId().intValue()) != null));
 			productDTOs.add(productDTO);
 		}
-//		chiTietPhieuXuatDTOs.forEach(ctpx -> {
-//			quantity+=ctpx.getSoLuong();
-//			ProductDTO productDTO = productService.findInfoProductForOrderInWeb(ctpx.getPhienBanSanPhamXuatId());
-//			productDTO.setMaPX(phieuXuatFindByIDto.getId().intValue());
-//			productDTO.setIsCommentWithOrder(
-//					(commentAndRateService.getExistCommentByMaspAndOrderId(productDTO.getMap().intValue(),
-//							phieuXuatFindByIDto.getId().intValue(), userDTO.getId().intValue()) != null));
-//			productDTOs.add(productDTO);
-//		});
 
 		phieuXuatFindByIDto.setListctpx(chiTietPhieuXuatDTOs);
 		phieuXuatFindByIDto.setListProductDTOsForDisplay(productDTOs);

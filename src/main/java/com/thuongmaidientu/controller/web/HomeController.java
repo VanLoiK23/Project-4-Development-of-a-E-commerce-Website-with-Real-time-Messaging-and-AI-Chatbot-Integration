@@ -52,27 +52,10 @@ public class HomeController {
 
 	// cap nhat lai tat ca so luong cho dong bo **** ok !!
 
+	
 	@RequestMapping(value = "/trang-chu", method = RequestMethod.GET)
 	public ModelAndView homePage() {
 		
-//		cartService.getAllCarts().forEach(cart -> {
-//			try {
-//				firebaseService.insertCartSynchFromMySql(cart);
-//				
-//				cart.getCartItems().forEach(cartItem->{
-//					firebaseService.insertCartItem(cart.getId(), cartItem);
-//				});
-//			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		});
-		
-
 		ModelAndView mav = new ModelAndView("web/homepage/Homepage");
 
 		// slide

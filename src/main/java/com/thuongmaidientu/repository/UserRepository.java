@@ -49,9 +49,28 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	String getTokenUser(int id);
 
 	long countByRole(String role);
-	
+
+	@Query(value = """
+			SELECT
+			    COUNT(*)
+			FROM taikhoan 
+			WHERE
+			   -- 1. Lọc theo Tuần
+			   (:timeFilter = 'week' AND YEARWEEK(time_create_acc, 1) = YEARWEEK(CURDATE(), 1))
+			   OR
+			   -- 2. Lọc theo Tháng
+			   (:timeFilter = 'month' AND YEAR(time_create_acc) = YEAR(CURDATE()) AND MONTH(time_create_acc) = MONTH(CURDATE()))
+			   OR
+			   -- 3. Lọc theo Quý
+			   (:timeFilter = 'quarter' AND YEAR(time_create_acc) = YEAR(CURDATE()) AND QUARTER(time_create_acc) = QUARTER(CURDATE()))
+			   OR
+			   -- 4. Lọc theo Năm
+			   (:timeFilter = 'year' AND YEAR(time_create_acc) = YEAR(CURDATE()))
+			""", nativeQuery = true)
+	Integer getQuantityRegisterByTimeFilter(@Param("timeFilter") String timeFilter);
+
 	boolean existsByNameAllIgnoreCase(String name);
-	
+
 	boolean existsByEmailAllIgnoreCase(String email);
 
 	@Query(value = """
@@ -60,9 +79,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 			(:phone IS NULL OR phone = :phone) AND
 			role='khách hàng' AND status = 'lock'
 			""", nativeQuery = true)
-		int countLockedAccount(@Param("email") String email, @Param("phone") String phone);
+	int countLockedAccount(@Param("email") String email, @Param("phone") String phone);
 
 	List<UserEntity> findByEmail(String email);
-	
+
 	List<UserEntity> findByResetTokenHash(String resetTokenHash);
 }

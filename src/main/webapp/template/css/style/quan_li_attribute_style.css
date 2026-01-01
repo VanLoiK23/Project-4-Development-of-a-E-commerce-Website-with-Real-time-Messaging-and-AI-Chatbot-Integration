@@ -421,3 +421,40 @@ input.error {
 	border-color: #0056b3;
 	box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
 }
+
+
+.status_payment {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.status_payment:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* 1. Đã thanh toán - Màu Xanh Lá */
+.status_payment-paid {
+    background-color: #28a745 !important; /* Green */
+    box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3);
+}
+
+/* 2. Đang chờ thanh toán (Online) - Màu Cam */
+.status_payment-pending {
+    background-color: #ffc107 !important; /* Yellow/Orange */
+    color: #333; /* Chữ màu đen cho dễ đọc trên nền vàng */
+    box-shadow: 0 2px 5px rgba(255, 193, 7, 0.3);
+}
+
+/* 3. Thanh toán khi nhận hàng (COD) - Màu Xanh Dương */
+.status_payment-cod {
+    background-color: #17a2b8 !important; /* Cyan/Blue */
+    box-shadow: 0 2px 5px rgba(23, 162, 184, 0.3);
+}
