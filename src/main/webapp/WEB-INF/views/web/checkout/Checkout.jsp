@@ -172,7 +172,7 @@
 									</div>
 									<div class="col-md-12 col-custom">
 										<div class="checkout-form-list">
-											<label>Xã, Phường<span class="required">*</span></label> <input
+											<label>Quận, huyện<span class="required">*</span></label> <input
 												placeholder="Bao gồm quận, huyện" name="district"
 												value="${infoShipping.district }" id="district" required
 												type="text">

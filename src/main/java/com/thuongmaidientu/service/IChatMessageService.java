@@ -11,4 +11,8 @@ public interface IChatMessageService {
 	public List<ChatMessageDTO> getAllMessages();
 
 	public List<ChatMessageDTO> getMessagesBetween(String userA, String userB);
+	
+	public Integer getQuantityClientChat();
+	
+	public void deleteMsgClient(String clientId);
 }

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	// Gọi mặc định khi vào trang (Lọc theo tháng)
 	updateDashboard();
 
-	// Gọi hàm render bảng đơn hàng (đã có từ trước)
+	// Gọi hàm render bảng đơn hàng 
 	if (typeof fetchAndRenderOrders === "function") {
 		fetchAndRenderOrders();
 	}
@@ -22,10 +22,10 @@ function parseCurrency(str) {
 	return parseInt(numberStr) || 0;
 }
 
-// --- HÀM CẬP NHẬT DASHBOARD ---
+// --- UPDATE DASHBOARD ---
 function updateDashboard() {
 	const timeSlicer = document.getElementById('timeSlicer');
-	const timeRange = timeSlicer ? timeSlicer.value : 'month'; // Mặc định month nếu ko tìm thấy slicer
+	const timeRange = timeSlicer ? timeSlicer.value : 'month'; 
 
 	// Cập nhật text hiển thị
 	const labelSpan = document.getElementById('chartLabel');

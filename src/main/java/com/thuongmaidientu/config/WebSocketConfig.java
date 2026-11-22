@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		System.out.println("🟢 WebSocketConfig loaded — /chat endpoint registered! DM");
+		System.out.println("🟢 WebSocketConfig loaded — /chat endpoint registered!");
 
 		registry.addHandler(new ChatHandler(), "/chat").setAllowedOrigins("*");
 	}

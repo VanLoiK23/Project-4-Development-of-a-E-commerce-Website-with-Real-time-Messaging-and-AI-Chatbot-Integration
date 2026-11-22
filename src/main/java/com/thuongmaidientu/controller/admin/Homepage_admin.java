@@ -14,8 +14,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.thuongmaidientu.dto.PaymentStatisticalDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
+import com.thuongmaidientu.service.IChatMessageService;
 import com.thuongmaidientu.service.IPhieuXuatService;
 import com.thuongmaidientu.service.IThongKeService;
+import com.thuongmaidientu.service.impl.ChatMessageService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller("HomepageAdminOfController")
 public class Homepage_admin {
@@ -23,16 +27,10 @@ public class Homepage_admin {
 	@Autowired
 	private IThongKeService thongKeService;
 
-	@Autowired
-	private IPhieuXuatService phieuXuatService;
-
-	@RequestMapping(value = "/quan-tri/test", method = RequestMethod.GET)
-	public ModelAndView test() {
-		return new ModelAndView("admin/homepage/admin_homepage2");
-	}
+	private IChatMessageService chatMessageService = new ChatMessageService();
 
 	@RequestMapping(value = "/quan-tri/Homepage_admin", method = RequestMethod.GET)
-	public ModelAndView showlist() {
+	public ModelAndView showlist(HttpSession session) {
 
 		ModelAndView mav = new ModelAndView("admin/homepage/admin_homepage2");
 
@@ -43,6 +41,9 @@ public class Homepage_admin {
 		thongkeDTO.setQuantityWareHouse(thongKeService.getCountWareHouse());
 
 		mav.addObject("dto", thongkeDTO);
+
+		session.setAttribute("numberMsg", chatMessageService.getQuantityClientChat());
+
 		return mav;
 	}
 

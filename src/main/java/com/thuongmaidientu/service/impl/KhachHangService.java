@@ -127,7 +127,12 @@ public class KhachHangService implements IKhachHangService {
 		entity.setResetTokenHash(dto.getResetTokenHash());
 		entity.setResetTokenExpiresAt(dto.getResetTokenExpiresAt());
 		entity.setFirebaseUid(dto.getFirebaseUid());
+		entity.setTimeCreateAcc(dto.getTimeCreateAcc());
 
+		if(dto.getTimeCreateAcc()==null) {
+			entity.setTimeCreateAcc(new Date());
+		}
+		
 		if (dto.isAdmin()) {
 			entity.setRole("nhân viên");
 		} else {
@@ -162,6 +167,7 @@ public class KhachHangService implements IKhachHangService {
 
 	@Override
 	public KhachHangDTO save(KhachHangDTO ncc) {
+		
 		KhachHangEntity entity = convertToEntity(ncc);
 		KhachHangEntity savedEntity = KhachHangRepository.save(entity);
 		return convertToDTO(savedEntity);
@@ -169,6 +175,8 @@ public class KhachHangService implements IKhachHangService {
 
 	@Override
 	public UserDTO save(UserDTO ncc) {
+		System.out.println(ncc);
+		
 		UserEntity entity = convertToUserEntity(ncc);
 		UserEntity savedEntity = userRepository.save(entity);
 		return convertToUserDTO(savedEntity);

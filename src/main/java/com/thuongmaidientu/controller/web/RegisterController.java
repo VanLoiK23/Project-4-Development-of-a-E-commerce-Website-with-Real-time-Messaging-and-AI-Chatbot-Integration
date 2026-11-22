@@ -103,6 +103,8 @@ public class RegisterController {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		user.setPassword(encoder.encode(password));
 		user.setStatusString("active");
+		
+		user.setTimeCreateAcc(new Date());
 
 		UserDTO userSaveDto = khachHangService.save(user);
 

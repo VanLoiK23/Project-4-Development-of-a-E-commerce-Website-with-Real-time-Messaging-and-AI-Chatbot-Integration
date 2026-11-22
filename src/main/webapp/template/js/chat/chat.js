@@ -30,8 +30,35 @@ document.addEventListener("DOMContentLoaded", function() {
 		loadChatHistoryFromServer();
 
 		connectWebSocket();
+
+		if (localStorage.getItem("openChatAdmin") === "true") {
+			localStorage.removeItem("openChatAdmin");
+
+			const chatBox = document.getElementById("chatBox");
+			chatBox.style.display = "flex";
+
+			setTimeout(() => {
+				selectMode('ADMIN');
+			}, 500);
+		}
 	}
 });
+
+//helper function: only create html string, not intervene into DOM
+function createMessageHTML(type, content, isImage) {
+	const msgId = 'msg-' + new Date().getTime() + Math.random().toString(36).substr(2, 9);
+	const msgClass = (type === 'user') ? 'user-message' : 'bot-message';
+
+	if (isImage) {
+		return `<div class="message ${msgClass}" id="${msgId}">
+                    <img src="${content}" 
+                         style="max-width: 250px; border-radius: 10px; border: 1px solid #ddd; cursor: zoom-in;" 
+                         onclick="openImageModal(this.src)">
+                </div>`;
+	} else {
+		return `<div class="message ${msgClass}" id="${msgId}">${content}</div>`;
+	}
+}
 
 async function loadChatHistoryFromServer() {
 	try {
@@ -40,18 +67,25 @@ async function loadChatHistoryFromServer() {
 
 		console.log(messages)
 
+		let fullHistoryHTML = "";
+
 		messages.forEach(msg => {
 			let type = (msg.senderId === myUserId) ? 'user' : 'bot';
 			let isImage = (msg.type === "image") ? true : false;
 
-			addMessage(type, msg.content, false, isImage);
+			fullHistoryHTML += createMessageHTML(type, msg.content, isImage);
 
 		});
 
-		chatHistoryStorage['ADMIN'] = document.getElementById('chatMessages').innerHTML;
+		chatHistoryStorage['ADMIN'] = fullHistoryHTML;
 
 
 		console.log("✅ Đã tải xong lịch sử Admin:", chatHistoryStorage['ADMIN']);
+
+		if (currentMode === 'ADMIN') {
+			document.getElementById('chatMessages').innerHTML = fullHistoryHTML;
+			scrollToBottom();
+		}
 
 	} catch (error) {
 		console.error("Lỗi tải lịch sử:", error);
@@ -70,10 +104,6 @@ chatToggle.onclick = () => {
 			document.getElementById('chatMain').style.display = 'none';
 			chatBack.style.display = 'none';
 		}
-		
-		if (currentMode === "ADMIN") {
-			document.getElementById('chatMessages').innerHTML = chatHistoryStorage["ADMIN"] || '';
-		}
 	}
 };
 
@@ -81,8 +111,8 @@ chatClose.onclick = () => chatBox.style.display = "none";
 
 // select Mode (AI OR CHAT WITH STAFF)
 function selectMode(newMode) {
-	// Save history to mode
-	if (currentMode) {
+	// Save history to mode old
+	if (currentMode && currentMode !== newMode) {
 		chatHistoryStorage[currentMode] = document.getElementById('chatMessages').innerHTML;
 	}
 
@@ -167,6 +197,9 @@ function connectWebSocket() {
 			const isImage = (msgObj.type === "image");
 
 			addMessage('bot', msgObj.content, false, isImage);
+
+			// CẬP NHẬT LUÔN VÀO BIẾN NHỚ (Để chuyển tab không mất)
+			chatHistoryStorage["ADMIN"] = document.getElementById('chatMessages').innerHTML;
 		} else {
 			var isImage = msgObj.type === "image";
 			var content = msgObj.content;
@@ -175,19 +208,7 @@ function connectWebSocket() {
 			playNotificationSound();
 
 			//lưu vào lịch sử TN
-			let msgHTML = "";
-			const msgId = 'msg-' + new Date().getTime();
-
-			if (isImage) {
-				msgHTML = `<div class="message bot-message" id="${msgId}">
-			                        <img src="${content}" 
-			                             style="max-width: 250px; border-radius: 10px; border: 1px solid #ddd; cursor: zoom-in;" 
-			                             onclick="openImageModal(this.src)">
-			                   </div>`;
-			} else {
-				msgHTML = `<div class="message bot-message" id="${msgId}">${content}</div>`;
-			}
-
+			let msgHTML = createMessageHTML('bot', content, isImage);
 			chatHistoryStorage["ADMIN"] = (chatHistoryStorage["ADMIN"] || "") + msgHTML;
 
 		}
@@ -212,13 +233,13 @@ function showNotification(sender, content) {
 
 			if (!window.location.pathname.includes("/trang-chu")) {
 				window.location.href = "http://localhost:8080/Spring-mvc/trang-chu";
+
+				localStorage.setItem("openChatAdmin", "true");
+			} else {
+				document.getElementById("chatBox").style.display = "flex";
+
+				selectMode('ADMIN');
 			}
-
-			document.getElementById("chatBox").style.display = "flex";
-
-			document.getElementById('chatMessages').innerHTML = chatHistoryStorage["ADMIN"] || '';
-			
-			selectMode('ADMIN');
 		};
 	} else if (Notification.permission !== "denied") {
 		// Xin quyền nếu chưa có
@@ -368,6 +389,10 @@ function addMessage(sender, content, isHTML = false, isImage = false) {
 	}
 	else {
 		msgDiv.innerText = content;
+	}
+
+	if (currentMode) {
+		chatHistoryStorage[currentMode] = (chatHistoryStorage[currentMode] || "") + msgDiv.outerHTML;
 	}
 
 	chatMessages.appendChild(msgDiv);

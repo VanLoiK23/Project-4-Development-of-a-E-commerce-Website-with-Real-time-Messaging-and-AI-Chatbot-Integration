@@ -5,7 +5,9 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.or;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -17,13 +19,15 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.thuongmaidientu.dto.ChatMessageDTO;
 import com.thuongmaidientu.service.IChatMessageService;
 import com.thuongmaidientu.util.MongoUtil;
 
-public class ChatMessageService implements IChatMessageService{
+public class ChatMessageService implements IChatMessageService {
 
 	private final MongoCollection<Document> messageCollection;
 	private final Gson gson = Converters.registerAll(new GsonBuilder()).setDateFormat("EEE MMM dd HH:mm:ss z yyyy")
@@ -42,7 +46,7 @@ public class ChatMessageService implements IChatMessageService{
 		if (result.wasAcknowledged()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -75,9 +79,43 @@ public class ChatMessageService implements IChatMessageService{
 			while (cursor.hasNext()) {
 				ChatMessageDTO message = gson.fromJson(cursor.next().toJson(), ChatMessageDTO.class);
 				result.add(message);
+
 			}
 		}
 
 		return result;
+	}
+
+	@Override
+	public Integer getQuantityClientChat() {
+		Bson filter = Filters.ne("senderId", "admin");
+
+		Set<String> uniqueSenders = new HashSet<>();
+
+		messageCollection.distinct("senderId", filter, String.class).into(uniqueSenders);
+
+		return uniqueSenders.size();
+	}
+
+	@Override
+	public void deleteMsgClient(String clientId) {
+		if (clientId == null || clientId.trim().isEmpty()) {
+			System.out.println("❌ Client ID không hợp lệ");
+			return;
+		}
+
+		try {
+			Bson filter = Filters.or(Filters.eq("senderId", clientId), 
+					Filters.eq("receiverId", clientId)
+			);
+
+			DeleteResult result = messageCollection.deleteMany(filter);
+
+			System.out.println("✅ Đã xóa " + result.getDeletedCount() + " tin nhắn của client: " + clientId);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("❌ Lỗi khi xóa tin nhắn: " + e.getMessage());
+		}
 	}
 }

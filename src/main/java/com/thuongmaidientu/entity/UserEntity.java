@@ -42,7 +42,7 @@ public class UserEntity {
     @Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'khách hàng'")
     private String role="khách hàng";
 
-    @Column(name = "time_create_acc", nullable = true)
+    @Column(name = "time_create_acc", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date timeCreateAcc;
 

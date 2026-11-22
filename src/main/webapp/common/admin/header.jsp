@@ -28,9 +28,9 @@
 					<li><a class="dropdown-item" href="#">Log out</a></li>
 				</ul></li>
 			<li class="nav-item"><a class="nav-link" href='<c:url value="/quan-tri/chat-with-Client"/>'><i
-					class="uil-comments-alt"></i><span>23</span></a></li>
-			<li class="nav-item"><a class="nav-link" href="#"><i
-					class="uil-bell"></i><span>98</span></a></li>
+					class="uil-comments-alt"></i><span>${sessionScope.numberMsg}</span></a></li>
+			<!-- <li class="nav-item"><a class="nav-link" href="#"><i
+					class="uil-bell"></i><span>98</span></a></li> -->
 			<li class="nav-item"><a class="nav-link" href="#"> <i
 					data-show="show-side-navigation1" class="uil-bars show-side-btn"></i>
 			</a></li>

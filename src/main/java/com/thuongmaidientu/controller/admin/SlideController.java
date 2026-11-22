@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.SlideDTO;
 import com.thuongmaidientu.service.CloudinaryService;
 import com.thuongmaidientu.service.ISlideService;

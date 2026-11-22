@@ -442,10 +442,12 @@
 	    let text = "Không xác định";
 
 	    if (status == 0) { color = "#f0ad4e"; text = "Đang chờ duyệt"; }
-	    else if (status == 1) { color = "#5bc0de"; text = "Đang lấy hàng"; }
-	    else if (status == 2) { color = "#5cb85c"; text = "Đang giao hàng"; }
+	    else if (status == 1) { color = "#5bc0de"; text = "Đang chờ lấy hàng"; }
+	    else if (status == 2) { color = "#5bc0de"; text = "Đang lấy hàng"; }
+	    else if (status == 3) { color = "#36b9cc"; text = "Đang giao hàng"; }
 	    else if (status == 4) { color = "rgba(48, 205, 96, 1)"; text = "Đã giao"; }
-	    else if (status == -1) { color = "#d9534f"; text = "Đã hủy"; }
+	    else if (status == -2) { color = "gray"; text = "Khách hàng gửi đơn hủy"; }
+	    else if (status == -1||status == -3) { color = "#d9534f"; text = "Đã hủy"; }
 
 	    bgDiv.style.backgroundColor = color;
 	    bgDiv.style.color = "#fff";

@@ -72,19 +72,42 @@ function renderClients(list) {
 			? `<div class="avatar"><img src="${c.avatarUrl}" alt="${c.name}"><div class="status"></div></div>`
 			: `<div class="avatar">${c.name.charAt(0)}<div class="status"></div></div>`;
 
-		// Hiển thị preview tin nhắn (Nếu là ảnh thì hiện [Hình ảnh])
 		const previewMsg = c.lastMsgIsImage ? '📷 [Hình ảnh]' : (c.lastMsg || '');
 
 		div.innerHTML = `
-        ${avatarHTML}
-        <div class="info">
-          <div class="name">${c.name}</div>
-          <div class="last-msg">${previewMsg}</div> 
-        </div>`;
+            ${avatarHTML}
+            <div class="info">
+              <div class="name">${c.name}</div>
+              <div class="last-msg">${previewMsg}</div> 
+            </div>
+            
+            <button class="delete-btn" title="Xóa hội thoại" onclick="deleteConversation(event, '${c.id}')">
+                <i class="fa fa-trash"></i>
+            </button>
+        `;
 
 		div.onclick = () => openChat(c);
 		clientList.appendChild(div);
 	});
+}
+
+function deleteConversation(event, clientId) {
+	// không mở chat khi bấm xóa
+	event.stopPropagation();
+
+	if (!confirm("Bạn có chắc chắn muốn xóa toàn bộ tin nhắn với khách hàng này?")) return;
+
+
+	fetch(`http://localhost:8080/Spring-mvc/quan-tri/chat?clientId=${clientId}`, { method: 'DELETE' })
+		.then(() => {
+			clients = clients.filter(c => c.id !== clientId);
+			renderClients(clients);
+
+			if (activeClient && activeClient.id === clientId) {
+				document.getElementById('chatMessages').innerHTML = '';
+				activeClient = null;
+			}
+		});
 }
 
 function openChat(client) {

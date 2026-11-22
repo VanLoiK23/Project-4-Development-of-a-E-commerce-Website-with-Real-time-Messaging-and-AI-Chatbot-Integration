@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.thuongmaidientu.dto.UserDTO;
+import com.thuongmaidientu.service.IChatMessageService;
+import com.thuongmaidientu.service.impl.ChatMessageService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller(value = "chatControllerOfAdmin")
 public class ChatController {
+	private IChatMessageService chatMessageService = new ChatMessageService();
 	
 	@RequestMapping(value = "/quan-tri/chat-with-Client", method = RequestMethod.GET)
 	public ModelAndView chat(HttpSession session) {
@@ -19,6 +22,8 @@ public class ChatController {
 		UserDTO userDTO = (UserDTO) session.getAttribute("user");
 
 		mav.addObject("user", userDTO);
+		session.setAttribute("numberMsg", chatMessageService.getQuantityClientChat());
+
 		return new ModelAndView("admin/chat/chatWithClient");
 	}
 	

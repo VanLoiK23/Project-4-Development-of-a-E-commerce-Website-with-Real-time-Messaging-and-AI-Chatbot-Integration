@@ -466,7 +466,7 @@ public class CartController {
 
 			if (phieuXuatDTO != null) {
 				phieuXuatDTO.setPayment("vn-pay");// set status paid success
-				phieuXuatService.updatePaymentStatus(orderIdUpdate.intValue(),phieuXuatDTO.getPayment());
+				phieuXuatService.updatePaymentStatus(orderIdUpdate.intValue(), phieuXuatDTO.getPayment());
 
 				// save VNPay
 				VNPayDTO vnPayDTO = new VNPayDTO();
@@ -593,7 +593,7 @@ public class CartController {
 
 			if (phieuXuatDTO != null) {
 				phieuXuatDTO.setPayment("momo");// set status paid success
-				phieuXuatService.updatePaymentStatus(orderIdUpdate,phieuXuatDTO.getPayment());
+				phieuXuatService.updatePaymentStatus(orderIdUpdate, phieuXuatDTO.getPayment());
 
 				// save momo
 				MomoDTO momoDTO = new MomoDTO();
@@ -840,7 +840,7 @@ public class CartController {
 			session.removeAttribute("purchaseWithoutCart");
 
 			// after completed send email to notify client
-			if (!payment.equals("pending")) {
+			if (payment == null || !payment.equals("pending")) {
 				emailService.sendOrderEmail("huynhvanloi956@gmail.com", orderItems, totalInt);
 			}
 
