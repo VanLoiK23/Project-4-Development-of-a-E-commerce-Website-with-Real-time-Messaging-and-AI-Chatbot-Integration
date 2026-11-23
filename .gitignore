@@ -1,2 +1,10 @@
-*.json
-target/
+*firebase-adminsdk*.json
+
+**/target/
+
+**/node_modules/
+**/.env
+
+/.agents/
+
+Backend/src/main/resources/firebase/serviceAccountKey.json

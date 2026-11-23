@@ -1,0 +1,162 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Python\\ai_phone_assistant\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\agent\\agent.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\agent\\agent.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\.env||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\.env||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\main.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\main.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\tt.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\tt.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\Test.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\Test.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\repository\\ingestion_pipeline.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\repository\\ingestion_pipeline.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\retriever\\hybrid_retriever.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\retriever\\hybrid_retriever.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\model\\base_model.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{80E59CBC-7738-46BB-BAF6-3495BFD969BA}|ai_phone_assistant\\ai_phone_assistant.pyproj|solutionrelative:ai_phone_assistant\\app\\model\\base_model.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Test.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\Test.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\Test.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\Test.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\Test.py",
+              "ViewState": "AgIAAAgCAAAAAAAAAAAcwPABAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-22T04:58:00.197Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fb9be9ec-5f71-4a43-9ae6-ae02b00f044b}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "tt.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\tt.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\tt.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\tt.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\tt.py",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-12-27T07:08:32.346Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": ".env",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\.env",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\.env",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\.env",
+              "RelativeToolTip": "ai_phone_assistant\\app\\.env",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-12-27T04:57:46.342Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "agent.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\agent\\agent.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\agent\\agent.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\agent\\agent.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\agent\\agent.py",
+              "ViewState": "AgIAAJsBAAAAAAAAAAD4v8wAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-24T03:09:51.495Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ingestion_pipeline.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\repository\\ingestion_pipeline.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\repository\\ingestion_pipeline.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\repository\\ingestion_pipeline.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\repository\\ingestion_pipeline.py",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAcwAgAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-24T03:09:45.799Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "hybrid_retriever.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\retriever\\hybrid_retriever.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\retriever\\hybrid_retriever.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\retriever\\hybrid_retriever.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\retriever\\hybrid_retriever.py",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-24T03:09:43.963Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "base_model.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\model\\base_model.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\model\\base_model.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\model\\base_model.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\model\\base_model.py",
+              "ViewState": "AgIAABsAAAAAAAAAAAAswCAAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-24T02:54:27.051Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.py",
+              "DocumentMoniker": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\main.py",
+              "RelativeDocumentMoniker": "ai_phone_assistant\\app\\main.py",
+              "ToolTip": "D:\\Python\\ai_phone_assistant\\ai_phone_assistant\\app\\main.py",
+              "RelativeToolTip": "ai_phone_assistant\\app\\main.py",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-11-24T02:54:07.143Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
