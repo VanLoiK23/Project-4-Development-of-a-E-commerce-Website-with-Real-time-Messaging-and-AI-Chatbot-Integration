@@ -25,7 +25,7 @@ public class RequestProductInteraction {
 	private String title;
 	private String description;
 	private Boolean isTragop;
-	private List<ProductVariant> listPB;
+	private List<ProductVariantDTO> listPB;
 
 	// specs JSONB và 21 trường cấu hình phẳng bổ sung
 	private Map<String, Object> specs;

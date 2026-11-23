@@ -1,6 +1,10 @@
 package com.thuongmaidientu.service.impl;
 
+import com.thuongmaidientu.mapper.CategoryMapper;
+import com.thuongmaidientu.mapper.KhuVucKhoMapper;
+import com.thuongmaidientu.mapper.ProductVariantMapper;
 import com.thuongmaidientu.mapper.ProductMapper;
+import com.thuongmaidientu.mapper.XuatXuMapper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
@@ -24,44 +29,55 @@ import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongKeSellingProductDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
+import com.thuongmaidientu.entity.ProductVariantEntity;
+import com.thuongmaidientu.entity.XuatXuEntity;
+import com.thuongmaidientu.entity.CategoryEntity;
+import com.thuongmaidientu.entity.KhuVucKhoEntity;
 import com.thuongmaidientu.entity.ProductEntity;
+import com.thuongmaidientu.repository.CategoryRepository;
+import com.thuongmaidientu.repository.KhuVucKhoRepository;
 import com.thuongmaidientu.repository.ProductRepository;
+import com.thuongmaidientu.repository.XuatxuRepository;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.XuatxuService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-	@Autowired
-	private ProductMapper productMapper;
 
-	@Autowired
-	private ProductRepository productRepository;
+	private final ProductMapper productMapper;
 
-	@Autowired
-	private PhienbansanphamServiceImpl phienbansanphamService;
+	private final ProductRepository productRepository;
 
-	@Autowired
-	private CartServiceImpl cartService;
+	private final ProductVariantService phienbansanphamService;
 
-	@Autowired
-	private ChitietPNServiceImpl chitietPNService;
+	private final CartService cartService;
 
-	@Autowired
-	private ChitietPXServiceImpl chitietPXService;
+	private final CTPhieuNhapService chitietPNService;
 
-	@Autowired
-	private ChitietSPServiceImpl chitietSPService;
+	private final CTPhieuXuatService chitietPXService;
 
-	@Autowired
-	private CommentAndRateServiceImpl commentAndRateService;
+	private final CTSanPhamService chitietSPService;
 
-	@Autowired
-	private XuatxuServiceImpl xuatxuRepository;
+	private final CommentProductService commentAndRateService;
 
-	@Autowired
-	private KhuVucKhoServiceImpl khoRepository;
+	private final XuatxuRepository xuatxuRepository;
 
-	@Autowired
-	private CategoryServiceImpl brandRepository;
+	private final KhuVucKhoRepository khoRepository;
+
+	private final CategoryRepository categoryRepository;
+
+	private final ProductVariantMapper pBanSanPhamMapper;
 
 	@Override
 	public List<ProductDTO> findAll(Pageable pageable) {
@@ -113,7 +129,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 		dto.setCreatedDate(entity.getCreated());
 		if (entity.getListPhienBanSP() != null) {
-			dto.setPbspList(entity.getListPhienBanSP().stream().map(phienbansanphamService::convertToDTO)
+			dto.setPbspList(entity.getListPhienBanSP().stream().map(pBanSanPhamMapper::toDTO)
 					.collect(Collectors.toList()));
 		}
 
@@ -130,26 +146,21 @@ public class ProductServiceImpl implements ProductService {
 		Date date = new Date();
 
 		if (dto.getXuatXuId() != null) {
-			XuatXuDTO xx = xuatxuRepository.findById(dto.getXuatXuId());
-			if (xx != null) {
-				entity.setXuatXu(xuatxuRepository.convertToEntity(xx));
-			}
+			Optional<XuatXuEntity> xuatXu = xuatxuRepository.findById((long) dto.getXuatXuId());
+			entity.setXuatXu(xuatXu.get());
 		}
 		if (dto.getThuongHieuId() != null) {
-			CategoryDTO k = brandRepository.findById(dto.getThuongHieuId());
-			if (k != null) {
-				entity.setThuongHieu(brandRepository.convertToEntity(k));
-			}
+			Optional<CategoryEntity> thuongHieu = categoryRepository.findById((long) dto.getThuongHieuId());
+			entity.setThuongHieu(thuongHieu.get());
 		}
 		if (dto.getKhuVucKhoId() != null) {
-			KhuVucKhoDTO k = khoRepository.findById(dto.getKhuVucKhoId());
-			if (k != null) {
-				entity.setKhuVucKho(khoRepository.convertToEntity(k));
-			}
+			Optional<KhuVucKhoEntity> kho = khoRepository.findById((long) dto.getKhuVucKhoId());
+			entity.setKhuVucKho(kho.get());
 		}
 
 		// Fallback từ các trường cũ nếu specs chưa có
-		java.util.Map<String, Object> specs = entity.getSpecs() != null ? new java.util.HashMap<>(entity.getSpecs()) : new java.util.HashMap<>();
+		java.util.Map<String, Object> specs = entity.getSpecs() != null ? new java.util.HashMap<>(entity.getSpecs())
+				: new java.util.HashMap<>();
 		if (!specs.containsKey("battery_mah") && dto.getDungLuongPin() != null) {
 			specs.put("battery_mah", dto.getDungLuongPin());
 		}
@@ -183,18 +194,22 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	@Transactional
 	public void delete(int id) {
-		List<PhienBanSanPhamDTO> phienBanSanPhamDTOs = phienbansanphamService.findAll(id);
 
-		phienBanSanPhamDTOs.forEach(pb -> {
-			cartService.deleteCart(pb.getMaPhienbansanpham().intValue());
-			chitietSPService.deleteCTSP(pb.getMaPhienbansanpham().intValue());
+		Optional<ProductEntity> productEntity = productRepository.findById((long) id);
 
-			chitietPNService.deletePN(pb.getMaPhienbansanpham().intValue());
-			chitietPXService.deletePX(pb.getMaPhienbansanpham().intValue());
+		List<ProductVariantEntity> phienBanSanPhamEntities = productEntity.get().getListPhienBanSP();
+
+		phienBanSanPhamEntities.forEach(pb -> {
+			cartService.deleteCart(pb.getMaPhienBanSP().intValue());
+			chitietSPService.deleteCTSP(pb.getMaPhienBanSP().intValue());
+
+			chitietPNService.deletePN(pb.getMaPhienBanSP().intValue());
+			chitietPXService.deletePX(pb.getMaPhienBanSP().intValue());
 			commentAndRateService.deleteComment(id);
 
-			phienbansanphamService.deletePhienBanSP(pb.getMaPhienbansanpham().intValue());
+			phienbansanphamService.deletePhienBanSP(pb.getMaPhienBanSP().intValue());
 		});
 
 		productRepository.deleteById(Long.valueOf(id));
@@ -393,7 +408,6 @@ public class ProductServiceImpl implements ProductService {
 		return (productEntities != null) ? convertToDTO(productEntities.get(0)) : null;
 	}
 
-	
 	@Override
 	public ProductDTO findInfoProductForOrderInWeb(Integer maPB) {
 
@@ -408,10 +422,14 @@ public class ProductServiceImpl implements ProductService {
 			dto.setKichThuocRom((Integer) record[2]);
 			dto.setColor((String) record[3]);
 			dto.setHinhAnh((String) record[4]);
-			dto.setMap((Integer) record[5]);;
-			dto.setSortDesc((String) record[6]);;
-			dto.setGiaXuat(((Number) record[7]).doubleValue());;
-			dto.setPriceSale(((Number) record[8]).doubleValue());;
+			dto.setMap((Integer) record[5]);
+			;
+			dto.setSortDesc((String) record[6]);
+			;
+			dto.setGiaXuat(((Number) record[7]).doubleValue());
+			;
+			dto.setPriceSale(((Number) record[8]).doubleValue());
+			;
 
 		}
 

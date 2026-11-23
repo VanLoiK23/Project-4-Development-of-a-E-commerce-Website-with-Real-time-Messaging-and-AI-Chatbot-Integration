@@ -45,7 +45,7 @@ public class KhachHangEntity {
 	private List<CartEntity> clientListCart = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
-	private List<CommentAndRateEntity> clientCommentsProduct = new ArrayList<>();
+	private List<CommentProductEntity> clientCommentsProduct = new ArrayList<>();
 
 	@OneToMany(mappedBy = "kh")
 	private List<CommentArticleEntity> clientCommentsArticle = new ArrayList<>();

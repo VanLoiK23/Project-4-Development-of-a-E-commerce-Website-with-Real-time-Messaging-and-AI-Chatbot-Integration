@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.CommentArticleDTO;
 
 public interface CommentArticleService {

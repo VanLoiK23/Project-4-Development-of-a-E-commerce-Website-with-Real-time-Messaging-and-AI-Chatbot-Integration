@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
-import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
 import com.thuongmaidientu.service.PhieuNhapService;
 import com.thuongmaidientu.service.ProductService;
 
@@ -28,7 +28,7 @@ public class PhieuNhapAPI {
 	private PhieuNhapService phieuNhapService;
 	
 	@Autowired
-	private ChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 	
 	@Autowired
 	private ProductService productService;
@@ -49,11 +49,11 @@ public class PhieuNhapAPI {
 	    try {
 	    	PhieuNhapDTO dto = phieuNhapService.findById(id);
 
-	    	List<ChiTietPhieuNhapDTO> chiTietPhieuNhapDTOs=chiTietPNService.getListCTPN(dto.getId().intValue());
+	    	List<CTPhieuNhapDTO> chiTietPhieuNhapDTOs=chiTietPNService.getListCTPN(dto.getId().intValue());
 	    	
 	    	List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-	    	for (ChiTietPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
+	    	for (CTPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
 	    	    Object[] productData = productService
 	    	        .findChiTietPhienBanSanPhamByPhieuNhap(it.getPhienBanSanPhamNhapId(), dto.getId().intValue())
 	    	        .get(0);

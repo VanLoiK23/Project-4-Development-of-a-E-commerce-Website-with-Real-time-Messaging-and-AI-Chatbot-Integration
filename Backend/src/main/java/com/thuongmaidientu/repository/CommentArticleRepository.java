@@ -10,9 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.thuongmaidientu.entity.ArticleEntity;
-import com.thuongmaidientu.entity.CommentAndRateEntity;
 import com.thuongmaidientu.entity.CommentArticleEntity;
-import com.thuongmaidientu.entity.ProductEntity;
 
 import jakarta.transaction.Transactional;
 

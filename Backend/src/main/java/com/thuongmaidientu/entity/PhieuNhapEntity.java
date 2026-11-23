@@ -44,7 +44,7 @@ public class PhieuNhapEntity {
     private String save = "active";
 
     @OneToMany(mappedBy = "phieunhap", cascade = CascadeType.ALL)
-    private List<ChiTietPhieuNhapEntity> phieunhapList = new ArrayList<>();
+    private List<CTPhieuNhap> phieunhapList = new ArrayList<>();
 
     @OneToMany(mappedBy = "pn")
     private List<CTSanPhamEntity> phieunhapCTSP = new ArrayList<>();

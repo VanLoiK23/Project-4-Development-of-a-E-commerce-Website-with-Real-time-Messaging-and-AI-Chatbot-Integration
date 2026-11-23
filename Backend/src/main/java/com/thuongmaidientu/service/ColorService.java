@@ -4,20 +4,20 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 
 public interface ColorService {
-	List<MauSacDTO> findAll(Pageable pageable);
+	List<ColorDTO> findAll(Pageable pageable);
 
-	List<MauSacDTO> selectAll();
+	List<ColorDTO> selectAll();
 	
-	MauSacDTO findById(int id);
+	ColorDTO findById(int id);
 	
-	MauSacDTO save(MauSacDTO color);
+	ColorDTO save(ColorDTO color);
 	
 	int getTotalItem();
 	
-	List<MauSacDTO> findTrash();
+	List<ColorDTO> findTrash();
 	
 	int getTotalItemTrash();
 	

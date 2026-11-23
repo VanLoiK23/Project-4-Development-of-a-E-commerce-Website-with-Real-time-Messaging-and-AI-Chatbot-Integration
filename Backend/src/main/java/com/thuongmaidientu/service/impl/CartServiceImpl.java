@@ -16,8 +16,8 @@ import com.thuongmaidientu.entity.CartEntity;
 import com.thuongmaidientu.entity.CartItemEntity;
 import com.thuongmaidientu.entity.CategoryEntity;
 import com.thuongmaidientu.entity.KhachHangEntity;
-import com.thuongmaidientu.entity.MauSacEntity;
-import com.thuongmaidientu.entity.PhienBanSanPhamEntity;
+import com.thuongmaidientu.entity.ColorEntity;
+import com.thuongmaidientu.entity.ProductVariantEntity;
 import com.thuongmaidientu.entity.ProductEntity;
 import com.thuongmaidientu.repository.CartItemRepository;
 import com.thuongmaidientu.repository.CartRepository;
@@ -82,7 +82,7 @@ public class CartServiceImpl implements CartService {
 			entity.setIdCart(cartEntity);
 		}
 		if (dto.getMaphienbansp() != null) {
-			PhienBanSanPhamEntity phienBanSanPhamEntity = new PhienBanSanPhamEntity();
+			ProductVariantEntity phienBanSanPhamEntity = new ProductVariantEntity();
 			phienBanSanPhamEntity.setMaPhienBanSP(dto.getMaphienbansp());
 			entity.setPhienbansanpham(phienBanSanPhamEntity);
 		}
@@ -105,7 +105,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public void deleteCart(Integer maPB) {
-		PhienBanSanPhamEntity phienBanSanPhamEntity = new PhienBanSanPhamEntity();
+		ProductVariantEntity phienBanSanPhamEntity = new ProductVariantEntity();
 		phienBanSanPhamEntity.setMaPhienBanSP(maPB);
 		List<CartItemEntity> cartItemEntities = cartItemRepository.getByPhienbansanpham(phienBanSanPhamEntity);
 
@@ -218,7 +218,7 @@ public class CartServiceImpl implements CartService {
 		CartEntity cartEntity = new CartEntity();
 		cartEntity.setId(cartId);
 		
-		PhienBanSanPhamEntity phienBanSanPhamEntity=new PhienBanSanPhamEntity();	
+		ProductVariantEntity phienBanSanPhamEntity=new ProductVariantEntity();	
 		phienBanSanPhamEntity.setMaPhienBanSP(versionId);
 	
 		cartItemRepository.deleteByPhienbansanphamAndIdCart(phienBanSanPhamEntity, cartEntity);

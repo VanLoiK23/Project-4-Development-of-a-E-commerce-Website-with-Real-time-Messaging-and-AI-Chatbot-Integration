@@ -19,9 +19,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.SlideDTO;
-import com.thuongmaidientu.service.CategotyService;
-import com.thuongmaidientu.service.ChiTietSPService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
 import com.thuongmaidientu.service.SlideService;
 
@@ -33,16 +33,16 @@ public class HomeController {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbansanphamService;
+	private ProductVariantService phienbansanphamService;
 
 	@Autowired
 	private SlideService slideService;
 
 	@Autowired
-	private CategotyService categotyService;
+	private CategoryService categotyService;
 
 	@Autowired
-	private ChiTietSPService chiTietSPService;
+	private CTSanPhamService chiTietSPService;
 
 	// cap nhat lai tat ca so luong cho dong bo **** ok !!
 

@@ -19,7 +19,7 @@ public class CTSanPhamEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "maphienbansp", nullable = false)
-	private PhienBanSanPhamEntity productVersion;
+	private ProductVariantEntity productVersion;
 
 	@ManyToOne
 	@JoinColumn(name = "maphieunhap", nullable = false)

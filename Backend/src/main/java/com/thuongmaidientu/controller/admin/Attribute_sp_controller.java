@@ -19,13 +19,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.CategoryService;
 import com.thuongmaidientu.service.ColorService;
 import com.thuongmaidientu.service.RamService;
 import com.thuongmaidientu.service.RomService;
@@ -34,7 +34,7 @@ import com.thuongmaidientu.service.XuatxuService;
 @Controller(value = "Attribute_sp_controller")
 public class Attribute_sp_controller {
 	@Autowired
-	private CategotyService categoryService;
+	private CategoryService categoryService;
 
 	@Autowired
 	private ColorService colorService;
@@ -131,7 +131,7 @@ public class Attribute_sp_controller {
 			mav.addObject("tenAttri", "Kích thước Rom");
 
 		} else {
-			MauSacDTO model = new MauSacDTO();
+			ColorDTO model = new ColorDTO();
 
 			model.setPage(page);
 			model.setLimit(limit);
@@ -250,7 +250,7 @@ public class Attribute_sp_controller {
 
 			romService.save(dto);
 		} else {
-			MauSacDTO dto = new MauSacDTO();
+			ColorDTO dto = new ColorDTO();
 			dto.setTenMauSac(value);
 			if (id != null) {
 				dto.setId(Long.valueOf(id));
@@ -293,7 +293,7 @@ public class Attribute_sp_controller {
 
 			mav.addObject("model", dto);
 		} else {
-			MauSacDTO dto = new MauSacDTO();
+			ColorDTO dto = new ColorDTO();
 			dto.setListResult( colorService.findTrash());
 
 			mav.addObject("model", dto);

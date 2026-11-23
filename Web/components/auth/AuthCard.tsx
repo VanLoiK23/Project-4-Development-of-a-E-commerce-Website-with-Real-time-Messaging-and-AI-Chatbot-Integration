@@ -224,8 +224,9 @@ export function AuthCard({
       {/* ── Form Panel (phải khi login, lướt sang trái khi register trên desktop) ── */}
       <div
         className={cn(
-          "w-full lg:w-1/2 flex flex-col justify-center",
-          "overflow-y-auto max-h-[85vh] lg:max-h-[720px] z-10 shrink-0",
+          "w-full lg:w-1/2 flex flex-col",
+          "overflow-y-auto max-h-[85vh] lg:max-h-[760px] z-10 shrink-0",
+          "scroll-smooth overscroll-contain",
           isMounted && "transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]",
           mode === "register" ? "lg:-translate-x-full" : "lg:translate-x-0"
         )}
@@ -275,8 +276,13 @@ export function AuthCard({
           )}
         </div>
 
-        {/* Form content */}
-        <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center">
+        {/* Form content: login ngắn thì căn giữa với my-auto, register dài thì căn từ top để cuộn đầy đủ không bị tràn âm */}
+        <div
+          className={cn(
+            "w-full p-6 sm:p-8",
+            mode === "login" ? "my-auto" : "my-0"
+          )}
+        >
           {loginForm || registerForm ? (
             <div className="relative w-full">
               {/* Login form wrapper */}

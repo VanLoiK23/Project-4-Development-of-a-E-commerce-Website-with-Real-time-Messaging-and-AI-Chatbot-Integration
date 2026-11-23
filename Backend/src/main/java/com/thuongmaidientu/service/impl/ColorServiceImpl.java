@@ -1,6 +1,6 @@
 package com.thuongmaidientu.service.impl;
 
-import com.thuongmaidientu.mapper.MauSacMapper;
+import com.thuongmaidientu.mapper.ColorMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,41 +10,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.entity.CategoryEntity;
-import com.thuongmaidientu.entity.MauSacEntity;
+import com.thuongmaidientu.entity.ColorEntity;
 import com.thuongmaidientu.repository.ColorRepository;
 import com.thuongmaidientu.service.ColorService;
 
 @Service
 public class ColorServiceImpl implements ColorService {
 	@Autowired
-	private MauSacMapper mauSacMapper;
+	private ColorMapper mauSacMapper;
 
 	@Autowired
 	private ColorRepository colorRepository;
 
 	@Override
-	public List<MauSacDTO> findAll(Pageable pageable) {
-		List<MauSacEntity> entities = colorRepository.findByTrash("active", pageable).getContent();
+	public List<ColorDTO> findAll(Pageable pageable) {
+		List<ColorEntity> entities = colorRepository.findByTrash("active", pageable).getContent();
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<MauSacDTO> selectAll() {
-		List<MauSacEntity> entities = colorRepository.findByTrash("active");
+	public List<ColorDTO> selectAll() {
+		List<ColorEntity> entities = colorRepository.findByTrash("active");
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
-	private MauSacDTO convertToDTO(MauSacEntity entity) {
-		MauSacDTO dto = mauSacMapper.toDTO(entity);
+	private ColorDTO convertToDTO(ColorEntity entity) {
+		ColorDTO dto = mauSacMapper.toDTO(entity);
 		if (dto != null) {
 			dto.setNum_trash(getTotalItemTrash());
 		}
 		return dto;
 	}
 
-	public MauSacEntity convertToEntity(MauSacDTO dto) {
+	public ColorEntity convertToEntity(ColorDTO dto) {
 		return mauSacMapper.toEntity(dto);
 	}
 
@@ -64,8 +64,8 @@ public class ColorServiceImpl implements ColorService {
 	}
 
 	@Override
-	public MauSacDTO findById(int masp) {
-		Optional<MauSacEntity> entity = colorRepository.findById((long) masp);
+	public ColorDTO findById(int masp) {
+		Optional<ColorEntity> entity = colorRepository.findById((long) masp);
 		return entity.map(this::convertToDTO).orElse(null);
 	}
 
@@ -83,9 +83,9 @@ public class ColorServiceImpl implements ColorService {
 	}
 
 	@Override
-	public MauSacDTO save(MauSacDTO ncc) {
-		MauSacEntity entity = convertToEntity(ncc);
-		MauSacEntity savedEntity = colorRepository.save(entity);
+	public ColorDTO save(ColorDTO ncc) {
+		ColorEntity entity = convertToEntity(ncc);
+		ColorEntity savedEntity = colorRepository.save(entity);
 		return convertToDTO(savedEntity);
 	}
 
@@ -100,8 +100,8 @@ public class ColorServiceImpl implements ColorService {
 	}
 
 	@Override
-	public List<MauSacDTO> findTrash() {
-		List<MauSacEntity> entities = colorRepository.findByTrash("disable");
+	public List<ColorDTO> findTrash() {
+		List<ColorEntity> entities = colorRepository.findByTrash("disable");
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 }

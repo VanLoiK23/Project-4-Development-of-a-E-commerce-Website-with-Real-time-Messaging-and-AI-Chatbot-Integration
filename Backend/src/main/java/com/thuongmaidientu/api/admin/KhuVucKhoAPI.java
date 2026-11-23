@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.CategoryService;
 import com.thuongmaidientu.service.ColorService;
 import com.thuongmaidientu.service.KhuVucKhoService;
 import com.thuongmaidientu.service.RamService;

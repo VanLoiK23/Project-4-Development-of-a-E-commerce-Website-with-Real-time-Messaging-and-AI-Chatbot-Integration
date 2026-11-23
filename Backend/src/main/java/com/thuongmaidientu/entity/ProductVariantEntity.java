@@ -1,0 +1,63 @@
+package com.thuongmaidientu.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "phienbansanpham")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductVariantEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maphienbansp")
+    private Integer maPhienBanSP;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "masp")
+    private ProductEntity sanPham;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rom")
+    private RomEntity rom;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ram")
+    private RamEntity ram;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mausac")
+    private ColorEntity mauSac;
+
+    @Column(name = "gianhap")
+    private Integer giaNhap;
+
+    @Column(name = "giaxuat")
+    private Integer giaXuat;
+
+    @Column(name = "soluongton", columnDefinition = "INTEGER DEFAULT 0")
+    private Integer soLuongTon=0;
+
+    @Column(name = "sale")
+    private Double sale;
+
+    @Column(name = "price_sale", nullable = false)
+    private Integer priceSale;
+    
+    @OneToMany(mappedBy = "phienbansanpham")
+    private List<CartItemEntity> phienbansanphamCartitem = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "phienBanSanPhamNhap")
+    private List<CTPhieuNhap> phienbansanphamChiTietPhieuNhap = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "phienBanSanPhamXuat")
+    private List<CTPhieuXuat> phienbansanphamChiTietPhieuXuat = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "productVersion")
+    private List<CTSanPhamEntity> phienbanspListImei = new ArrayList<>();
+}

@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
-import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.CategoryService;
 import com.thuongmaidientu.service.ColorService;
 import com.thuongmaidientu.service.RamService;
 import com.thuongmaidientu.service.RomService;
@@ -32,7 +32,7 @@ import com.thuongmaidientu.service.XuatxuService;
 @RequestMapping("/quan-tri/thuoc-tinh")
 public class AttributeAPI {
 	@Autowired
-	private CategotyService categoryService;
+	private CategoryService categoryService;
 
 	@Autowired
 	private ColorService colorService;
@@ -109,9 +109,9 @@ public class AttributeAPI {
 	}
 
 	@GetMapping("/color")
-	public ResponseEntity<List<MauSacDTO>> getColor() {
+	public ResponseEntity<List<ColorDTO>> getColor() {
 		try {
-			List<MauSacDTO> pDto = colorService.selectAll();
+			List<ColorDTO> pDto = colorService.selectAll();
 			if (pDto == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}

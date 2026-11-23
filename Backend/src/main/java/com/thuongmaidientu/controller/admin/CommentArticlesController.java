@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.CommentArticleDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.CommentProductService;
 import com.thuongmaidientu.service.CommentArticleService;
 
 import jakarta.servlet.http.HttpSession;

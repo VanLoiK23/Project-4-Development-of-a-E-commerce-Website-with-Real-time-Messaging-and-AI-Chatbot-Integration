@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.CommentProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,10 +26,10 @@ import jakarta.servlet.http.HttpSession;
 public class CommentAndRateController {
 
 	@Autowired
-	private CommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@RequestMapping(value = "/quan-tri/Quanlicomment_controller/danh-sach", method = RequestMethod.GET)
-	public ModelAndView showlist(@ModelAttribute("model") CommentAndRateDTO model,
+	public ModelAndView showlist(@ModelAttribute("model") CommentProductDTO model,
 			@RequestParam(value = "page", defaultValue = "1") int page,
 			@RequestParam(value = "limit", defaultValue = "7") int limit,
 			@RequestParam(value = "rateFilter", required = false) Integer rateFilter,
@@ -43,7 +43,7 @@ public class CommentAndRateController {
 
 		Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Order.asc("id")));
 
-		List<CommentAndRateDTO> list;
+		List<CommentProductDTO> list;
 		int totalItem;
 
 		if (rateFilter != null || statusFilter != null) {
@@ -86,7 +86,7 @@ public class CommentAndRateController {
 
 		ModelAndView mav = new ModelAndView("admin/comment/comment_show");
 
-		CommentAndRateDTO dto = new CommentAndRateDTO();
+		CommentProductDTO dto = new CommentProductDTO();
 		dto = commentAndRateService.findById(id);
 
 		mav.addObject("dto", dto);
@@ -100,7 +100,7 @@ public class CommentAndRateController {
 			@RequestParam(value = "feeback_content", defaultValue = "", required = true) String feeback_content,
 			RedirectAttributes redirectAttributes, HttpSession session) {
 
-		CommentAndRateDTO dto = new CommentAndRateDTO();
+		CommentProductDTO dto = new CommentProductDTO();
 		dto.setId((long) id);
 		dto.setFeeback(1);
 		dto.setFeedbackContent(feeback_content);

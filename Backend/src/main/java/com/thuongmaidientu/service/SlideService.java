@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.SlideDTO;
 

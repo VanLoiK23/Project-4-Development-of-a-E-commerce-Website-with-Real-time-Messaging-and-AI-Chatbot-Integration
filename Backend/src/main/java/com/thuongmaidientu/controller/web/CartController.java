@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.MomoDTO;
 import com.thuongmaidientu.dto.OrderItem;
@@ -38,12 +38,12 @@ import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.dto.VNPayDTO;
 import com.thuongmaidientu.service.EmailService;
 import com.thuongmaidientu.service.CartService;
-import com.thuongmaidientu.service.ChiTietPNService;
-import com.thuongmaidientu.service.ChiTietPXService;
-import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
 import com.thuongmaidientu.service.DiscountService;
 import com.thuongmaidientu.service.MomoService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.PhieuXuatService;
 import com.thuongmaidientu.service.ProductService;
 import com.thuongmaidientu.service.ThongTinGiaoHangService;
@@ -61,7 +61,7 @@ public class CartController {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
 	private ThongTinGiaoHangService thongTinGiaoHangService;
@@ -79,13 +79,13 @@ public class CartController {
 	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private ChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private ChiTietSPService chiTietSPService;
+	private CTSanPhamService chiTietSPService;
 
 	@Autowired
-	private ChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 
 	@Autowired
 	private EmailService emailService;
@@ -463,11 +463,11 @@ public class CartController {
 
 				vnPayService.insertVNPay(vnPayDTO);
 
-				List<ChiTietPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate.intValue());
+				List<CTPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate.intValue());
 				List<OrderItem> orderItemList = new ArrayList<OrderItem>();
 				// for send email
 				if (chitietPXList != null && !chitietPXList.isEmpty()) {
-					for (ChiTietPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
+					for (CTPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
 						OrderItem orderItem = new OrderItem();
 						orderItem.setPrice(chiTietPhieuXuatDTO.getDonGia());
 						orderItem.setQuantity(chiTietPhieuXuatDTO.getSoLuong());
@@ -590,11 +590,11 @@ public class CartController {
 
 				momoService.insertMomo(momoDTO);
 
-				List<ChiTietPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate);
+				List<CTPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate);
 				List<OrderItem> orderItemList = new ArrayList<OrderItem>();
 				// for send email
 				if (chitietPXList != null && !chitietPXList.isEmpty()) {
-					for (ChiTietPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
+					for (CTPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
 						OrderItem orderItem = new OrderItem();
 						orderItem.setPrice(chiTietPhieuXuatDTO.getDonGia());
 						orderItem.setQuantity(chiTietPhieuXuatDTO.getSoLuong());
@@ -765,7 +765,7 @@ public class CartController {
 
 				list_mapbspIntegers.add(ma_pbsp);
 
-				ChiTietPhieuXuatDTO chiTietPhieuXuatDTO = new ChiTietPhieuXuatDTO();
+				CTPhieuXuatDTO chiTietPhieuXuatDTO = new CTPhieuXuatDTO();
 				if (payment == null) {
 					chiTietPhieuXuatDTO.setCodeCart("");
 				} else {

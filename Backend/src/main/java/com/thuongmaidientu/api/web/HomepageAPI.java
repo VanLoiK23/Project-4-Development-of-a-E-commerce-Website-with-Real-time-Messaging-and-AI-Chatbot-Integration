@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
@@ -29,7 +29,7 @@ public class HomepageAPI {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@PostMapping("/getPrice")
 	public ResponseEntity<?> getPrice(@RequestParam("alias") String alias, @RequestParam("id_pbsp") Integer idPBSP) {

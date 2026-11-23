@@ -9,20 +9,20 @@ import org.springframework.data.repository.query.Param;
 
 import com.thuongmaidientu.entity.CartEntity;
 import com.thuongmaidientu.entity.CartItemEntity;
-import com.thuongmaidientu.entity.PhienBanSanPhamEntity;
+import com.thuongmaidientu.entity.ProductVariantEntity;
 
 import jakarta.transaction.Transactional;
 
 public interface CartItemRepository extends JpaRepository<CartItemEntity, Long> {
-	List<CartItemEntity> getByPhienbansanpham(PhienBanSanPhamEntity phienbansanpham);
+	List<CartItemEntity> getByPhienbansanpham(ProductVariantEntity phienbansanpham);
 
 	@Modifying
 	@Transactional
-	void deleteByPhienbansanpham(PhienBanSanPhamEntity phienbansanpham);
+	void deleteByPhienbansanpham(ProductVariantEntity phienbansanpham);
 	
 	@Modifying
 	@Transactional
-	void deleteByPhienbansanphamAndIdCart(PhienBanSanPhamEntity phienbansanpham, CartEntity idCart);
+	void deleteByPhienbansanphamAndIdCart(ProductVariantEntity phienbansanpham, CartEntity idCart);
 	
 	@Modifying
 	@Transactional

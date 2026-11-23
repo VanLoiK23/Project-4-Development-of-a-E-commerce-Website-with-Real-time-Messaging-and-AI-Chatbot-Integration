@@ -1,6 +1,10 @@
 package com.thuongmaidientu.service.impl;
 
-import com.thuongmaidientu.mapper.PhienBanSanPhamMapper;
+import com.thuongmaidientu.mapper.ProductVariantMapper;
+import com.thuongmaidientu.mapper.RamMapper;
+import com.thuongmaidientu.mapper.RomMapper;
+import com.thuongmaidientu.mapper.ColorMapper;
+import com.thuongmaidientu.mapper.ProductMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,101 +14,76 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
-import com.thuongmaidientu.entity.NhanVienEntity;
-import com.thuongmaidientu.entity.PhienBanSanPhamEntity;
-import com.thuongmaidientu.entity.RamEntity;
-import com.thuongmaidientu.entity.RomEntity;
-import com.thuongmaidientu.repository.PhienbansanphamRepository;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.entity.ProductVariantEntity;
+import com.thuongmaidientu.entity.ProductEntity;
+import com.thuongmaidientu.repository.ProductVariantRepository;
+import com.thuongmaidientu.repository.ProductRepository;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
-public class PhienbansanphamServiceImpl implements PhienbanspService {
-	@Autowired
-	private PhienBanSanPhamMapper phienBanSanPhamMapper;
+@RequiredArgsConstructor
+public class PhienbansanphamServiceImpl implements ProductVariantService {
+	private final ProductVariantMapper phienBanSanPhamMapper;
 
-	@Autowired
-	private PhienbansanphamRepository phienbanSPRepository;
+	private final ProductVariantRepository phienbanSPRepository;
 
-	@Autowired
-	private ProductServiceImpl productService;
+	private final ColorService colorRepository;
 
-	@Autowired
-	private ColorServiceImpl colorRepository;
+	private final RamService ramRepository;
 
-	@Autowired
-	private RamServiceImpl ramRepository;
+	private final RomService romRepository;
 
-	@Autowired
-	private RomServiceImpl romRepository;
+	private final ProductRepository productRepository;
 
-	@Autowired
-	private ProductServiceImpl prRepository;
+	private final ProductMapper productMapper;
 
-	@Override
-	public List<PhienBanSanPhamDTO> findAll(int masp) {
-		ProductDTO productDTO = productService.findById(masp);
+	private final ColorMapper colorMapper;
 
-		if (productDTO == null) {
-			return Collections.emptyList();
-		}
+	private final RamMapper ramMapper;
 
-		List<PhienBanSanPhamDTO> dtos = productDTO.getPbspList();
+	private final RomMapper romMapper;
 
-		if (dtos == null || dtos.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		System.out.println(dtos);
-
-		return dtos;
-
-//		List<PhienBanSanPhamEntity> entities = phienbanSPRepository.selectAllPhienBanSP(masp);
-//
-//		if (entities == null || entities.isEmpty()) {
-//			return Collections.emptyList();
-//		}
-//
-//		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
-	}
-
-	public PhienBanSanPhamDTO convertToDTO(PhienBanSanPhamEntity entity) {
+	public PhienBanSanPhamDTO convertToDTO(ProductVariantEntity entity) {
 		return phienBanSanPhamMapper.toDTO(entity);
 	}
 
 	// Convert DTO -> Entity
-	public PhienBanSanPhamEntity convertToEntity(PhienBanSanPhamDTO dto) {
-		PhienBanSanPhamEntity entity = phienBanSanPhamMapper.toEntity(dto);
+	public ProductVariantEntity convertToEntity(PhienBanSanPhamDTO dto) {
+		ProductVariantEntity entity = phienBanSanPhamMapper.toEntity(dto);
 		if (entity == null) {
 			return null;
 		}
 
 		Optional.ofNullable(dto.getMaSanpham()).ifPresent(id -> {
-			ProductDTO productDTO = prRepository.findById(id.intValue());
-			if (productDTO != null) {
-				entity.setSanPham(prRepository.convertToEntity(productDTO));
-			}
+			Optional<ProductEntity> product = productRepository.findById(id);
+			entity.setSanPham(product.get());
 		});
 		Optional.ofNullable(dto.getColorId()).ifPresent(id -> {
-			MauSacDTO c = colorRepository.findById(id.intValue());
+			ColorDTO c = colorRepository.findById(id.intValue());
 			if (c != null) {
-				entity.setMauSac(colorRepository.convertToEntity(c));
+				entity.setMauSac(colorMapper.toEntity(c));
 			}
 		});
 		Optional.ofNullable(dto.getRamId()).ifPresent(id -> {
 			RamDTO r = ramRepository.findById(id.intValue());
 			if (r != null) {
-				entity.setRam(ramRepository.convertToEntity(r));
+				entity.setRam(ramMapper.toEntity(r));
 			}
 		});
 		Optional.ofNullable(dto.getRomId()).ifPresent(id -> {
 			RomDTO r = romRepository.findById(id.intValue());
 			if (r != null) {
-				entity.setRom(romRepository.convertToEntity(r));
+				entity.setRom(romMapper.toEntity(r));
 			}
 		});
 
@@ -114,8 +93,8 @@ public class PhienbansanphamServiceImpl implements PhienbanspService {
 	@Override
 	public PhienBanSanPhamDTO save(PhienBanSanPhamDTO phienbanmoi) {
 		// Chuyển DTO thành entity
-		PhienBanSanPhamEntity entity = convertToEntity(phienbanmoi);
-		PhienBanSanPhamEntity savedEntity = phienbanSPRepository.save(entity);
+		ProductVariantEntity entity = convertToEntity(phienbanmoi);
+		ProductVariantEntity savedEntity = phienbanSPRepository.save(entity);
 		return convertToDTO(savedEntity);
 	}
 
@@ -160,7 +139,7 @@ public class PhienbansanphamServiceImpl implements PhienbanspService {
 
 	@Override
 	public PhienBanSanPhamDTO findById(int id) {
-		Optional<PhienBanSanPhamEntity> entity = phienbanSPRepository.findById(Long.valueOf(id));
+		Optional<ProductVariantEntity> entity = phienbanSPRepository.findById(Long.valueOf(id));
 		return entity.map(this::convertToDTO).orElse(null);
 	}
 

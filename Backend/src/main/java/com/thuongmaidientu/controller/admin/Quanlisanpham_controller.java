@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CTSanPhamDTO;
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
@@ -34,14 +34,14 @@ import com.thuongmaidientu.dto.PromoDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.CategotyService;
-import com.thuongmaidientu.service.ChiTietPNService;
-import com.thuongmaidientu.service.ChiTietPXService;
-import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
 import com.thuongmaidientu.service.ColorService;
 import com.thuongmaidientu.service.KhuVucKhoService;
 import com.thuongmaidientu.service.NhacungcapService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.PhieuNhapService;
 import com.thuongmaidientu.service.ProductService;
 import com.thuongmaidientu.service.RamService;
@@ -57,7 +57,7 @@ public class Quanlisanpham_controller {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
 	private CloudinaryService cloudinaryService;
@@ -66,7 +66,7 @@ public class Quanlisanpham_controller {
 	private NhacungcapService nhacungcapService;
 
 	@Autowired
-	private CategotyService categoryService;
+	private CategoryService categoryService;
 
 	@Autowired
 	private ColorService colorService;
@@ -84,13 +84,13 @@ public class Quanlisanpham_controller {
 	private KhuVucKhoService khoService;
 
 	@Autowired
-	private ChiTietPNService pnService;
+	private CTPhieuNhapService pnService;
 
 	@Autowired
-	private ChiTietPXService pxService;
+	private CTPhieuXuatService pxService;
 
 	@Autowired
-	private ChiTietSPService ctspService;
+	private CTSanPhamService ctspService;
 
 	@Autowired
 	private PhieuNhapService importService;
@@ -677,7 +677,7 @@ public class Quanlisanpham_controller {
 				int currentNumber = number.get(i);
 				Long currentIMEI = imei.get(i);
 
-				ChiTietPhieuNhapDTO pbpn = new ChiTietPhieuNhapDTO();
+				CTPhieuNhapDTO pbpn = new CTPhieuNhapDTO();
 				pbpn.setPhieunhapId(dto.getId().intValue());
 				pbpn.setDonGia(currentPrice);
 				pbpn.setSoLuong(currentNumber);

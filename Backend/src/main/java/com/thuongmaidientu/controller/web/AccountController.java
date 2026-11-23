@@ -23,15 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.KhachHangDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.ChiTietPXService;
-import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CommentProductService;
 import com.thuongmaidientu.service.DiscountService;
 import com.thuongmaidientu.service.KhachHangService;
 import com.thuongmaidientu.service.PhieuXuatService;
@@ -51,13 +51,13 @@ public class AccountController {
 	private ProductService productService;
 
 	@Autowired
-	private CommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@Autowired
 	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private ChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
 	private ThongTinGiaoHangService thongTinGiaoHangService;
@@ -79,7 +79,7 @@ public class AccountController {
 		List<PhieuXuatDTO> phieuXuatDTOAllList = phieuXuatService.getAllOrderByUserID(userDTO.getId().intValue());
 
 		phieuXuatDTOAllList.forEach(px -> {
-			List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(px.getId().intValue());
+			List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(px.getId().intValue());
 
 			List<ProductDTO> productDTOs = new ArrayList<ProductDTO>();
 			chiTietPhieuXuatDTOs.forEach(ctpx -> {
@@ -231,13 +231,13 @@ public class AccountController {
 			return new ModelAndView("redirect:/account");
 		}
 
-		List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+		List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 				.getListCTPX(phieuXuatFindByIDto.getId().intValue());
 
 		List<ProductDTO> productDTOs = new ArrayList<ProductDTO>();
 
 		Integer quantity = 0;
-		for (ChiTietPhieuXuatDTO ctpx : chiTietPhieuXuatDTOs) {
+		for (CTPhieuXuatDTO ctpx : chiTietPhieuXuatDTOs) {
 			quantity += ctpx.getSoLuong();
 			ProductDTO productDTO = productService.findInfoProductForOrderInWeb(ctpx.getPhienBanSanPhamXuatId());
 			productDTO.setMaPX(phieuXuatFindByIDto.getId().intValue());

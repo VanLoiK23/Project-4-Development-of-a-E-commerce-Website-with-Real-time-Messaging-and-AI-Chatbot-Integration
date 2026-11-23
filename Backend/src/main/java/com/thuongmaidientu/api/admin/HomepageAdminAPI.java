@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.KhachHangDTO;
 import com.thuongmaidientu.dto.PaymentStatisticalDTO;
@@ -26,7 +26,7 @@ import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
 import com.thuongmaidientu.service.DiscountService;
 import com.thuongmaidientu.service.KhachHangService;
 import com.thuongmaidientu.service.PhieuNhapService;
@@ -51,7 +51,7 @@ public class HomepageAdminAPI {
 	private ProductService productService;
 
 	@Autowired
-	private ChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
 	private DiscountService discountService;
@@ -127,7 +127,7 @@ public class HomepageAdminAPI {
 			phieuXuatDTO.setAddress(thongTinGiaoHangDTO.getStreetName() + " " + thongTinGiaoHangDTO.getDistrict() + " "
 					+ thongTinGiaoHangDTO.getCountry());
 
-			List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+			List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 					.getListCTPX(phieuXuatDTO.getId().intValue());
 
 			AtomicInteger totalQuantity = new AtomicInteger(0);

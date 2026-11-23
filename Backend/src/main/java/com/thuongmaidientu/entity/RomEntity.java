@@ -44,5 +44,5 @@ public class RomEntity {
     
 
     @OneToMany(mappedBy = "rom")
-    private List<PhienBanSanPhamEntity> roms = new ArrayList<>();
+    private List<ProductVariantEntity> roms = new ArrayList<>();
 }

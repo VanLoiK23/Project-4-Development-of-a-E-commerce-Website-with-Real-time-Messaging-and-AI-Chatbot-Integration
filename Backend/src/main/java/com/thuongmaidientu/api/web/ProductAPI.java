@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.service.CartService;
-import com.thuongmaidientu.service.CommentAndRateService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
@@ -37,13 +37,13 @@ public class ProductAPI {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
 	private CartService cartService;
 
 	@Autowired
-	private CommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@PostMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
 	public ResponseEntity<String> filterComment(@RequestParam(name = "filter", required = false) Integer rateFilter,
@@ -51,7 +51,7 @@ public class ProductAPI {
 		try {
 			StringBuilder textBuilder = new StringBuilder();
 
-			List<CommentAndRateDTO> commentByProduct = commentAndRateService.findByProductId(masp);
+			List<CommentProductDTO> commentByProduct = commentAndRateService.findByProductId(masp);
 			if (commentByProduct == null || commentByProduct.isEmpty()) {
 
 				return ResponseEntity.ok().contentType(MediaType.valueOf("text/html; charset=UTF-8"))
@@ -60,18 +60,18 @@ public class ProductAPI {
 								+ "  </div>\r\n</div>");
 			}
 
-			List<CommentAndRateDTO> commentsByRate = commentAndRateService.findAllByRateAndStatus(rateFilter, null,
+			List<CommentProductDTO> commentsByRate = commentAndRateService.findAllByRateAndStatus(rateFilter, null,
 					null);
 
-			List<CommentAndRateDTO> filteredComments = commentsByRate.stream()
+			List<CommentProductDTO> filteredComments = commentsByRate.stream()
 					.filter(c -> commentByProduct.stream().anyMatch(cm -> cm.getId().equals(c.getId())))
 					.collect(Collectors.toList());
 
-			List<CommentAndRateDTO> sortedComments = filteredComments.stream()
-					.sorted(Comparator.comparing(CommentAndRateDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
+			List<CommentProductDTO> sortedComments = filteredComments.stream()
+					.sorted(Comparator.comparing(CommentProductDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
 					.collect(Collectors.toList());
 
-			for (CommentAndRateDTO comment : sortedComments) {
+			for (CommentProductDTO comment : sortedComments) {
 				textBuilder.append("<div class='review-item'>").append("<div class='review-name'>")
 						.append(comment.getHoten()).append("</div>").append("<div class='review-rating'>");
 

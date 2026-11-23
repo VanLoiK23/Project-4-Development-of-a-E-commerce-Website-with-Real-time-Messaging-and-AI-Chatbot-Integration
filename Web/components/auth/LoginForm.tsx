@@ -42,6 +42,7 @@ export function LoginForm({ onSwitchMode }: LoginFormProps) {
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const isVerified = searchParams.get("verified") === "1";
+  const isRegistered = searchParams.get("registered") === "1" || isVerified;
   const isReset = searchParams.get("reset") === "1";
 
   const handleBlurEmail = () => {
@@ -138,9 +139,9 @@ export function LoginForm({ onSwitchMode }: LoginFormProps) {
       </div>
 
       {/* Phản hồi từ bước trước */}
-      {isVerified && (
+      {isRegistered && (
         <Alert variant="success">
-          Tài khoản đã được xác thực thành công. Hãy đăng nhập để tiếp tục.
+          Tài khoản đã được đăng ký và xác thực thành công. Hãy đăng nhập để tiếp tục.
         </Alert>
       )}
 

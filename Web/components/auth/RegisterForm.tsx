@@ -11,7 +11,7 @@ import { Alert } from "@/components/ui/Alert";
 import { AuthStepper } from "@/components/auth/AuthStepper";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
-import { register } from "@/api/auth";
+import { sendOtpCheckEmail } from "@/api/auth";
 import {
   validateEmail,
   validateFullName,
@@ -30,10 +30,13 @@ interface RegisterFormProps {
 /**
  * Client Component RegisterForm (Bước 1/2).
  *
- * Gửi đúng payload theo RegisterRequest của Backend:
- *   { firstName, lastName, phone, email, ngaySinh, gender, password }
- *
- * Sau khi đăng ký thành công → lưu email vào sessionStorage → chuyển /register/verify.
+ * Luồng đăng ký mới:
+ * 1. Thu thập và validate thông tin người dùng.
+ * 2. Khi bấm "Tiếp tục · Xác thực email" → Gọi API auth/send-otp-check-email.
+ * 3. Hiển thị thông báo "Đang tiến hành xác nhận email..." không để đứng UI.
+ * 4. Khi gửi OTP thành công → hiển thị fallback thông báo gửi thành công và lưu tạm dữ liệu vào sessionStorage.
+ * 5. Chuyển sang /register/verify (VerifyOtpForm).
+ * 6. Chỉ sau khi verify OTP thành công mới gọi auth/register và chuyển sang Login.
  */
 export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
   const router = useRouter();
@@ -68,6 +71,11 @@ export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
     acceptedTerms?: string | null;
     server?: string | null;
   }>({});
+
+  const [statusFeedback, setStatusFeedback] = useState<{
+    type: "info" | "success";
+    message: string;
+  } | null>(null);
 
   const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -217,6 +225,7 @@ export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
     setHasSubmittedOnce(true);
     setErrors({});
     setIsTakenEmail(false);
+    setStatusFeedback(null);
 
     const validationErrors = validateAll();
     const hasError = Object.values(validationErrors).some(Boolean);
@@ -228,46 +237,78 @@ export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
     }
 
     setIsLoading(true);
+    setStatusFeedback({
+      type: "info",
+      message: "Đang tiến hành xác nhận email... Vui lòng đợi trong giây lát.",
+    });
 
     try {
-      // Gửi đúng payload RegisterRequest của BE
-      const res = await register({
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        phone: formData.phone.trim(),
+      // 1. Gọi tới API auth/send-otp-check-email
+      const res = await sendOtpCheckEmail({
         email: formData.email.trim(),
-        ngaySinh: formData.ngaySinh, // yyyy-MM-dd
-        gender: formData.gender as Gender,
-        password: formData.password,
       });
 
       if (!res.ok) {
+        setStatusFeedback(null);
         if (res.error.code === "EMAIL_TAKEN") {
           setIsTakenEmail(true);
           setErrors({ email: res.error.message });
           document.getElementById("register-email")?.focus();
           return;
         }
-        setErrors({ server: res.error.message });
+        setErrors({
+          server:
+            res.error.message ||
+            "Không thể gửi mã xác nhận đến email này. Vui lòng kiểm tra lại.",
+        });
         return;
       }
 
+      if (!res.data.isSuccess) {
+        setStatusFeedback(null);
+        setErrors({
+          server: "Không thể gửi mã xác nhận đến email này. Vui lòng thử lại sau.",
+        });
+        return;
+      }
+
+      // 2. Gửi OTP thành công → Lưu tạm dữ liệu đăng ký vào sessionStorage
       try {
         sessionStorage.setItem(
           "pending_verify_email",
           formData.email.trim().toLowerCase()
         );
+        sessionStorage.setItem(
+          "pending_register_data",
+          JSON.stringify({
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            phone: formData.phone.trim(),
+            email: formData.email.trim(),
+            ngaySinh: formData.ngaySinh,
+            gender: formData.gender,
+            password: formData.password,
+          })
+        );
       } catch {
         // sessionStorage blocked
       }
 
-      router.push("/register/verify");
+      // 3. Fallback thông báo gửi thành công để người dùng biết trước khi chuyển trang
+      setStatusFeedback({
+        type: "success",
+        message: "Mã xác thực đã được gửi tới email của bạn thành công! Đang chuyển đến trang xác thực...",
+      });
+
+      setTimeout(() => {
+        router.push("/register/verify");
+      }, 900);
     } catch {
+      setStatusFeedback(null);
       setErrors({
         server:
           "Không thể kết nối đến máy chủ. Vui lòng kiểm tra đường truyền và thử lại.",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -287,6 +328,12 @@ export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
       </div>
 
       <AuthStepper currentStep={1} />
+
+      {statusFeedback && (
+        <Alert variant={statusFeedback.type}>
+          <span>{statusFeedback.message}</span>
+        </Alert>
+      )}
 
       {errors.server && (
         <Alert variant="danger">
@@ -557,7 +604,7 @@ export function RegisterForm({ onSwitchMode }: RegisterFormProps) {
           className="w-full mt-2"
           loading={isLoading}
         >
-          Tiếp tục · Xác thực email
+          {isLoading ? "Đang gửi mã xác nhận..." : "Tiếp tục · Xác thực email"}
         </Button>
       </form>
 

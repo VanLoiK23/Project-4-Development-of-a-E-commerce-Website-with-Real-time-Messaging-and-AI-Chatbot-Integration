@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
-import com.thuongmaidientu.service.CommentAndRateService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
 
 @Controller(value = "ProductControllerOfWeb")
@@ -26,10 +26,10 @@ public class ProductController {
 	private ProductService productService;
 
 	@Autowired
-	private PhienbanspService phienbansanphamService;
+	private ProductVariantService phienbansanphamService;
 
 	@Autowired
-	private CommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@RequestMapping(value = "/Detail", method = RequestMethod.GET)
 	public ModelAndView Detail(@RequestParam("p") String p) {
@@ -69,7 +69,7 @@ public class ProductController {
 
 		ProductDTO model = new ProductDTO();
 
-		CommentAndRateDTO commentAndRateDTO = new CommentAndRateDTO();
+		CommentProductDTO commentAndRateDTO = new CommentProductDTO();
 
 		ProductDTO sampleProduct = new ProductDTO();
 
@@ -153,11 +153,11 @@ public class ProductController {
 				}
 			}
 
-			List<CommentAndRateDTO> commentAndRateDTOs = commentAndRateService
+			List<CommentProductDTO> commentAndRateDTOs = commentAndRateService
 					.findByProductId(model.getId().intValue());
 			
-			List<CommentAndRateDTO> sortedComments = commentAndRateDTOs.stream()
-				    .sorted(Comparator.comparing(CommentAndRateDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
+			List<CommentProductDTO> sortedComments = commentAndRateDTOs.stream()
+				    .sorted(Comparator.comparing(CommentProductDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
 				    .collect(Collectors.toList());
 			
 			commentAndRateDTO.setListResult(sortedComments);

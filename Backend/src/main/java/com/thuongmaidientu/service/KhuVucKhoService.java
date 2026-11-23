@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 
 public interface KhuVucKhoService {

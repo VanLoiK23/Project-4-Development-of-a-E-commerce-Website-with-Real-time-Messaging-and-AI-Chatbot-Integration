@@ -30,7 +30,7 @@ public class CartItemEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maphienbansp")
-    private PhienBanSanPhamEntity phienbansanpham;
+    private ProductVariantEntity phienbansanpham;
    
     @Column(name = "soluong")
     private Integer soluong;

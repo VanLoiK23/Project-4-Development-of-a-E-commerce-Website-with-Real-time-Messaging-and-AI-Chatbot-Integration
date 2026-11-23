@@ -37,8 +37,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.EmailRequest;
 import com.thuongmaidientu.dto.MomoDTO;
@@ -51,14 +51,14 @@ import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.service.EmailService;
 import com.thuongmaidientu.service.CartService;
-import com.thuongmaidientu.service.ChiTietPNService;
-import com.thuongmaidientu.service.ChiTietPXService;
-import com.thuongmaidientu.service.ChiTietSPService;
-import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.CommentProductService;
 import com.thuongmaidientu.service.DiscountService;
 import com.thuongmaidientu.service.KhachHangService;
 import com.thuongmaidientu.service.MomoService;
-import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.PhieuXuatService;
 import com.thuongmaidientu.service.ProductService;
 import com.thuongmaidientu.service.ThongTinGiaoHangService;
@@ -73,10 +73,10 @@ public class PhieuXuatAPI {
 	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private ChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private ChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 
 	@Autowired
 	private ProductService productService;
@@ -88,10 +88,10 @@ public class PhieuXuatAPI {
 	private MomoService momoService;
 
 	@Autowired
-	private ChiTietSPService chiTietSPService;
+	private CTSanPhamService chiTietSPService;
 
 	@Autowired
-	private PhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
 	private DiscountService discountService;
@@ -103,7 +103,7 @@ public class PhieuXuatAPI {
 	private KhachHangService khachHangService;
 
 	@Autowired
-	private CommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@Autowired
 	private EmailService emailService;
@@ -441,7 +441,7 @@ public class PhieuXuatAPI {
 			List<Integer> list_mapbspIntegers = new ArrayList<Integer>();
 
 			for (Integer i = 0; i < maPBList.size(); i++) {
-				ChiTietPhieuXuatDTO chiTietPhieuXuatDTO = new ChiTietPhieuXuatDTO();
+				CTPhieuXuatDTO chiTietPhieuXuatDTO = new CTPhieuXuatDTO();
 				chiTietPhieuXuatDTO.setCodeCart(codeCart.toString());
 				chiTietPhieuXuatDTO.setPhieuXuatId(savePhieuXuatDTO.getId().intValue());
 				chiTietPhieuXuatDTO.setPhienBanSanPhamXuatId(maPBList.get(i));
@@ -531,11 +531,11 @@ public class PhieuXuatAPI {
 		try {
 			PhieuXuatDTO dto = phieuXuatService.findById(id);
 
-			List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
+			List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
 
 			List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-			for (ChiTietPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
+			for (CTPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
 				Object[] productData = productService
 						.findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())
 						.get(0);
@@ -691,7 +691,7 @@ public class PhieuXuatAPI {
 //			        $sql1 = "INSERT INTO chitietphieuxuat (maphieuxuat, maphienbansp, soluong, dongia,code_cart) VALUES (?, ?, ?, ?, ?)";
 //			        $sql2 = "UPDATE ctsanpham SET maphieuxuat=?, tinhtrang=1 WHERE maphienbansp=? AND maimei=?";
 
-				for (ChiTietPhieuXuatDTO ct : request.getChitietphieuxuatList()) {
+				for (CTPhieuXuatDTO ct : request.getChitietphieuxuatList()) {
 
 					int ma_pbsp = ct.getPhienBanSanPhamXuatId();
 					int num = ct.getSoLuong();
@@ -905,7 +905,7 @@ public class PhieuXuatAPI {
 					phieuxuat.setInfoOrderDiscount(discountService.findById(phieuxuat.getDiscountCode()));
 				}
 
-				List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+				List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 						.getListCTPX(phieuxuat.getId().intValue());
 
 				chiTietPhieuXuatDTOs.forEach(ct -> {
@@ -948,7 +948,7 @@ public class PhieuXuatAPI {
 					phieuxuat.setInfoOrderDiscount(discountService.findById(phieuxuat.getDiscountCode()));
 				}
 
-				List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+				List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 						.getListCTPX(phieuxuat.getId().intValue());
 
 				chiTietPhieuXuatDTOs.forEach(ct -> {
@@ -980,7 +980,7 @@ public class PhieuXuatAPI {
 	}
 
 	@PostMapping("/review")
-	public ResponseEntity<?> saveReview(@RequestBody CommentAndRateDTO review) {
+	public ResponseEntity<?> saveReview(@RequestBody CommentProductDTO review) {
 		try {
 			ResponseId responseId = new ResponseId();
 			responseId.setId(commentAndRateService.save(review).getId().intValue());
@@ -999,10 +999,10 @@ public class PhieuXuatAPI {
 		List<ProductDTO> allProducts = productService.getALlProducts();
 
 		for (ProductDTO product : allProducts) {
-			List<CommentAndRateDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
+			List<CommentProductDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
 
 			int soLuongDanhGia = ratings.size();
-			double tongSao = ratings.stream().mapToDouble(CommentAndRateDTO::getRate).sum();
+			double tongSao = ratings.stream().mapToDouble(CommentProductDTO::getRate).sum();
 
 			product.setSoLuongDanhGia(soLuongDanhGia);
 			product.setTongSao(tongSao);
@@ -1011,7 +1011,7 @@ public class PhieuXuatAPI {
 	}
 
 	@PutMapping("/review")
-	public void updateReview(@RequestBody CommentAndRateDTO review) {
+	public void updateReview(@RequestBody CommentProductDTO review) {
 		try {
 			commentAndRateService.updateReview(review);
 		} catch (Exception e) {

@@ -43,5 +43,5 @@ public class RamEntity {
     private Date deletedAt;
     
     @OneToMany(mappedBy = "ram")
-    private List<PhienBanSanPhamEntity> rams = new ArrayList<>();
+    private List<ProductVariantEntity> rams = new ArrayList<>();
 }

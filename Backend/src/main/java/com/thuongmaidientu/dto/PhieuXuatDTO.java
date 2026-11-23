@@ -53,7 +53,7 @@ public class PhieuXuatDTO extends AbstractDTO<PhieuXuatDTO> {
 	
 	//info for order side android
 	private DiscountDTO InfoOrderDiscount;
-	private List<ChiTietPhieuXuatDTO> listctpx;
+	private List<CTPhieuXuatDTO> listctpx;
 	private String name;
 	private String phone;
 	private String address;

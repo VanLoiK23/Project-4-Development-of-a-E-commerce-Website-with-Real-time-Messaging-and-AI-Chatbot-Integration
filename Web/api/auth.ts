@@ -61,7 +61,7 @@ function getBaseUrl(): string {
     process.env.BACKEND_INTERNAL_URL ||
     process.env.NEXT_PUBLIC_BACKEND_URL ||
     axios.defaults.baseURL ||
-    "http://localhost:8080"
+    "http://localhost:8080/api/"
   );
 }
 
@@ -258,12 +258,6 @@ export async function register(
       "auth/register",
       payload
     );
-
-    try {
-      await sendOtpCheckEmail({ email: payload.email });
-    } catch {
-      // Không chặn luồng đăng ký nếu gửi mail gặp độ trễ
-    }
 
     return {
       ok: true,

@@ -185,7 +185,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO> {
 
 	// model xai cho add_sp,edit_sp
 	private List<CategoryDTO> category_List;
-	private List<MauSacDTO> color_List;
+	private List<ColorDTO> color_List;
 	private List<RamDTO> ram_List;
 	private List<RomDTO> rom_List;
 	private List<XuatXuDTO> xuatxu_List;

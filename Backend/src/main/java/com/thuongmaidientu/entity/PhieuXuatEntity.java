@@ -62,11 +62,11 @@ public class PhieuXuatEntity {
 	private Date updatedAt;
 
 	@OneToMany(mappedBy = "phieuXuat")
-	private List<ChiTietPhieuXuatEntity> phieuxuatList = new ArrayList<>();
+	private List<CTPhieuXuat> phieuxuatList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "px")
 	private List<CTSanPhamEntity> phieunhapCTSP = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "order")
-	private List<CommentAndRateEntity> listComment = new ArrayList<>();
+	private List<CommentProductEntity> listComment = new ArrayList<>();
 }

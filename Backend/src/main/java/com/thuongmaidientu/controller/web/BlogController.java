@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.thuongmaidientu.dto.ArticleDTO;
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.CommentArticleDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.entity.CommentArticleEntity;

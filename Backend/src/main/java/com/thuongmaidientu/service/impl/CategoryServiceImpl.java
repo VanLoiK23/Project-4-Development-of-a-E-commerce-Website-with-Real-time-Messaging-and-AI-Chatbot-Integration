@@ -14,10 +14,10 @@ import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.entity.CategoryEntity;
 import com.thuongmaidientu.entity.ProductEntity;
 import com.thuongmaidientu.repository.CategoryRepository;
-import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.CategoryService;
 
 @Service
-public class CategoryServiceImpl implements CategotyService {
+public class CategoryServiceImpl implements CategoryService {
 	@Autowired
 	private CategoryMapper categoryMapper;
 

@@ -107,10 +107,10 @@ public class ProductEntity {
 	private Map<String, Object> specs = new HashMap<>();
 
 	@OneToMany(mappedBy = "sanPham")
-	private List<PhienBanSanPhamEntity> listPhienBanSP = new ArrayList<>();
+	private List<ProductVariantEntity> listPhienBanSP = new ArrayList<>();
 
 	@OneToMany(mappedBy = "product")
-	private List<CommentAndRateEntity> listcomment = new ArrayList<>();
+	private List<CommentProductEntity> listcomment = new ArrayList<>();
 
 	@Transient
 	private Integer xxID;

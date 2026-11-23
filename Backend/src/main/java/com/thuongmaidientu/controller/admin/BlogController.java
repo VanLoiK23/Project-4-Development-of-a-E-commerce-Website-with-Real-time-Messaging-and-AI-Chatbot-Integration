@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thuongmaidientu.dto.ArticleDTO;
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.RamDTO;

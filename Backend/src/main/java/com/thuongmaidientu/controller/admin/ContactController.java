@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.ContactDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
