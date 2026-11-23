@@ -12,7 +12,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,8 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.KhachHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.IKhachHangService;
+import com.thuongmaidientu.service.KhachHangService;
 import com.thuongmaidientu.util.HashUtil;
 import com.thuongmaidientu.util.TimeUtil;
 import com.thuongmaidientu.util.TokenUtil;
@@ -44,13 +43,10 @@ import jakarta.mail.internet.MimeMessage;
 public class KhachHangAPI {
 
 	@Autowired
-	private IKhachHangService khachHangService;
-//	
-//	@Autowired
-//	private FirebaseService firebaseService;
-	
+	private KhachHangService khachHangService;
+
 	@Autowired
-	private JavaMailSenderImpl mailSender;
+	private JavaMailSender mailSender;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteKH(@RequestParam("id") int id, @RequestParam("status") String status) {
@@ -58,17 +54,6 @@ public class KhachHangAPI {
 			khachHangService.updateStatus(id, status);
 
 			return ResponseEntity.ok("Delete Success");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xóa sản phẩm");
-		}
-	}
-
-	@PutMapping("/login/{id}/{token}")
-	public ResponseEntity<String> loginUpdatetokenFCM(@PathVariable("id") Integer id,
-			@PathVariable("token") String token) {
-		try {
-			khachHangService.saveFCMtoken(id, token);
-			return ResponseEntity.ok("Update Success");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xóa sản phẩm");
 		}
@@ -134,14 +119,8 @@ public class KhachHangAPI {
 
 				User.setName(User.getLastName() + " " + User.getFirstName());
 				User.setUsername(formatName(User.getName()));
-
-				System.out.println("Tét " + User);
-
-				khachHangService.updateFromAndroid(User);
 				
 				UserDTO userDTO=khachHangService.findUserDTOById(User.getId().intValue());
-				
-//				firebaseService.saveUserToFirebase(userDTO,false,true,false,true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

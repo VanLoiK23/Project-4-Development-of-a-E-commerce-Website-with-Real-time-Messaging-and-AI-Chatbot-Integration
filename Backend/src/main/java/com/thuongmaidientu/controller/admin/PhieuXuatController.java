@@ -32,11 +32,11 @@ import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -44,16 +44,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PhieuXuatController {
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private ChiTietPXService chiTietPXService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@RequestMapping(value = "/quan-tri/donhang/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") PhieuXuatDTO model,

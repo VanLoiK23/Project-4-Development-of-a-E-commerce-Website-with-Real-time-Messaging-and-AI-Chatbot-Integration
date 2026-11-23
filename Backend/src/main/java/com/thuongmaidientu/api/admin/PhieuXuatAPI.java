@@ -50,19 +50,18 @@ import com.thuongmaidientu.dto.ResponseId;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.service.EmailService;
-import com.thuongmaidientu.service.FcmService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IMomoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.MomoService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -71,43 +70,40 @@ import jakarta.servlet.http.HttpSession;
 //@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class PhieuXuatAPI {
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private ChiTietPXService chiTietPXService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private ChiTietPNService chiTietPNService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IMomoService momoService;
+	private MomoService momoService;
 
 	@Autowired
-	private IChiTietSPService chiTietSPService;
+	private ChiTietSPService chiTietSPService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@Autowired
-	private FcmService fcmService;
-
-	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentAndRateService commentAndRateService;
 
 	@Autowired
 	private EmailService emailService;
@@ -569,39 +565,12 @@ public class PhieuXuatAPI {
 	public ResponseEntity<String> updateStatus(@PathVariable("id") int id, @PathVariable("status") int status) {
 		try {
 			phieuXuatService.updateStatus(id, status);
-			String token = khachHangService.getTokenUser(phieuXuatService.getUserIdByOrder(id));
-			Map<String, Object> data = new HashMap<>();
-			data.put("order_id", id);
-			data.put("status", status);
-			String result = null;
-			if (token != null) {
-				if (status == 1) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã được duyệt",
-							"Cảm ơn bạn đã mua hàng. Đơn sẽ được giao sớm nhất.", data);
-				} else if (status == 3) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đang được giao",
-							"Cảm ơn bạn đã mua hàng. Đơn sẽ được giao sớm nhất.", data);
-				} else if (status == 4) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã giao",
-							"Cảm ơn bạn đã mua hàng.", data);
-				} else if (status == -1) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã bị nhân viên hủy",
-							"Xin lỗi vì bất tiện này.", data);
-					cancleOrder(id);
-				} else if (status == -3) {
-					result = fcmService.sendNotification(token, "Phiếu hủy của đơn hàng #" + id + " đã được duyệt",
-							"Cảm ơn bạn đã phản hồi chúng tôi sẽ khắc phục.", data);
-					cancleOrder(id);
-				}
-			} else {
-				if (status == -1 || status == -3) {
-					cancleOrder(id);
-				}
+			if (status == -1 || status == -3) {
+				cancleOrder(id);
 			}
-			System.out.println(result);
-			return ResponseEntity.ok("Update success" + token);
+			return ResponseEntity.ok("Update success");
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xóa sản phẩm");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi cập nhật trạng thái");
 		}
 	}
 

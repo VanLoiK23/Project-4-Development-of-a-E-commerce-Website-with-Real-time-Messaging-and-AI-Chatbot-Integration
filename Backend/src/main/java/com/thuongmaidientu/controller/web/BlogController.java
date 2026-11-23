@@ -20,18 +20,18 @@ import com.thuongmaidientu.dto.CommentAndRateDTO;
 import com.thuongmaidientu.dto.CommentArticleDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.entity.CommentArticleEntity;
-import com.thuongmaidientu.service.IArticleService;
-import com.thuongmaidientu.service.ICommentArticleService;
+import com.thuongmaidientu.service.ArticleService;
+import com.thuongmaidientu.service.CommentArticleService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller(value = "blogOfWebController")
 public class BlogController {
 	@Autowired
-	private IArticleService articleService;
+	private ArticleService articleService;
 
 	@Autowired
-	private ICommentArticleService commentArticleService;
+	private CommentArticleService commentArticleService;
 
 	@RequestMapping(value = { "/Blog", "/Blog/{id}" }, method = RequestMethod.GET)
 	public ModelAndView Detail(@PathVariable(name = "id", required = false) Integer id, HttpSession session) {

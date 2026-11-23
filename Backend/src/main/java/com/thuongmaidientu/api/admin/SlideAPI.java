@@ -19,15 +19,15 @@ import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.SlideDTO;
-import com.thuongmaidientu.service.INhacungcapService;
-import com.thuongmaidientu.service.ISlideService;
+import com.thuongmaidientu.service.NhacungcapService;
+import com.thuongmaidientu.service.SlideService;
 
 @RestController(value = "SlideApiOfAdmin")
 @RequestMapping("/quan-tri/banner")
 public class SlideAPI {
 	
 	@Autowired
-	private ISlideService slideService;
+	private SlideService slideService;
 	
 	@GetMapping
     public ResponseEntity<List<SlideDTO>> getAllSlide() {

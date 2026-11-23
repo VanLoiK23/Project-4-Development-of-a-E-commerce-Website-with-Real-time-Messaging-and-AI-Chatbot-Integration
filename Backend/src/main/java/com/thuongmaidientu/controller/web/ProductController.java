@@ -16,20 +16,20 @@ import org.springframework.web.servlet.ModelAndView;
 import com.thuongmaidientu.dto.CommentAndRateDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductService;
 
 @Controller(value = "ProductControllerOfWeb")
 public class ProductController {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbansanphamService;
+	private PhienbanspService phienbansanphamService;
 
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentAndRateService commentAndRateService;
 
 	@RequestMapping(value = "/Detail", method = RequestMethod.GET)
 	public ModelAndView Detail(@RequestParam("p") String p) {

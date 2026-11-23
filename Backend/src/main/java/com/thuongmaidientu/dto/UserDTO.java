@@ -3,6 +3,8 @@ package com.thuongmaidientu.dto;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thuongmaidientu.statusEnum.AccountRole;
+import com.thuongmaidientu.statusEnum.AccountStatus;
 
 import lombok.Data;
 
@@ -31,7 +33,7 @@ public class UserDTO extends AbstractDTO<UserDTO>{
     private String password;
     private String passwordRaw;
 
-    private String role;
+    private AccountRole role;
 
     private Date timeCreateAcc;
 
@@ -42,7 +44,5 @@ public class UserDTO extends AbstractDTO<UserDTO>{
     private Date resetTokenExpiresAt;
     
     @JsonProperty("status")
-    private String statusString;
-    
-    private String firebaseUid;
+    private AccountStatus statusString;
 }

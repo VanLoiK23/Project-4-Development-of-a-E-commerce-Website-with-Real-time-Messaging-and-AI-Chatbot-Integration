@@ -39,7 +39,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
 	@Query(value = "SELECT DISTINCT  *  FROM sanpham as sp WHERE "
 			+ "                                                                   sp.khuvuckho=:makv "
-			+ "                                                                   LIMIT 0,15", nativeQuery = true)
+			+ "                                                                   LIMIT 15 OFFSET 0", nativeQuery = true)
 	List<ProductEntity> getListSPFromKho(@Param("makv") int makv);
 
 	boolean existsByTenSanPhamAllIgnoreCase(String tensp);
@@ -97,41 +97,39 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
 	@Query(value = """
 			SELECT
-			    sp.*, version.giaxuat, version.price_sale,
+			    sp.*, MIN(version.giaxuat) AS giaxuat, MIN(version.price_sale) AS price_sale,
 			    sp.soluongdanhgia AS total_reviews,
-			    COALESCE(ROUND((sp.tongsao / NULLIF(sp.soluongdanhgia, 0)), 1), 0) AS average_rating,
-			    JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].value')) AS promo_value
+			    COALESCE(ROUND((sp.tongsao / NULLIF(sp.soluongdanhgia, 0))::numeric, 1), 0) AS average_rating,
+			    NULL AS promo_value
 			FROM
 			    sanpham AS sp
 			JOIN
 			    phienbansanpham AS version ON sp.masp = version.masp
 			WHERE
-			    JSON_SEARCH(sp.promo, 'one', ?1) IS NOT NULL
+			    sp.promo ILIKE CONCAT('%', ?1, '%')
 			GROUP BY
 			    sp.masp
 			ORDER BY
 			    total_reviews DESC
 			""", countQuery = """
 			    SELECT COUNT(*) FROM sanpham
-			    WHERE JSON_SEARCH(promo, 'one', ?1) IS NOT NULL
+			    WHERE promo ILIKE CONCAT('%', ?1, '%')
 			""", nativeQuery = true)
 	Page<ProductEntity> getProductByHighlight(String highlight, Pageable pageable);
 
 	@Query(value = """
 			SELECT
 			    sp.*,
-			    version.giaxuat, version.price_sale,
+			    MIN(version.giaxuat) AS giaxuat, MIN(version.price_sale) AS price_sale,
 			    sp.soluongdanhgia AS total_reviews,
-			    ROUND(AVG(comment_and_rate.rate), 1) AS average_rating,
-			    JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].name')) AS promo_name,
-			    version.giaxuat - (
-			        CAST(IFNULL(JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].value')), '0') AS DECIMAL(10,2)) * version.giaxuat / 100
-			    ) AS price_sale
+			    ROUND(AVG(comment_and_rate.rate)::numeric, 1) AS average_rating,
+			    NULL AS promo_name,
+			    MIN(version.price_sale) AS price_sale_calc
 			FROM sanpham AS sp
 			JOIN phienbansanpham AS version ON sp.masp = version.masp
 			LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
 			GROUP BY sp.masp
-			HAVING average_rating >= ?1
+			HAVING ROUND(AVG(comment_and_rate.rate)::numeric, 1) >= ?1
 			ORDER BY total_reviews DESC
 			""", countQuery = "SELECT COUNT(DISTINCT sp.masp) FROM sanpham AS sp JOIN phienbansanpham AS version ON sp.masp = version.masp LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp", nativeQuery = true)
 	Page<ProductEntity> getProductTopRate(double minRating, Pageable pageable);
@@ -139,42 +137,38 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 	@Query(value = """
 			SELECT
 			    sp.*,
-			    version.giaxuat, version.price_sale,
+			    MIN(version.giaxuat) AS giaxuat, MIN(version.price_sale) AS price_sale,
 			    sp.soluongdanhgia AS total_reviews,
-			    ROUND(AVG(comment_and_rate.rate), 1) AS average_rating,
-			    JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].name')) AS promo_name,
-			    version.giaxuat - (
-			        CAST(IFNULL(JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].value')), '0') AS DECIMAL(10,2)) * version.giaxuat / 100
-			    ) AS price_sale
+			    ROUND(AVG(comment_and_rate.rate)::numeric, 1) AS average_rating,
+			    NULL AS promo_name,
+			    MIN(version.price_sale) AS price_sale_calc
 			FROM sanpham AS sp
 			JOIN phienbansanpham AS version ON sp.masp = version.masp
 			LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
-			WHERE sp.created >= NOW() - INTERVAL 14 DAY
+			WHERE sp.created >= now() - INTERVAL '14 days'
 			GROUP BY sp.masp
 			ORDER BY total_reviews DESC
 			""", countQuery = """
 			    SELECT COUNT(DISTINCT sp.masp)
 			    FROM sanpham AS sp
 			    JOIN phienbansanpham AS version ON sp.masp = version.masp
-			    WHERE sp.created >= NOW() - INTERVAL 14 DAY
+			    WHERE sp.created >= now() - INTERVAL '14 days'
 			""", nativeQuery = true)
 	Page<ProductEntity> getProductNewlyReleasedWithinTwoWeeks(Pageable pageable);
 
 	@Query(value = """
 			   SELECT
 			    sp.*,
-			    version.giaxuat, version.price_sale,
+			    MIN(version.giaxuat) AS giaxuat, MIN(version.price_sale) AS price_sale,
 			    sp.soluongdanhgia AS total_reviews,
-			    ROUND(AVG(comment_and_rate.rate), 1) AS average_rating,
-			    JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].name')) AS promo_name,
-			    version.giaxuat - (
-			        CAST(IFNULL(JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].value')), '0') AS DECIMAL(10,2)) * version.giaxuat / 100
-			    ) AS price_sale
+			    ROUND(AVG(comment_and_rate.rate)::numeric, 1) AS average_rating,
+			    NULL AS promo_name,
+			    MIN(version.price_sale) AS price_sale_calc
 			FROM sanpham AS sp
 			JOIN phienbansanpham AS version ON sp.masp = version.masp
 			LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
 			GROUP BY sp.masp
-			HAVING version.price_sale < 2000000
+			HAVING MIN(version.price_sale) < 2000000
 			ORDER BY total_reviews DESC
 			""", countQuery = "SELECT COUNT(DISTINCT sp.masp) FROM sanpham AS sp JOIN phienbansanpham AS version ON sp.masp = version.masp WHERE version.price_sale < 2000000", nativeQuery = true)
 	Page<ProductEntity> findProductsWithPriceSaleUnder2Million(Pageable pageable);
@@ -197,23 +191,21 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 			SELECT * FROM (
 			    SELECT
 			        sp.*,
-			        version.giaxuat,
+			        MIN(version.giaxuat) AS giaxuat,
 			        MIN(version.price_sale) AS min_price,
 			        sp.soluongdanhgia AS total_reviews,
-			        ROUND(AVG(comment_and_rate.rate), 1) AS average_rating,
-			        JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].name')) AS promo_name,
-			        version.giaxuat - (
-			            CAST(IFNULL(JSON_UNQUOTE(JSON_EXTRACT(sp.promo, '$[0].value')), '0') AS DECIMAL(10,2)) * version.giaxuat / 100
-			        ) AS calculated_price_sale
+			        ROUND(AVG(comment_and_rate.rate)::numeric, 1) AS average_rating,
+			        NULL AS promo_name,
+			        MIN(version.price_sale) AS calculated_price_sale
 			    FROM sanpham AS sp
 			    JOIN phienbansanpham AS version ON sp.masp = version.masp
 			    LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
-			    WHERE (:promo IS NULL OR (JSON_SEARCH(sp.promo, 'one', :promo) IS NOT NULL  AND (:promo != 'moiramat' OR sp.created >= DATE_SUB(CURDATE(), INTERVAL 14 DAY))))
+			    WHERE (:promo IS NULL OR ((sp.promo ILIKE CONCAT('%', :promo, '%')) AND (:promo != 'moiramat' OR sp.created >= CURRENT_DATE - INTERVAL '14 days')))
 			      AND (:minPrice IS NULL OR :maxPrice IS NULL OR version.price_sale BETWEEN :minPrice AND :maxPrice)
 			      AND (:company IS NULL OR sp.thuonghieu = :company)
-			      AND (:search IS NULL OR sp.tensp LIKE LOWER(CONCAT('%', :search, '%')))
+			      AND (:search IS NULL OR sp.tensp ILIKE CONCAT('%', :search, '%'))
 			    GROUP BY sp.masp
-			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate), 1) >= :star)
+			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate)::numeric, 1) >= :star)
 			) AS sub
 			""", countQuery = """
 			SELECT COUNT(*) FROM (
@@ -221,12 +213,12 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 			    FROM sanpham AS sp
 			    JOIN phienbansanpham AS version ON sp.masp = version.masp
 			    LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
-				WHERE (:promo IS NULL OR (JSON_SEARCH(sp.promo, 'one', :promo) IS NOT NULL  AND (:promo != 'moiramat' OR sp.created >= DATE_SUB(CURDATE(), INTERVAL 14 DAY))))
+				WHERE (:promo IS NULL OR ((sp.promo ILIKE CONCAT('%', :promo, '%')) AND (:promo != 'moiramat' OR sp.created >= CURRENT_DATE - INTERVAL '14 days')))
 			      AND (:minPrice IS NULL OR :maxPrice IS NULL OR version.price_sale BETWEEN :minPrice AND :maxPrice)
 			      AND (:company IS NULL OR sp.thuonghieu = :company)
-			      AND (:search IS NULL OR sp.tensp LIKE LOWER(CONCAT('%', :search, '%')))
+			      AND (:search IS NULL OR sp.tensp ILIKE CONCAT('%', :search, '%'))
 			    GROUP BY sp.masp
-			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate), 1) >= :star)
+			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate)::numeric, 1) >= :star)
 			) AS sub_count
 			""", nativeQuery = true)
 	Page<ProductEntity> findAllByOptionalFilters(@Param("promo") String promo, @Param("star") Integer star,
@@ -239,12 +231,12 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 			    FROM sanpham AS sp
 			    JOIN phienbansanpham AS version ON sp.masp = version.masp
 			    LEFT JOIN comment_and_rate ON sp.masp = comment_and_rate.id_sp
-				WHERE (:promo IS NULL OR (JSON_SEARCH(sp.promo, 'one', :promo) IS NOT NULL  AND (:promo != 'moiramat' OR sp.created >= DATE_SUB(CURDATE(), INTERVAL 14 DAY))))
+				WHERE (:promo IS NULL OR ((sp.promo ILIKE CONCAT('%', :promo, '%')) AND (:promo != 'moiramat' OR sp.created >= CURRENT_DATE - INTERVAL '14 days')))
 			      AND (:minPrice IS NULL OR :maxPrice IS NULL OR version.price_sale BETWEEN :minPrice AND :maxPrice)
 			      AND (:company IS NULL OR sp.thuonghieu = :company)
-			      AND (:search IS NULL OR sp.tensp LIKE LOWER(CONCAT('%', :search, '%')))
+			      AND (:search IS NULL OR sp.tensp ILIKE CONCAT('%', :search, '%'))
 			    GROUP BY sp.masp
-			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate), 1) >= :star)
+			    HAVING (:star IS NULL OR ROUND(AVG(comment_and_rate.rate)::numeric, 1) >= :star)
 			) AS counted
 			""", nativeQuery = true)
 	Long countFilteredProducts(@Param("promo") String promo, @Param("star") Integer star,
@@ -260,7 +252,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 			""", nativeQuery = true)
 	List<ProductEntity> findProductByIdVersionProduct(@Param("maPB") Integer maPB);
 	
-	@Query(value = "SELECT sp.tensp, ram.kichthuocram, rom.kichthuocrom, color.tenmausac, sp.hinhanh,sp.masp,sp.sortDesc,pb.giaxuat,pb.price_sale "
+	@Query(value = "SELECT sp.tensp, ram.kichthuocram, rom.kichthuocrom, color.tenmausac, sp.hinhanh,sp.masp,sp.sort_desc,pb.giaxuat,pb.price_sale "
 			+ "FROM sanpham as sp " + "LEFT JOIN phienbansanpham as pb ON pb.masp = sp.masp "
 			+ "LEFT JOIN dungluongram as ram ON pb.ram = ram.madungluongram "
 			+ "LEFT JOIN dungluongrom as rom ON pb.rom = rom.madungluongrom "

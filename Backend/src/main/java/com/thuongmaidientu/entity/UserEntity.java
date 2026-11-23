@@ -2,20 +2,27 @@ package com.thuongmaidientu.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Builder.Default;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.thuongmaidientu.statusEnum.AccountRole;
+import com.thuongmaidientu.statusEnum.AccountStatus;
 
 @Entity
 @Table(name = "taikhoan")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", length = 100, nullable = false)
     private String name;
@@ -26,7 +33,7 @@ public class UserEntity {
     @Column(name = "phone", length = 10, nullable = false)
     private String phone;
 
-    @Column(name = "email", length = 100, nullable = false)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
     @Column(name = "ngaysinh", nullable = false)
@@ -40,29 +47,22 @@ public class UserEntity {
     private String password;
 
     @Column(name = "role", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'khách hàng'")
-    private String role="khách hàng";
+    @Default
+    private AccountRole role = AccountRole.CUSTOMER;
 
     @Column(name = "time_create_acc", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date timeCreateAcc;
 
-    @Column(name = "reset_token_hash", length = 64, nullable = true)
-    private String resetTokenHash;
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
-    @Column(name = "reset_token_expires_at", nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date resetTokenExpiresAt;
-    
-    @Column(name = "fcm_tokens", length = 255, nullable = true)
-    private String fcm_tokens;
-    
-    @Column(name = "firebaseUid", length = 255, nullable = true)
-    private String firebaseUid;
+    @Column(name = "status", columnDefinition = "VARCHAR(20)")
+    @Default
+    private AccountStatus status = AccountStatus.ACTIVE;
 
-    @Column(name = "status", columnDefinition = "ENUM('active','deleted','lock') DEFAULT 'active'")
-    private String status;
-
-    @Column(name = "deleted_at",nullable = true)
+    @Column(name = "deleted_at", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date deletedAt;
 }

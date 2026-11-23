@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thuongmaidientu.dto.CTSanPhamDTO;
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
@@ -35,20 +34,19 @@ import com.thuongmaidientu.dto.PromoDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.INhacungcapService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
+import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.NhacungcapService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -56,49 +54,46 @@ import jakarta.servlet.http.HttpSession;
 public class Quanlisanpham_controller {
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@Autowired
 	private CloudinaryService cloudinaryService;
 
 	@Autowired
-	private INhacungcapService nhacungcapService;
+	private NhacungcapService nhacungcapService;
 
 	@Autowired
-	private ICategotyService categoryService;
+	private CategotyService categoryService;
 
 	@Autowired
-	private IHedieuhanhService hedieuhanhService;
+	private ColorService colorService;
 
 	@Autowired
-	private IColorService colorService;
+	private RamService ramService;
 
 	@Autowired
-	private IRamService ramService;
+	private RomService romService;
 
 	@Autowired
-	private IRomService romService;
+	private XuatxuService xuatxuService;
 
 	@Autowired
-	private IXuatxuService xuatxuService;
+	private KhuVucKhoService khoService;
 
 	@Autowired
-	private IKhuVucKhoService khoService;
+	private ChiTietPNService pnService;
 
 	@Autowired
-	private IChiTietPNService pnService;
+	private ChiTietPXService pxService;
 
 	@Autowired
-	private IChiTietPXService pxService;
+	private ChiTietSPService ctspService;
 
 	@Autowired
-	private IChiTietSPService ctspService;
-
-	@Autowired
-	private IPhieuNhapService importService;
+	private PhieuNhapService importService;
 
 	@RequestMapping(value = "/quan-tri/Quanlisanpham_controller/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") ProductDTO model,
@@ -174,7 +169,6 @@ public class Quanlisanpham_controller {
 		ProductDTO dto = new ProductDTO();
 
 		dto.setCategory_List(categoryService.selectAll());
-		dto.setHedieuhanh_List(hedieuhanhService.selectAll());
 		dto.setColor_List(colorService.selectAll());
 		dto.setRam_List(ramService.selectAll());
 		dto.setRom_List(romService.selectAll());
@@ -212,36 +206,6 @@ public class Quanlisanpham_controller {
 			}
 
 			dto.setCategory_List(categoryList);
-
-			Integer hedieuhanhId = dto.getHeDieuHanhId();
-
-			List<HedieuhanhDTO> hdhList = hedieuhanhService.selectAll();
-			HedieuhanhDTO currentHDH = null;
-
-			if (hedieuhanhId != null) {
-				for (HedieuhanhDTO h : hdhList) {
-					if (h.getId().equals(hedieuhanhId)) {
-						currentHDH = h;
-						break;
-					}
-				}
-			}
-
-			// Nếu tìm thấy hệ điều hành, đưa nó lên đầu danh sách
-			if (currentHDH != null) {
-				hdhList.remove(currentHDH);
-				hdhList.add(0, currentHDH);
-			}
-
-			// Nếu danh sách rỗng hoặc không có hệ điều hành phù hợp, thêm tùy chọn "Không"
-			if (hdhList.isEmpty() || currentHDH == null) {
-				HedieuhanhDTO noOS = new HedieuhanhDTO();
-				noOS.setId(null); // Đặt ID null để không chọn gì mặc định
-				noOS.setTenHeDieuHanh("Không");
-				hdhList.add(0, noOS);
-			}
-
-			dto.setHedieuhanh_List(hdhList);
 
 			Integer XXId = dto.getXuatXuId();
 
@@ -286,7 +250,6 @@ public class Quanlisanpham_controller {
 
 		} else {
 			dto.setCategory_List(categoryService.selectAll());
-			dto.setHedieuhanh_List(hedieuhanhService.selectAll());
 			dto.setXuatxu_List(xuatxuService.selectAll());
 			dto.setKho_List(khoService.selectAll());
 		}

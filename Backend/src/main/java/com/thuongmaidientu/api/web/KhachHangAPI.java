@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -23,10 +23,10 @@ import jakarta.servlet.http.HttpSession;
 public class KhachHangAPI {
 
 	@Autowired
-	IKhachHangService khachHangService;
+	KhachHangService khachHangService;
 
 	@Autowired
-	IThongTinGiaoHangService thongTinGiaoHangService;
+	ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@PostMapping("/checkUser_name")
 	public ResponseEntity<?> checkIsExistUserName(@RequestParam("name") String name) {

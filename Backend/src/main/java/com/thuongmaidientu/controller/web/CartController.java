@@ -37,18 +37,17 @@ import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.dto.VNPayDTO;
 import com.thuongmaidientu.service.EmailService;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IMomoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
-import com.thuongmaidientu.service.IVNPayService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.MomoService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
+import com.thuongmaidientu.service.VNPayService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -56,40 +55,37 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/Cart")
 public class CartController {
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private IMomoService momoService;
+	private MomoService momoService;
 
 	@Autowired
-	private IVNPayService vnPayService;
+	private VNPayService vnPayService;
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private ChiTietPXService chiTietPXService;
 
 	@Autowired
-	private IChiTietSPService chiTietSPService;
+	private ChiTietSPService chiTietSPService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
-
-//	@Autowired
-//	private FirebaseService firebaseService;
+	private ChiTietPNService chiTietPNService;
 
 	@Autowired
 	private EmailService emailService;
@@ -126,11 +122,6 @@ public class CartController {
 			if (userDTO != null) {
 				mapResultMap.put("result",
 						cartService.deleteByPhienbansanphamAndClientId(maPb, userDTO.getId().intValue()));
-
-				// delete cartItem in Firebase
-				Integer idCartExist = cartService.getIdCartActiveByClient(userDTO.getId().intValue());
-
-//				firebaseService.deleteCartItemByMaphienbansp(idCartExist, maPb);
 			} else {
 				mapResultMap.put("result", false);
 			}
@@ -181,15 +172,6 @@ public class CartController {
 //				cartService.updateCartItem(idCartInteger, cartItemDTO);
 
 				cartService.updateExistProductInCartItem(maPb, userDTO.getId().intValue(), cartItemDTO.getSoluong());
-
-				// after update then select and update in fire base :))
-				// update cart in firebase
-				CartItemDTO cartItemFindById = cartService
-						.getCartItemDTOsByClientIdAndIdVersion(userDTO.getId().intValue(), maPb);
-//			bỏ	firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
-				cartItemFindById.setSoluong(newQuantity);
-				// firebaseService.insertCartItem(cartItemFindById.getCart_id(),
-				// cartItemFindById);
 
 				mapResultMap.put("result", "Cập nhật giỏ hàng thành công.");
 
@@ -770,9 +752,6 @@ public class CartController {
 				CartDTO cartDTO = cartService.getCartById(cartItemDTO.getListResult().get(0).getCart_id());
 
 				cartDTO.setStatus("completed");
-
-				// completed in firebase
-//				firebaseService.updateCartCompleted(cartDTO.getStatus(), cartDTO.getId().toString());
 
 				cartService.updateCart(cartDTO);
 			}

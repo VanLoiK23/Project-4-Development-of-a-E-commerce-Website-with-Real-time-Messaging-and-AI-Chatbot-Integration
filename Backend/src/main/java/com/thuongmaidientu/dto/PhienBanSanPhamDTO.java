@@ -41,12 +41,12 @@ public class PhienBanSanPhamDTO {
 	@JsonProperty("soluongton")
 	private Integer soLuongTon;
 	@JsonProperty("sale")
-	private Float sale;
+	private Double sale;
 	@JsonProperty("price_sale")
 	private Integer priceSale;
 
 	public PhienBanSanPhamDTO(long maSanpham, Integer romId, Integer ramId, int colorId, Integer giaNhap,
-			Integer giaXuat, Float sale, Integer priceSale) {
+			Integer giaXuat, Double sale, Integer priceSale) {
 		super();
 		this.maSanpham = maSanpham;
 		this.romId = romId;
@@ -56,6 +56,11 @@ public class PhienBanSanPhamDTO {
 		this.giaXuat = giaXuat;
 		this.sale = sale;
 		this.priceSale = priceSale;
+	}
+
+	public PhienBanSanPhamDTO(long maSanpham, Integer romId, Integer ramId, int colorId, Integer giaNhap,
+			Integer giaXuat, Float sale, Integer priceSale) {
+		this(maSanpham, romId, ramId, colorId, giaNhap, giaXuat, sale != null ? sale.doubleValue() : null, priceSale);
 	}
 
 	public PhienBanSanPhamDTO() {

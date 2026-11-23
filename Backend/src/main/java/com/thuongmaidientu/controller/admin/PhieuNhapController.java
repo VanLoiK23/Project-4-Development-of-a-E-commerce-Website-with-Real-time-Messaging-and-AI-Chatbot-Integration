@@ -29,9 +29,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -39,13 +39,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PhieuNhapController {
 
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private ChiTietPNService chiTietPNService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@RequestMapping(value = "/quan-tri/phieunhap/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") PhieuNhapDTO model,

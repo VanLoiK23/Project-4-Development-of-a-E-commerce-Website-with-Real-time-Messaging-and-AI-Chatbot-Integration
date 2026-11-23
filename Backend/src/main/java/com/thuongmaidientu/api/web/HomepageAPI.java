@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,10 +26,10 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/homepage")
 public class HomepageAPI {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@PostMapping("/getPrice")
 	public ResponseEntity<?> getPrice(@RequestParam("alias") String alias, @RequestParam("id_pbsp") Integer idPBSP) {

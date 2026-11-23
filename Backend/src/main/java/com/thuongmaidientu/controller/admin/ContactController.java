@@ -23,23 +23,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.ContactDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
 import com.thuongmaidientu.dto.MauSacDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
-import com.thuongmaidientu.service.IContactService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.INhacungcapService;
+import com.thuongmaidientu.service.ContactService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.NhacungcapService;
 
 @Controller("contactOfController")
 @RequestMapping("/quan-tri/contact")
 public class ContactController {
 
 	@Autowired
-	private IContactService contactService;
+	private ContactService contactService;
 
 	@RequestMapping(value = "/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") ContactDTO model,

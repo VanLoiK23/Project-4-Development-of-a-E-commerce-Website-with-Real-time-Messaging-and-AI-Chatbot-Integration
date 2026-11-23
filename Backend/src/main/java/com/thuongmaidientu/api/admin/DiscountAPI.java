@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.INhacungcapService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.NhacungcapService;
 
 @RestController(value = "DiscountApiOfAdmin")
 @RequestMapping("/quan-tri/ma-giam-gia")
 public class DiscountAPI {
 	
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 	
 	@GetMapping
     public ResponseEntity<List<DiscountDTO>> getAllDiscount(@RequestParam("id") int id) {

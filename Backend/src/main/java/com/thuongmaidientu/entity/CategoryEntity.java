@@ -25,11 +25,11 @@ public class CategoryEntity {
     @Column(name = "image", length = 255, nullable = false)
     private String image;
 
-    @Column(name = "status", columnDefinition = "int(1) default 1")
-    private Integer status=1;
+    @Column(name = "status", nullable = false)
+    private Integer status = 1;
 
-    @Column(name = "trash", length = 10, columnDefinition = "VARCHAR(10) DEFAULT 'active'")
-    private String trash="active";
+    @Column(name = "trash", length = 10, nullable = false)
+    private String trash = "active";
 
     @Column(name = "delete_at",nullable = true)
     @Temporal(TemporalType.DATE)

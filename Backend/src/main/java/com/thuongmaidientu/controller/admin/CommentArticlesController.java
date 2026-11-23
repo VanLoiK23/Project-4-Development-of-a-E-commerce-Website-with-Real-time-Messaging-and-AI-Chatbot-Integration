@@ -19,8 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thuongmaidientu.dto.CommentAndRateDTO;
 import com.thuongmaidientu.dto.CommentArticleDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.ICommentArticleService;
+import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.CommentArticleService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpSession;
 public class CommentArticlesController {
 
 	@Autowired
-	private ICommentArticleService commentArticleService;
+	private CommentArticleService commentArticleService;
 
 	@RequestMapping(value = "/quan-tri/QuanlicommentArticles_controller/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") CommentArticleDTO model,

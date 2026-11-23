@@ -18,13 +18,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.DiscountDTO;
-import com.thuongmaidientu.service.IDiscountService;
+import com.thuongmaidientu.service.DiscountService;
 
 @Controller("discountOfController")
 public class DiscountController {
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@RequestMapping(value = "/quan-tri/discount/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") DiscountDTO model,

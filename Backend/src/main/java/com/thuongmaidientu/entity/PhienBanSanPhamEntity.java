@@ -40,11 +40,11 @@ public class PhienBanSanPhamEntity {
     @Column(name = "giaxuat")
     private Integer giaXuat;
 
-    @Column(name = "soluongton", columnDefinition = "int default 0")
+    @Column(name = "soluongton", columnDefinition = "INTEGER DEFAULT 0")
     private Integer soLuongTon=0;
 
     @Column(name = "sale")
-    private Float sale;
+    private Double sale;
 
     @Column(name = "price_sale", nullable = false)
     private Integer priceSale;

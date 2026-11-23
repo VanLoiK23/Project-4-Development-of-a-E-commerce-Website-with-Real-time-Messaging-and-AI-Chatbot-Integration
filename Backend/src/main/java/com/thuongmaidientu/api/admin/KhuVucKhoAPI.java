@@ -15,21 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
+import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
 
 @RestController(value = "KhoApiOfAdmin")
 @RequestMapping("/quan-tri/khu-vuc-kho")
 public class KhuVucKhoAPI {
 	@Autowired
-	private IKhuVucKhoService khoService;
+	private KhuVucKhoService khoService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteKho(@RequestParam("id") int id) {

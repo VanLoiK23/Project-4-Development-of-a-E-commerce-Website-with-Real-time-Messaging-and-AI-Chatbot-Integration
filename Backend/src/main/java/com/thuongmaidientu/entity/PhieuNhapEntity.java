@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,28 +24,28 @@ public class PhieuNhapEntity {
     @Column(name = "maphieunhap")
     private Integer id;
 
-    @Column(name = "thoigian", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
+    @Column(name = "thoigian", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date thoiGian;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manhacungcap", nullable = false)
-    private NhaCungCapEntity nhaCungCap;  // Khóa ngoại đến bảng nhà cung cấp
+    private NhaCungCapEntity nhaCungCap; // Khóa ngoại đến bảng nhà cung cấp
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nguoitaophieunhap", nullable = false)
-    private NhanVienEntity nguoiTaoPhieu;  // Khóa ngoại đến bảng tài khoản (người tạo phiếu)
+    private NhanVienEntity nguoiTaoPhieu; // Khóa ngoại đến bảng tài khoản (người tạo phiếu)
 
     @Column(name = "tongtien", nullable = false)
     private BigDecimal tongTien;
 
     @Column(name = "save", nullable = true, length = 50)
-    private String save="active";
-    
+    private String save = "active";
+
     @OneToMany(mappedBy = "phieunhap", cascade = CascadeType.ALL)
     private List<ChiTietPhieuNhapEntity> phieunhapList = new ArrayList<>();
-    
-    
+
     @OneToMany(mappedBy = "pn")
     private List<CTSanPhamEntity> phieunhapCTSP = new ArrayList<>();
 }

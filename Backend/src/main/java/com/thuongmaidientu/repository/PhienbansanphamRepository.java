@@ -64,7 +64,7 @@ public interface PhienbansanphamRepository extends JpaRepository<PhienBanSanPham
 			+ "WHERE maphienbansp = :maphienbansp", nativeQuery = true)
 	void updatePBSP(@Param("maphienbansp") Long maphienbansp, @Param("romId") Integer romId,
 			@Param("ramId") Integer ramId, @Param("colorId") Integer colorId, @Param("gianhap") Integer gianhap,
-			@Param("giaxuat") Integer giaxuat, @Param("sale") Float sale, @Param("priceSale") Integer priceSale);
+			@Param("giaxuat") Integer giaxuat, @Param("sale") Double sale, @Param("priceSale") Integer priceSale);
 
 	@Modifying
 	@Transactional

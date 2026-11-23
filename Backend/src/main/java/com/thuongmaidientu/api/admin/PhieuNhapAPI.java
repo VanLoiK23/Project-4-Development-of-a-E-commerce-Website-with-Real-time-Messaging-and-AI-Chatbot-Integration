@@ -16,22 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
 
 @RestController(value = "phieuNhapApiOfAdmin")
 @RequestMapping("/quan-tri/phieu-nhap")
 //@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class PhieuNhapAPI {
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 	
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private ChiTietPNService chiTietPNService;
 	
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 
 	@DeleteMapping

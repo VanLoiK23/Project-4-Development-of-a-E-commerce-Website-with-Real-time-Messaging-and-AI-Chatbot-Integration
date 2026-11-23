@@ -19,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.ArticleDTO;
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
 import com.thuongmaidientu.dto.MauSacDTO;
 import com.thuongmaidientu.dto.NhaCungCapDTO;
@@ -29,16 +28,16 @@ import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
 import com.thuongmaidientu.entity.ArticleEntity;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.IArticleService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.INhacungcapService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.ArticleService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.NhacungcapService;
+import com.thuongmaidientu.service.ProductService;
 
 @Controller("blogOfController")
 public class BlogController {
 
 	@Autowired
-	private IArticleService articleService;
+	private ArticleService articleService;
 
 	@Autowired
 	private CloudinaryService cloudinaryService;

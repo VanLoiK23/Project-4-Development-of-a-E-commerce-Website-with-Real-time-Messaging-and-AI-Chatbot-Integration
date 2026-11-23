@@ -22,9 +22,6 @@ public class KhachHangEntity {
 	@Column(name = "hoten", length = 100, nullable = false)
 	private String hoTen;
 
-	@Column(name = "matkhau", length = 255, nullable = true)
-	private String matKhau;
-
 	@Column(name = "gioitinh", length = 15, nullable = true)
 	private String gioiTinh;
 

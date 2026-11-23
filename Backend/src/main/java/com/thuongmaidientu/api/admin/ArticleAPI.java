@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.service.IArticleService;
-import com.thuongmaidientu.service.ICommentArticleService;
+import com.thuongmaidientu.service.ArticleService;
+import com.thuongmaidientu.service.CommentArticleService;
 
 @RestController(value = "ArticleApiOfAdmin")
 @RequestMapping("/quan-tri/bai-viet")
 public class ArticleAPI {
 	@Autowired
-	private IArticleService articleService;
+	private ArticleService articleService;
 	
 	@Autowired
-	private ICommentArticleService commentArticleService;
+	private CommentArticleService commentArticleService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteBlog(@RequestParam("id") int id) {

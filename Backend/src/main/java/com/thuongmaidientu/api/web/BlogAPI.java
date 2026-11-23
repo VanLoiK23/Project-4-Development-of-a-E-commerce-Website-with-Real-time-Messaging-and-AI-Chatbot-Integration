@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.CommentArticleDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.ICommentArticleService;
+import com.thuongmaidientu.service.CommentArticleService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/bai-viet")
 public class BlogAPI {
 	@Autowired
-	private ICommentArticleService commentArticleService;
+	private CommentArticleService commentArticleService;
 
 	@PostMapping
 	public ResponseEntity<?> addComment(@RequestParam("rating") Double rating, @RequestParam("comment") String content,

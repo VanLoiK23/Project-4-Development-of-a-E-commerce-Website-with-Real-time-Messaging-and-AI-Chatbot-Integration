@@ -24,10 +24,10 @@ public class ChiTietPhieuXuatEntity {
 	@Column(name = "code_cart", length = 50, nullable = true)
 	private String codeCart="";
 
-	@Column(name = "soluong", columnDefinition = "int DEFAULT 0")
-	private Integer soLuong;
+	@Column(name = "soluong", nullable = false)
+	private Integer soLuong = 0;
 
-	@Column(name = "dongia", columnDefinition = "int DEFAULT 0")
-	private Integer donGia;
+	@Column(name = "dongia", nullable = false)
+	private Integer donGia = 0;
 }
 

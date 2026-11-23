@@ -36,20 +36,19 @@ import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ProductVariant;
 import com.thuongmaidientu.dto.PromoDTO;
 import com.thuongmaidientu.dto.RequestProductInteraction;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
-import com.thuongmaidientu.service.impl.XuatxuService;
+import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.ChiTietPNService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.ChiTietSPService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
+import com.thuongmaidientu.service.impl.XuatxuServiceImpl;
 
 import netscape.javascript.JSObject;
 
@@ -58,43 +57,40 @@ import netscape.javascript.JSObject;
 //@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class ProductAPI {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@Autowired
-	private IChiTietPNService pnService;
+	private ChiTietPNService pnService;
 
 	@Autowired
-	private IChiTietPXService pxService;
+	private ChiTietPXService pxService;
 
 	@Autowired
-	private IChiTietSPService ctspService;
+	private ChiTietSPService ctspService;
 
 	@Autowired
-	private IPhieuNhapService importService;
+	private PhieuNhapService importService;
 
 	@Autowired
-	private IColorService colorService;
+	private ColorService colorService;
 
 	@Autowired
-	private IRamService ramService;
+	private RamService ramService;
 
 	@Autowired
-	private IRomService romService;
+	private RomService romService;
 
 	@Autowired
-	private IXuatxuService xuatxuService;
+	private XuatxuService xuatxuService;
 
 	@Autowired
-	private ICategotyService categotyService;
+	private CategotyService categotyService;
 
 	@Autowired
-	private IKhuVucKhoService khoService;
-
-	@Autowired
-	private IHedieuhanhService hedieuhanhService;
+	private KhuVucKhoService khoService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteProduct(@RequestParam("id") int id) {
@@ -332,7 +328,7 @@ public class ProductAPI {
 		dto.setHinhAnh(request.getImg());
 		dto.setTenSanPham(request.getName());
 		dto.setXuatXuId(request.getXuatxu());
-		if (request.getHedieuhanh() == -1) {
+		if (request.getHedieuhanh() != null && request.getHedieuhanh() == -1) {
 			request.setHedieuhanh(null);
 		}
 		dto.setHeDieuHanhId(request.getHedieuhanh());
@@ -341,10 +337,34 @@ public class ProductAPI {
 		dto.setDungLuongPin(request.getDungluongpin());
 		dto.setCameraTruoc(request.getCameratruoc());
 		dto.setCameraSau(request.getCamerasau());
-		dto.setPhienBanHDH(request.getPhienbanHDH().doubleValue());
+		dto.setPhienBanHDH(request.getPhienbanHDH() != null ? request.getPhienbanHDH().doubleValue() : null);
 		dto.setManHinh(request.getManhinh());
 		dto.setSortDesc(request.getTitle());
 		dto.setDetail(request.getDescription());
+
+		// Specs & flat config
+		if (request.getSpecs() != null) dto.setSpecs(request.getSpecs());
+		if (request.getOs() != null) dto.setOs(request.getOs());
+		if (request.getReleaseYear() != null) dto.setReleaseYear(request.getReleaseYear());
+		if (request.getChipset() != null) dto.setChipset(request.getChipset());
+		if (request.getExpandableStorage() != null) dto.setExpandableStorage(request.getExpandableStorage());
+		if (request.getBatteryMah() != null) dto.setBatteryMah(request.getBatteryMah());
+		if (request.getChargeW() != null) dto.setChargeW(request.getChargeW());
+		if (request.getScreenInch() != null) dto.setScreenInch(request.getScreenInch());
+		if (request.getResolutionW() != null) dto.setResolutionW(request.getResolutionW());
+		if (request.getResolutionH() != null) dto.setResolutionH(request.getResolutionH());
+		if (request.getPanel() != null) dto.setPanel(request.getPanel());
+		if (request.getRefreshHz() != null) dto.setRefreshHz(request.getRefreshHz());
+		if (request.getBrightnessNitsPeak() != null) dto.setBrightnessNitsPeak(request.getBrightnessNitsPeak());
+		if (request.getRearMainMp() != null) dto.setRearMainMp(request.getRearMainMp());
+		if (request.getOis() != null) dto.setOis(request.getOis());
+		if (request.getWeightG() != null) dto.setWeightG(request.getWeightG());
+		if (request.getIpRating() != null) dto.setIpRating(request.getIpRating());
+		if (request.getNfc() != null) dto.setNfc(request.getNfc());
+		if (request.getHas5g() != null) dto.setHas5g(request.getHas5g());
+		if (request.getWifiGen() != null) dto.setWifiGen(request.getWifiGen());
+		if (request.getStereoSpeaker() != null) dto.setStereoSpeaker(request.getStereoSpeaker());
+		if (request.getHeadphoneJack() != null) dto.setHeadphoneJack(request.getHeadphoneJack());
 
 		// Xử lý khuyến mãi
 		List<PromoDTO> promoList = new ArrayList<>();
@@ -416,7 +436,7 @@ public class ProductAPI {
 		dto.setHinhAnh(request.getImg());
 		dto.setTenSanPham(request.getName());
 		dto.setXuatXuId(request.getXuatxu());
-		if (request.getHedieuhanh() == -1) {
+		if (request.getHedieuhanh() != null && request.getHedieuhanh() == -1) {
 			request.setHedieuhanh(null);
 		}
 		dto.setHeDieuHanhId(request.getHedieuhanh());
@@ -425,10 +445,34 @@ public class ProductAPI {
 		dto.setDungLuongPin(request.getDungluongpin());
 		dto.setCameraTruoc(request.getCameratruoc());
 		dto.setCameraSau(request.getCamerasau());
-		dto.setPhienBanHDH(request.getPhienbanHDH().doubleValue());
+		dto.setPhienBanHDH(request.getPhienbanHDH() != null ? request.getPhienbanHDH().doubleValue() : null);
 		dto.setManHinh(request.getManhinh());
 		dto.setSortDesc(request.getTitle());
 		dto.setDetail(request.getDescription());
+
+		// Specs & flat config
+		if (request.getSpecs() != null) dto.setSpecs(request.getSpecs());
+		if (request.getOs() != null) dto.setOs(request.getOs());
+		if (request.getReleaseYear() != null) dto.setReleaseYear(request.getReleaseYear());
+		if (request.getChipset() != null) dto.setChipset(request.getChipset());
+		if (request.getExpandableStorage() != null) dto.setExpandableStorage(request.getExpandableStorage());
+		if (request.getBatteryMah() != null) dto.setBatteryMah(request.getBatteryMah());
+		if (request.getChargeW() != null) dto.setChargeW(request.getChargeW());
+		if (request.getScreenInch() != null) dto.setScreenInch(request.getScreenInch());
+		if (request.getResolutionW() != null) dto.setResolutionW(request.getResolutionW());
+		if (request.getResolutionH() != null) dto.setResolutionH(request.getResolutionH());
+		if (request.getPanel() != null) dto.setPanel(request.getPanel());
+		if (request.getRefreshHz() != null) dto.setRefreshHz(request.getRefreshHz());
+		if (request.getBrightnessNitsPeak() != null) dto.setBrightnessNitsPeak(request.getBrightnessNitsPeak());
+		if (request.getRearMainMp() != null) dto.setRearMainMp(request.getRearMainMp());
+		if (request.getOis() != null) dto.setOis(request.getOis());
+		if (request.getWeightG() != null) dto.setWeightG(request.getWeightG());
+		if (request.getIpRating() != null) dto.setIpRating(request.getIpRating());
+		if (request.getNfc() != null) dto.setNfc(request.getNfc());
+		if (request.getHas5g() != null) dto.setHas5g(request.getHas5g());
+		if (request.getWifiGen() != null) dto.setWifiGen(request.getWifiGen());
+		if (request.getStereoSpeaker() != null) dto.setStereoSpeaker(request.getStereoSpeaker());
+		if (request.getHeadphoneJack() != null) dto.setHeadphoneJack(request.getHeadphoneJack());
 		dto.setId(request.getId().longValue());
 
 		// Xử lý khuyến mãi

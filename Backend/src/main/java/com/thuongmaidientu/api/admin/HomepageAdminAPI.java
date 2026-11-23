@@ -26,41 +26,41 @@ import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongKeService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongKeService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 @RestController(value = "HomepageApiOfAdmin")
 @RequestMapping("/quan-tri/thong-ke")
 public class HomepageAdminAPI {
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private ChiTietPXService chiTietPXService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IThongKeService thongKeService;
+	private ThongKeService thongKeService;
 
 	@GetMapping("/orders")
 	public ResponseEntity<?> getOrders() {
@@ -271,7 +271,6 @@ public class HomepageAdminAPI {
 			ThongkeDTO thongkeDTO = new ThongkeDTO();
 			thongkeDTO.setQuantityProduct(thongKeService.getCountProduct());
 			thongkeDTO.setQuantityPurchase(thongKeService.getCountPurchase());
-			thongkeDTO.setQuantityUser(thongKeService.getCountUser());
 			thongkeDTO.setQuantityWareHouse(thongKeService.getCountWareHouse());
 
 			return ResponseEntity.ok(thongkeDTO);

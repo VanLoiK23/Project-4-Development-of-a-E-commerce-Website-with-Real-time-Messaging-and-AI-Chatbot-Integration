@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.ContactDTO;
-import com.thuongmaidientu.service.IContactService;
+import com.thuongmaidientu.service.ContactService;
 
 @RestController("contactAPI")
 @RequestMapping("/quan-tri/lien-he")
 public class ContactAPI {
 	@Autowired
-	private IContactService contactService;
+	private ContactService contactService;
 	
 	@GetMapping
 	public ResponseEntity<?> showContactContent(@RequestParam("id") int id) {

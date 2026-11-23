@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.firebase.auth.FirebaseAuthException;
 import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.KhachHangDTO;
@@ -31,14 +30,13 @@ import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.ChiTietPXService;
+import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -47,28 +45,25 @@ import jakarta.servlet.http.HttpSession;
 public class AccountController {
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentAndRateService commentAndRateService;
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private ChiTietPXService chiTietPXService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IDiscountService discountService;
-
-//	@Autowired
-//	private FirebaseService firebaseService;
+	private DiscountService discountService;
 
 	@GetMapping
 	public ModelAndView showAccountView(HttpSession session, @ModelAttribute("message") String message) {
@@ -134,7 +129,7 @@ public class AccountController {
 			@RequestParam(value = "email", required = false) String email,
 			@RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaysinh,
 			@RequestParam(value = "gender", required = false) String gender, RedirectAttributes redirectAttributes,
-			HttpSession session) throws FirebaseAuthException, ExecutionException, InterruptedException {
+			HttpSession session) {
 
 		UserDTO userDTO = khachHangService.findUserDTOById(id);
 
@@ -149,8 +144,6 @@ public class AccountController {
 
 			UserDTO userSaveChangedPass = khachHangService.save(userDTO);
 			userSaveChangedPass.setPasswordRaw(newpassword);
-
-//			firebaseService.saveUserToFirebase(userSaveChangedPass, false, false, true, false);
 
 			redirectAttributes.addFlashAttribute("message", "Mật khẩu đổi mới thành công!");
 			return "redirect:/account";
@@ -183,8 +176,6 @@ public class AccountController {
 		UserDTO userSaveDto = khachHangService.save(userDTO);
 		userSaveDto.setFirstName(firstName);
 		userSaveDto.setLastName(lastName);
-
-//		firebaseService.saveUserToFirebase(userSaveDto, false, true, false, false);
 
 		if (userSaveDto != null) {
 			khachHangDTO.setHoTen(fullname);

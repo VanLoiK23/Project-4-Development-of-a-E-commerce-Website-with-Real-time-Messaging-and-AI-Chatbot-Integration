@@ -19,39 +19,34 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.MauSacDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
+import com.thuongmaidientu.service.CategotyService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
 
 @Controller(value = "Attribute_sp_controller")
 public class Attribute_sp_controller {
 	@Autowired
-	private ICategotyService categoryService;
+	private CategotyService categoryService;
 
 	@Autowired
-	private IHedieuhanhService hedieuhanhService;
+	private ColorService colorService;
 
 	@Autowired
-	private IColorService colorService;
+	private RamService ramService;
 
 	@Autowired
-	private IRamService ramService;
+	private RomService romService;
 
 	@Autowired
-	private IRomService romService;
-
-	@Autowired
-	private IXuatxuService xuatxuService;
+	private XuatxuService xuatxuService;
 
 	@Autowired
 	private CloudinaryService cloudinaryService;
@@ -80,24 +75,6 @@ public class Attribute_sp_controller {
 			mav.addObject("model", model);
 			mav.addObject("page", page);
 			mav.addObject("tenAttri", "Xuất xứ");
-
-		} else if ("hedieuhanh".equals(type)) {
-			HedieuhanhDTO model = new HedieuhanhDTO();
-
-			model.setPage(page);
-			model.setLimit(limit);
-
-			Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Order.asc("maHeDieuHanh")));
-
-			model.setListResult(hedieuhanhService.findAll(pageable));
-			model.setTotalItem(hedieuhanhService.getTotalItem());
-			model.setTotalPage((int) Math.ceil((double) model.getTotalItem() / model.getLimit()));
-
-			model.setNum_trash(hedieuhanhService.getTotalItemTrash());
-
-			mav.addObject("model", model);
-			mav.addObject("page", page);
-			mav.addObject("tenAttri", "Hệ điều hành");
 
 		} else if ("thuonghieu".equals(type)) {
 			CategoryDTO model = new CategoryDTO();
@@ -192,8 +169,6 @@ public class Attribute_sp_controller {
 
 				if ("xuatxu".equals(type)) {
 					xuatxuService.updateStatus(id, 0);
-				} else if ("hedieuhanh".equals(type)) {
-					hedieuhanhService.updateStatus(id, 0);
 				} else if ("thuonghieu".equals(type)) {
 					categoryService.updateStatus(id, 0);
 				} else if ("dungluongram".equals(type)) {
@@ -207,8 +182,6 @@ public class Attribute_sp_controller {
 //				productService.updateStatus(id, 1);
 				if ("xuatxu".equals(type)) {
 					xuatxuService.updateStatus(id, 1);
-				} else if ("hedieuhanh".equals(type)) {
-					hedieuhanhService.updateStatus(id, 1);
 				} else if ("thuonghieu".equals(type)) {
 					categoryService.updateStatus(id, 1);
 				} else if ("dungluongram".equals(type)) {
@@ -241,14 +214,6 @@ public class Attribute_sp_controller {
 			}
 
 			xuatxuService.save(dto);
-		} else if ("hedieuhanh".equals(type)) {
-			HedieuhanhDTO dto = new HedieuhanhDTO();
-			dto.setTenHeDieuHanh(value);
-			if (id != null) {
-				dto.setId(Long.valueOf(id));
-			}
-
-			hedieuhanhService.save(dto);
 		} else if ("thuonghieu".equals(type)) {
 			CategoryDTO dto = new CategoryDTO();
 			if (img != null && !img.isEmpty()) {
@@ -312,11 +277,6 @@ public class Attribute_sp_controller {
 			dto.setListResult( xuatxuService.findTrash());
 
 			mav.addObject("model", dto);
-		} else if ("hedieuhanh".equals(type)) {
-			HedieuhanhDTO dto = new HedieuhanhDTO();
-			dto.setListResult( hedieuhanhService.findTrash());
-
-			mav.addObject("model", dto);
 		} else if ("thuonghieu".equals(type)) {
 			CategoryDTO dto = new CategoryDTO();
 			dto.setListResult( categoryService.findTrash());
@@ -354,8 +314,6 @@ public class Attribute_sp_controller {
 
 		if ("xuatxu".equals(type)) {
 			xuatxuService.updateTrash(id, "active");
-		} else if ("hedieuhanh".equals(type)) {
-			hedieuhanhService.updateTrash(id, "active");
 		} else if ("thuonghieu".equals(type)) {
 			categoryService.updateTrash(id, "active");
 		} else if ("dungluongram".equals(type)) {

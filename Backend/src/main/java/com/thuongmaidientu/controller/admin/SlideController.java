@@ -19,13 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.SlideDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.ISlideService;
+import com.thuongmaidientu.service.SlideService;
 
 @Controller("slideOfController")
 public class SlideController {
 
 	@Autowired
-	private ISlideService slideService;
+	private SlideService slideService;
 
 	@Autowired
 	private CloudinaryService cloudinaryService;

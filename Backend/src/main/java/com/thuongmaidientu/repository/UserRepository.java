@@ -1,7 +1,5 @@
 package com.thuongmaidientu.repository;
 
-import java.util.Date;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import com.thuongmaidientu.entity.UserEntity;
 
 import jakarta.transaction.Transactional;
+
+import java.util.*;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	Page<UserEntity> findByStatusNotLikeAndRole(String status, String role, Pageable pageable);
@@ -40,20 +40,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	int updateFromAndroid(String name, String username, String phone, String email, Date ngaySinh, String role,
 			String status, int id);
 
-	@Modifying
-	@Transactional
-	@Query(value = "UPDATE taikhoan p SET p.fcm_tokens = ?1 WHERE p.id = ?2", nativeQuery = true)
-	void updateFCMtoken(String token, int id);
-
-	@Query(value = "SELECT p.fcm_tokens FROM  taikhoan p WHERE p.id = ?1", nativeQuery = true)
-	String getTokenUser(int id);
-
 	long countByRole(String role);
 
 	@Query(value = """
 			SELECT
 			    COUNT(*)
-			FROM taikhoan 
+			FROM taikhoan
 			WHERE
 			   -- 1. Lọc theo Tuần
 			   (:timeFilter = 'week' AND YEARWEEK(time_create_acc, 1) = YEARWEEK(CURDATE(), 1))
@@ -81,7 +73,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 			""", nativeQuery = true)
 	int countLockedAccount(@Param("email") String email, @Param("phone") String phone);
 
-	List<UserEntity> findByEmail(String email);
+	Optional<UserEntity> findByEmail(String email);
 
-	List<UserEntity> findByResetTokenHash(String resetTokenHash);
+	Optional<UserEntity> findByName(String name);
+
+	boolean existsByEmail(String email);
+
+	boolean existsByName(String name);
 }

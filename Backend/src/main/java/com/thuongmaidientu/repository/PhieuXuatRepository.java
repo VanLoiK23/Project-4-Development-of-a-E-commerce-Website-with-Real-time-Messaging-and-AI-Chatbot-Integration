@@ -55,12 +55,12 @@ public interface PhieuXuatRepository extends JpaRepository<PhieuXuatEntity, Long
 			""")
 	List<PhieuXuatEntity> findOrdersSuccessByOptionalFilters(@Param("fromDate") Date fromDate, @Param("st") Integer st, Pageable pageable);
 
-	@Query("""
-			    SELECT p FROM PhieuXuatEntity p
+	@Query(value = """
+			    SELECT p.* FROM phieuxuat p
 			    WHERE p.save='active'
-			    ORDER BY p.thoiGian DESC
+			    ORDER BY p.thoigian DESC
 			    LIMIT 10
-			""")
+			""", nativeQuery = true)
 	List<PhieuXuatEntity> selectOrderFollowEarlyDate();
 
 	@Query(value = """
@@ -103,37 +103,37 @@ public interface PhieuXuatRepository extends JpaRepository<PhieuXuatEntity, Long
 	Integer getCountOrderNotCancel();
 
 	// Number order statistical
-	@Query(value = "SELECT CASE WHEN DAYOFWEEK(thoigian) = 1 THEN 'Chủ nhật' "
-			+ "       WHEN DAYOFWEEK(thoigian) = 2 THEN 'Thứ 2'   " + "       WHEN DAYOFWEEK(thoigian) = 3 THEN 'Thứ 3'"
-			+ "       WHEN DAYOFWEEK(thoigian) = 4 THEN 'Thứ 4'" + "       WHEN DAYOFWEEK(thoigian) = 5 THEN 'Thứ 5'"
-			+ "       WHEN DAYOFWEEK(thoigian) = 6 THEN 'Thứ 6'" + "        WHEN DAYOFWEEK(thoigian) = 7 THEN 'Thứ 7'"
+	@Query(value = "SELECT CASE WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 1 THEN 'Chủ nhật' "
+			+ "       WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 2 THEN 'Thứ 2'   " + "       WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 3 THEN 'Thứ 3'"
+			+ "       WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 4 THEN 'Thứ 4'" + "       WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 5 THEN 'Thứ 5'"
+			+ "       WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 6 THEN 'Thứ 6'" + "        WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 7 THEN 'Thứ 7'"
 			+ "   END AS day_of_week, " + "   COUNT(maphieuxuat) AS count " + "    FROM phieuxuat "
-			+ "    WHERE YEARWEEK(thoigian, 1) = YEARWEEK(CURDATE(), 1) AND (:optinalStatus IS NULL OR status = :optinalStatus)"
-			+ "   GROUP BY DAYOFWEEK(thoigian)", nativeQuery = true)
+			+ "    WHERE to_char(thoigian, 'IYYY-IW') = to_char(CURRENT_DATE, 'IYYY-IW') AND (:optinalStatus IS NULL OR status = :optinalStatus)"
+			+ "   GROUP BY CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER)", nativeQuery = true)
 	List<Object[]> getOrderStatisticalFollowWeek(@Param("optinalStatus") Integer optinalStatus);
 
-	@Query(value = " SELECT " + "    CASE " + "        WHEN CEIL(DAY(thoigian) / 7) = 1 THEN 'Tuần 1'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 2 THEN 'Tuần 2'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 3 THEN 'Tuần 3'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 4 THEN 'Tuần 4'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
-			+ "    COUNT(maphieuxuat) AS count " + "FROM phieuxuat " + "  WHERE YEAR(thoigian) = YEAR(CURDATE()) "
-			+ "  AND MONTH(thoigian) = MONTH(CURDATE()) AND (:optinalStatus IS NULL OR status = :optinalStatus)"
-			+ "GROUP BY CEIL(DAY(thoigian) / 7) " + "ORDER BY CEIL(DAY(thoigian) / 7);", nativeQuery = true)
+	@Query(value = " SELECT " + "    CASE " + "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 1 THEN 'Tuần 1'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 2 THEN 'Tuần 2'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 3 THEN 'Tuần 3'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 4 THEN 'Tuần 4'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
+			+ "    COUNT(maphieuxuat) AS count " + "FROM phieuxuat " + "  WHERE EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) "
+			+ "  AND EXTRACT(MONTH FROM thoigian) = EXTRACT(MONTH FROM CURRENT_DATE) AND (:optinalStatus IS NULL OR status = :optinalStatus)"
+			+ "GROUP BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) " + "ORDER BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER);", nativeQuery = true)
 	List<Object[]> getOrderStatisticalFollowMonth(@Param("optinalStatus") Integer optinalStatus);
 
-	@Query(value = "SELECT QUARTER(thoigian) AS quarter, COUNT(maphieuxuat) AS count " + "FROM phieuxuat "
-			+ "WHERE YEAR(thoigian) = YEAR(CURDATE())  AND (:optinalStatus IS NULL OR status = :optinalStatus)"
-			+ "GROUP BY QUARTER(thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) AS quarter, COUNT(maphieuxuat) AS count " + "FROM phieuxuat "
+			+ "WHERE EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE)  AND (:optinalStatus IS NULL OR status = :optinalStatus)"
+			+ "GROUP BY CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getOrderStatisticalFollowQuarter(@Param("optinalStatus") Integer optinalStatus);
 
 	@Query(value = "SELECT COUNT(maphieuxuat) AS count " + "FROM phieuxuat "
-			+ "WHERE YEAR(thoigian) = YEAR(CURDATE()) AND QUARTER(thoigian) = QUARTER(CURDATE())  AND (:optinalStatus IS NULL OR status = :optinalStatus)", nativeQuery = true)
+			+ "WHERE EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) AND CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) = CAST(EXTRACT(QUARTER FROM CURRENT_DATE) AS INTEGER)  AND (:optinalStatus IS NULL OR status = :optinalStatus)", nativeQuery = true)
 	Integer getOrderStatisticalFollowQuarterAndDoughnutChart(@Param("optinalStatus") Integer optinalStatus);
 
 	@Query(value = """
 			SELECT
-			    CASE MONTH(thoigian)
+			    CASE CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			        WHEN 1 THEN 'Tháng 1'
 			        WHEN 2 THEN 'Tháng 2'
 			        WHEN 3 THEN 'Tháng 3'
@@ -149,44 +149,44 @@ public interface PhieuXuatRepository extends JpaRepository<PhieuXuatEntity, Long
 			    END AS month_of_year,
 			    COUNT(maphieuxuat) AS count
 			FROM phieuxuat
-			WHERE YEAR(thoigian) = YEAR(CURDATE()) AND (:optinalStatus IS NULL OR status = :optinalStatus)
-			GROUP BY MONTH(thoigian)
-			ORDER BY MONTH(thoigian)
+			WHERE EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) AND (:optinalStatus IS NULL OR status = :optinalStatus)
+			GROUP BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
+			ORDER BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			""", nativeQuery = true)
 	List<Object[]> getOrderStatisticalFollowYear(@Param("optinalStatus") Integer optinalStatus);
 
 	// Revenue Statistic
-	@Query(value = "   SELECT CASE  WHEN DAYOFWEEK(thoigian) = 1 THEN 'Chủ nhật'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 2 THEN 'Thứ 2'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 3 THEN 'Thứ 3'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 4 THEN 'Thứ 4'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 5 THEN 'Thứ 5'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 6 THEN 'Thứ 6'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 7 THEN 'Thứ 7' END AS day_of_week, "
+	@Query(value = "   SELECT CASE  WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 1 THEN 'Chủ nhật'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 2 THEN 'Thứ 2'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 3 THEN 'Thứ 3'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 4 THEN 'Thứ 4'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 5 THEN 'Thứ 5'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 6 THEN 'Thứ 6'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 7 THEN 'Thứ 7' END AS day_of_week, "
 			+ "            SUM(tongtien) AS total " + "        FROM phieuxuat "
 			+ "        WHERE status != -3 AND status != -1 "
-			+ "        AND YEARWEEK(thoigian, 1) = YEARWEEK(CURDATE(), 1) "
-			+ "        GROUP BY DAYOFWEEK(thoigian)", nativeQuery = true)
+			+ "        AND to_char(thoigian, 'IYYY-IW') = to_char(CURRENT_DATE, 'IYYY-IW') "
+			+ "        GROUP BY CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER)", nativeQuery = true)
 	List<Object[]> getRevenueStatisticalFollowWeek();
 
-	@Query(value = " SELECT  CASE  WHEN CEIL(DAY(thoigian) / 7) = 1 THEN 'Tuần 1'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 2 THEN 'Tuần 2'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 3 THEN 'Tuần 3'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 4 THEN 'Tuần 4'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
+	@Query(value = " SELECT  CASE  WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 1 THEN 'Tuần 1'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 2 THEN 'Tuần 2'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 3 THEN 'Tuần 3'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 4 THEN 'Tuần 4'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
 			+ "    SUM(tongtien) AS total " + "FROM phieuxuat " + "WHERE status NOT IN (-3, -1) "
-			+ "  AND YEAR(thoigian) = YEAR(CURDATE()) " + "  AND MONTH(thoigian) = MONTH(CURDATE()) "
-			+ "GROUP BY CEIL(DAY(thoigian) / 7) " + "ORDER BY CEIL(DAY(thoigian) / 7);", nativeQuery = true)
+			+ "  AND EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) " + "  AND EXTRACT(MONTH FROM thoigian) = EXTRACT(MONTH FROM CURRENT_DATE) "
+			+ "GROUP BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) " + "ORDER BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER);", nativeQuery = true)
 	List<Object[]> getRevenueStatisticalFollowMonth();
 
-	@Query(value = "SELECT QUARTER(thoigian) AS quarter, SUM(tongtien) AS total " + "FROM phieuxuat "
-			+ "WHERE status NOT IN (-3, -1) AND YEAR(thoigian) = YEAR(CURDATE()) "
-			+ "GROUP BY QUARTER(thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) AS quarter, SUM(tongtien) AS total " + "FROM phieuxuat "
+			+ "WHERE status NOT IN (-3, -1) AND EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) "
+			+ "GROUP BY CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getRevenueStatisticalFollowQuarter();
 
 	@Query(value = """
 			SELECT
-			    CASE MONTH(thoigian)
+			    CASE CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			        WHEN 1 THEN 'Tháng 1'
 			        WHEN 2 THEN 'Tháng 2'
 			        WHEN 3 THEN 'Tháng 3'
@@ -202,28 +202,28 @@ public interface PhieuXuatRepository extends JpaRepository<PhieuXuatEntity, Long
 			    END AS month_of_year,
 			    SUM(tongtien) AS total
 			FROM phieuxuat
-			WHERE status NOT IN (-3, -1) AND YEAR(thoigian) = YEAR(CURDATE())
-			GROUP BY MONTH(thoigian)
-			ORDER BY MONTH(thoigian)
+			WHERE status NOT IN (-3, -1) AND EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE)
+			GROUP BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
+			ORDER BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			""", nativeQuery = true)
 	List<Object[]> getRevenueStatisticalFollowYear();
 
 	@Query(value = """
 			    SELECT
 			        CASE
-			            WHEN CEIL(DAY(thoigian) / 7) = 1 THEN 'Tuần 1'
-			            WHEN CEIL(DAY(thoigian) / 7) = 2 THEN 'Tuần 2'
-			            WHEN CEIL(DAY(thoigian) / 7) = 3 THEN 'Tuần 3'
-			            WHEN CEIL(DAY(thoigian) / 7) = 4 THEN 'Tuần 4'
-			            WHEN CEIL(DAY(thoigian) / 7) = 5 THEN 'Tuần 5'
+			            WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 1 THEN 'Tuần 1'
+			            WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 2 THEN 'Tuần 2'
+			            WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 3 THEN 'Tuần 3'
+			            WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 4 THEN 'Tuần 4'
+			            WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 5 THEN 'Tuần 5'
 			        END AS week_of_month,
 			        SUM(tongtien) AS total
 			    FROM phieuxuat
 			    WHERE status NOT IN (-3, -1)
-			      AND thoigian >= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL DAY(CURDATE()) - 1 DAY), INTERVAL 1 MONTH)
-			      AND thoigian < DATE_SUB(CURDATE(), INTERVAL DAY(CURDATE()) - 1 DAY)
-			    GROUP BY CEIL(DAY(thoigian) / 7)
-			    ORDER BY CEIL(DAY(thoigian) / 7)
+			      AND thoigian >= (date_trunc('month', CURRENT_DATE) - INTERVAL '1 month')
+			      AND thoigian < date_trunc('month', CURRENT_DATE)
+			    GROUP BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER)
+			    ORDER BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER)
 			""", nativeQuery = true)
 	List<Object[]> getStatisticalDoanhThuFollowPreviousMonthFromToday();
 
@@ -238,27 +238,27 @@ public interface PhieuXuatRepository extends JpaRepository<PhieuXuatEntity, Long
 			JOIN sanpham as sp ON sp.masp = version.masp
 			WHERE
 			   -- 1. Lọc theo Tuần
-			   (:timeFilter = 'week' AND YEARWEEK(px.thoigian, 1) = YEARWEEK(CURDATE(), 1))
+			   (:timeFilter = 'week' AND to_char(px.thoigian, 'IYYY-IW') = to_char(CURRENT_DATE, 'IYYY-IW'))
 			   OR
 			   -- 2. Lọc theo Tháng
-			   (:timeFilter = 'month' AND YEAR(px.thoigian) = YEAR(CURDATE()) AND MONTH(px.thoigian) = MONTH(CURDATE()))
+			   (:timeFilter = 'month' AND EXTRACT(YEAR FROM px.thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(MONTH FROM px.thoigian) = EXTRACT(MONTH FROM CURRENT_DATE))
 			   OR
 			   -- 3. Lọc theo Quý
-			   (:timeFilter = 'quarter' AND YEAR(px.thoigian) = YEAR(CURDATE()) AND QUARTER(px.thoigian) = QUARTER(CURDATE()))
+			   (:timeFilter = 'quarter' AND EXTRACT(YEAR FROM px.thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) AND CAST(EXTRACT(QUARTER FROM px.thoigian) AS INTEGER) = CAST(EXTRACT(QUARTER FROM CURRENT_DATE) AS INTEGER))
 			   OR
 			   -- 4. Lọc theo Năm
-			   (:timeFilter = 'year' AND YEAR(px.thoigian) = YEAR(CURDATE()))
+			   (:timeFilter = 'year' AND EXTRACT(YEAR FROM px.thoigian) = EXTRACT(YEAR FROM CURRENT_DATE))
 			GROUP BY sp.masp, sp.tensp
 			ORDER BY total_sold DESC
 			LIMIT 5
 			""", nativeQuery = true)
 	List<Object[]> getTopSellingProductStatistical(@Param("timeFilter") String timeFilter);
 
-	@Query(value = "SELECT MONTH(p.thoigian), SUM(p.tongtien) FROM phieuxuat p WHERE p.status != -3 AND p.status != -1 AND YEAR(p.thoigian) = YEAR(CURRENT_DATE) GROUP BY MONTH(p.thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(MONTH FROM p.thoigian) AS INTEGER), SUM(p.tongtien) FROM phieuxuat p WHERE p.status != -3 AND p.status != -1 AND EXTRACT(YEAR FROM p.thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY CAST(EXTRACT(MONTH FROM p.thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getTongPhieuXuatTheoThang();
 
-	@Query(value = "SELECT QUARTER(thoigian) AS quarter, SUM(tongtien) AS total " + "FROM phieuxuat "
-			+ "WHERE status != -3 AND status != -1 AND YEAR(thoigian) = YEAR(CURDATE()) "
-			+ "GROUP BY QUARTER(thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) AS quarter, SUM(tongtien) AS total " + "FROM phieuxuat "
+			+ "WHERE status != -3 AND status != -1 AND EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) "
+			+ "GROUP BY CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getPhieuXuatTheoQuy();
 }

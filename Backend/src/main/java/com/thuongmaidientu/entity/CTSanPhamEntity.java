@@ -13,6 +13,7 @@ import lombok.Setter;
 public class CTSanPhamEntity {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "maimei", nullable = false)
 	private Long maImei;
 

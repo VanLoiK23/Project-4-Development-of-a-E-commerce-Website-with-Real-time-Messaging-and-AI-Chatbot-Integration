@@ -23,11 +23,10 @@ import com.thuongmaidientu.dto.CommentAndRateDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.CommentAndRateService;
+import com.thuongmaidientu.service.PhienbanspService;
+import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -35,20 +34,16 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/product")
 public class ProductAPI {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private PhienbanspService phienbanspService;
 
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
-	
-//	@Autowired
-//	private FirebaseService firebaseService;
-//	@RequestMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
+	private CommentAndRateService commentAndRateService;
 
 	@PostMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
 	public ResponseEntity<String> filterComment(@RequestParam(name = "filter", required = false) Integer rateFilter,
@@ -197,10 +192,6 @@ public class ProductAPI {
 				cartItemDTO.setMaphienbansp(phienBanSanPhamDTO.getMaPhienbansanpham().intValue());
 				cartItemDTO.setMasp(productDTO.getId().intValue());
 				cartItemDTO.setSoluong(numberPurchase);
-				
-				//update cart in firebase
-//				firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
-//				firebaseService.insertCartItem(idCartIsExist, cartItemDTO);
 				
 				Integer existQuantityVersionProduct=cartService.getQuantityExistInCartByIdVersionAndClientId(phienBanSanPhamDTO.getMaPhienbansanpham().intValue(), userDTO.getId().intValue());
 

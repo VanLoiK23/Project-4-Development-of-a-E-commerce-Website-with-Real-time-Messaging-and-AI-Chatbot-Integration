@@ -11,12 +11,20 @@ import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { login } from "@/api/auth";
 import { getSafeRedirectUrl } from "@/lib/safe-redirect";
 import { validateEmail } from "@/lib/validation";
+import type { AuthMode } from "@/types/auth";
+
+interface LoginFormProps {
+  /** Callback khi người dùng bấm chuyển sang Register (dùng trong split-card) */
+  onSwitchMode?: (mode: AuthMode) => void;
+}
 
 /**
  * Client Component LoginForm.
- * Handles login credentials, account lock states, unverified redirect, and safe post-login redirection.
+ * Contract: POST /api/auth/login → { userNameOrEmail, password }
+ * Response: LoginResponse { token: { accessToken, tokenType, expiresIn }, user: AccountResponse }
+ * Errors handled: INVALID_CREDENTIALS, ACCOUNT_LOCKED, NETWORK_ERROR, EMAIL_UNVERIFIED.
  */
-export function LoginForm() {
+export function LoginForm({ onSwitchMode }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,7 +41,6 @@ export function LoginForm() {
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  // Check URL query parameters for success feedback
   const isVerified = searchParams.get("verified") === "1";
   const isReset = searchParams.get("reset") === "1";
 
@@ -50,10 +57,7 @@ export function LoginForm() {
     if (err) return;
 
     if (!password) {
-      setServerError({
-        type: "danger",
-        message: "Vui lòng nhập mật khẩu.",
-      });
+      setServerError({ type: "danger", message: "Vui lòng nhập mật khẩu." });
       passwordInputRef.current?.focus();
       return;
     }
@@ -61,20 +65,25 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const res = await login({ email, password });
+      // Gửi userNameOrEmail theo đúng field name của BE LoginRequest
+      const res = await login({ userNameOrEmail: email, password });
 
       if (res.ok) {
+        // BE trả về accessToken trong LoginResponse.token.accessToken
+        // Lưu vào memory/cookie (không dùng localStorage theo AGENTS.md)
         const nextUrl = getSafeRedirectUrl(searchParams.get("next"), "/");
         router.push(nextUrl);
         return;
       }
 
-      // Handle specific error codes
       if (res.error.code === "EMAIL_UNVERIFIED") {
         try {
-          sessionStorage.setItem("pending_verify_email", email.trim().toLowerCase());
+          sessionStorage.setItem(
+            "pending_verify_email",
+            email.trim().toLowerCase()
+          );
         } catch {
-          // sessionStorage blocked fallback
+          // sessionStorage blocked
         }
         router.push("/register/verify");
         return;
@@ -98,11 +107,8 @@ export function LoginForm() {
         return;
       }
 
-      // Generic invalid credentials: keep email, clear password, focus password
-      setServerError({
-        type: "danger",
-        message: res.error.message,
-      });
+      // INVALID_CREDENTIALS – xóa password, focus lại
+      setServerError({ type: "danger", message: res.error.message });
       setPassword("");
       setTimeout(() => {
         const el = document.getElementById("login-password") as HTMLInputElement;
@@ -120,8 +126,18 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full space-y-4">
-      {/* Success banner from previous step */}
+    <div className="w-full space-y-5">
+      {/* Heading (h1 ở page level, đây là sub-heading trong card) */}
+      <div>
+        <h1 className="text-2xl font-bold text-ink tracking-tight">
+          Đăng nhập
+        </h1>
+        <p className="text-sm text-ink-2 mt-1">
+          Chào mừng trở lại! Đăng nhập để tiếp tục trải nghiệm.
+        </p>
+      </div>
+
+      {/* Phản hồi từ bước trước */}
       {isVerified && (
         <Alert variant="success">
           Tài khoản đã được xác thực thành công. Hãy đăng nhập để tiếp tục.
@@ -134,7 +150,7 @@ export function LoginForm() {
         </Alert>
       )}
 
-      {/* Server feedback */}
+      {/* Lỗi từ server */}
       {serverError && (
         <Alert variant={serverError.type}>
           <span>{serverError.message}</span>
@@ -142,7 +158,7 @@ export function LoginForm() {
             <div className="mt-2">
               <Link
                 href="/forgot-password"
-                className="font-semibold underline hover:text-ink"
+                className="font-semibold underline hover:opacity-80"
               >
                 Đặt lại mật khẩu ngay →
               </Link>
@@ -153,7 +169,7 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="font-semibold underline hover:text-ink cursor-pointer"
+                className="font-semibold underline hover:opacity-80 cursor-pointer"
               >
                 Thử lại ngay
               </button>
@@ -167,7 +183,7 @@ export function LoginForm() {
           id="login-email"
           name="email"
           type="email"
-          label="Địa chỉ email"
+          label="Email hoặc tên đăng nhập"
           placeholder="ten@domain.com"
           value={email}
           onChange={(e) => {
@@ -194,6 +210,7 @@ export function LoginForm() {
             required
             autoComplete="current-password"
             disabled={isLoading}
+            ref={passwordInputRef}
           />
           <div className="text-right">
             <Link
@@ -217,14 +234,25 @@ export function LoginForm() {
 
       <SocialLoginButtons />
 
-      <div className="text-center pt-2 text-sm text-ink-2">
+      {/* Chuyển sang Register */}
+      <div className="text-center pt-1 text-sm text-ink-2">
         Chưa có tài khoản?{" "}
-        <Link
-          href="/register"
-          className="font-semibold text-ink underline hover:text-ink-2"
-        >
-          Đăng ký ngay
-        </Link>
+        {onSwitchMode ? (
+          <button
+            type="button"
+            onClick={() => onSwitchMode("register")}
+            className="font-semibold text-ink underline hover:text-ink-2 cursor-pointer"
+          >
+            Đăng ký ngay
+          </button>
+        ) : (
+          <Link
+            href="/register"
+            className="font-semibold text-ink underline hover:text-ink-2"
+          >
+            Đăng ký ngay
+          </Link>
+        )}
       </div>
     </div>
   );

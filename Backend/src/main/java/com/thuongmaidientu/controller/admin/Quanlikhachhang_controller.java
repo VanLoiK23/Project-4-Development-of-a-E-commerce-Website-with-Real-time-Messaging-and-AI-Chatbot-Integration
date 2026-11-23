@@ -17,13 +17,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IKhachHangService;
+import com.thuongmaidientu.service.KhachHangService;
 
 @Controller("clientOfController")
 public class Quanlikhachhang_controller {
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@RequestMapping(value = "/quan-tri/Quanlikhachhang_controller/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") UserDTO model,
