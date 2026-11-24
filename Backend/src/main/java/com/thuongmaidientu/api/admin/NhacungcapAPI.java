@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.NhaCungCapDTO;
-import com.thuongmaidientu.service.INhacungcapService;
+import com.thuongmaidientu.service.NhacungcapService;
 
 @RestController(value = "NhacungcapApiOfAdmin")
 @RequestMapping("/quan-tri/nha-cung-cap")
 public class NhacungcapAPI {
 	
 	@Autowired
-	private INhacungcapService nhacungcapService;
+	private NhacungcapService nhacungcapService;
 	
 	@GetMapping
     public ResponseEntity<List<NhaCungCapDTO>> showListImport() {

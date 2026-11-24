@@ -27,11 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -39,13 +39,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PhieuNhapController {
 
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@RequestMapping(value = "/quan-tri/phieunhap/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") PhieuNhapDTO model,
@@ -140,11 +140,11 @@ public class PhieuNhapController {
 		// Lấy thông tin phiếu nhập từ service
 		PhieuNhapDTO dto = phieuNhapService.findById(id.intValue());
 
-		List<ChiTietPhieuNhapDTO> chiTietPhieuNhapDTOs = chiTietPNService.getListCTPN(dto.getId().intValue());
+		List<CTPhieuNhapDTO> chiTietPhieuNhapDTOs = chiTietPNService.getListCTPN(dto.getId().intValue());
 
 		List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-		for (ChiTietPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
+		for (CTPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
 			Object[] productData = productService
 					.findChiTietPhienBanSanPhamByPhieuNhap(it.getPhienBanSanPhamNhapId(), dto.getId().intValue())
 					.get(0);

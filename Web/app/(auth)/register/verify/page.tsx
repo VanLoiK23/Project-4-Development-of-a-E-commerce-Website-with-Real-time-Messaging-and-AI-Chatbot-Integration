@@ -1,16 +1,15 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { AuthCard } from "@/components/auth/AuthCard";
+import { SimpleAuthCard } from "@/components/auth/SimpleAuthCard";
 import { VerifyOtpForm } from "@/components/auth/VerifyOtpForm";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { DevHint } from "@/components/auth/DevHint";
 
 export const metadata: Metadata = {
   title: "Xác thực email",
-  description: "Nhập mã xác thực 6 chữ số gửi tới email để hoàn tất kích hoạt tài khoản Phone Store.",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  description:
+    "Nhập mã xác thực 6 chữ số gửi tới email để hoàn tất kích hoạt tài khoản Phone Store.",
+  robots: { index: false, follow: false },
 };
 
 function VerifyOtpLoading() {
@@ -25,13 +24,16 @@ function VerifyOtpLoading() {
 
 export default function VerifyOtpPage() {
   return (
-    <AuthCard
-      title="Xác thực email"
-      description="Bước cuối cùng để hoàn tất đăng ký và bảo vệ tài khoản của bạn."
-    >
-      <Suspense fallback={<VerifyOtpLoading />}>
-        <VerifyOtpForm />
-      </Suspense>
-    </AuthCard>
+    <div className="w-full max-w-[440px] mx-auto space-y-4">
+      <SimpleAuthCard
+        title="Xác thực email"
+        description="Bước cuối cùng để hoàn tất đăng ký và bảo vệ tài khoản của bạn."
+      >
+        <Suspense fallback={<VerifyOtpLoading />}>
+          <VerifyOtpForm />
+        </Suspense>
+      </SimpleAuthCard>
+      <DevHint />
+    </div>
   );
 }

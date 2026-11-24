@@ -1,19 +1,21 @@
 package com.thuongmaidientu.controller.admin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IChatMessageService;
-import com.thuongmaidientu.service.impl.ChatMessageService;
+import com.thuongmaidientu.service.ChatMessageService;
+import com.thuongmaidientu.service.impl.ChatMessageServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller(value = "chatControllerOfAdmin")
 public class ChatController {
-	private IChatMessageService chatMessageService = new ChatMessageService();
+	@Autowired
+	private ChatMessageService chatMessageService;
 	
 	@RequestMapping(value = "/quan-tri/chat-with-Client", method = RequestMethod.GET)
 	public ModelAndView chat(HttpSession session) {

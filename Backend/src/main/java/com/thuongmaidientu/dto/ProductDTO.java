@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import lombok.Data;
 
@@ -72,6 +73,68 @@ public class ProductDTO extends AbstractDTO<ProductDTO> {
 
 	private LocalDateTime deletedAt;
 
+	// specs JSONB và 21 trường cấu hình phẳng
+	private Map<String, Object> specs;
+
+	private String os;
+	private Integer releaseYear;
+	private String chipset;
+	private Boolean expandableStorage;
+	private Integer batteryMah;
+	private Double chargeW;
+	private Double screenInch;
+	private Integer resolutionW;
+	private Integer resolutionH;
+	private String panel;
+	private Integer refreshHz;
+	private Integer brightnessNitsPeak;
+	private Double rearMainMp;
+	private Boolean ois;
+	private Double weightG;
+	private String ipRating;
+	private Boolean nfc;
+	private Boolean has5g;
+	private String wifiGen;
+	private Boolean stereoSpeaker;
+	private Boolean headphoneJack;
+
+	public Integer getDungLuongPin() {
+		if (dungLuongPin != null) return dungLuongPin;
+		if (batteryMah != null) return batteryMah;
+		if (specs != null && specs.containsKey("battery_mah")) {
+			Object v = specs.get("battery_mah");
+			if (v instanceof Number n) return n.intValue();
+		}
+		return null;
+	}
+
+	public String getManHinh() {
+		if (manHinh != null) return manHinh;
+		if (screenInch != null) return screenInch + " inch";
+		if (specs != null && specs.containsKey("screen_inch")) {
+			return specs.get("screen_inch") + " inch";
+		}
+		return null;
+	}
+
+	public String getHeDieuHanh() {
+		if (heDieuHanh != null) return heDieuHanh;
+		if (os != null) return os;
+		if (specs != null && specs.containsKey("os")) {
+			return String.valueOf(specs.get("os"));
+		}
+		return null;
+	}
+
+	public String getCameraSau() {
+		if (cameraSau != null) return cameraSau;
+		if (rearMainMp != null) return rearMainMp + " MP";
+		if (specs != null && specs.containsKey("rear_main_mp")) {
+			return specs.get("rear_main_mp") + " MP";
+		}
+		return null;
+	}
+
 	@Override
 	@JsonProperty("masp")
 	public Long getId() {
@@ -93,7 +156,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO> {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return objectMapper.writeValueAsString(promoList);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			e.printStackTrace();
 			return "[]"; // Trả về mảng rỗng nếu lỗi
 		}
@@ -110,7 +173,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO> {
 		try {
 			return objectMapper.readValue(this.promo, new TypeReference<List<PromoDTO>>() {
 			});
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			e.printStackTrace();
 			return Collections.emptyList();
 		}
@@ -122,8 +185,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO> {
 
 	// model xai cho add_sp,edit_sp
 	private List<CategoryDTO> category_List;
-	private List<HedieuhanhDTO> hedieuhanh_List;
-	private List<MauSacDTO> color_List;
+	private List<ColorDTO> color_List;
 	private List<RamDTO> ram_List;
 	private List<RomDTO> rom_List;
 	private List<XuatXuDTO> xuatxu_List;

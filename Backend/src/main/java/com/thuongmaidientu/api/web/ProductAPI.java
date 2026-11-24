@@ -19,15 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -35,20 +34,16 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/product")
 public class ProductAPI {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
-	
-//	@Autowired
-//	private FirebaseService firebaseService;
-//	@RequestMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
+	private CommentProductService commentAndRateService;
 
 	@PostMapping(value = "/filterComment", produces = "text/html; charset=UTF-8")
 	public ResponseEntity<String> filterComment(@RequestParam(name = "filter", required = false) Integer rateFilter,
@@ -56,7 +51,7 @@ public class ProductAPI {
 		try {
 			StringBuilder textBuilder = new StringBuilder();
 
-			List<CommentAndRateDTO> commentByProduct = commentAndRateService.findByProductId(masp);
+			List<CommentProductDTO> commentByProduct = commentAndRateService.findByProductId(masp);
 			if (commentByProduct == null || commentByProduct.isEmpty()) {
 
 				return ResponseEntity.ok().contentType(MediaType.valueOf("text/html; charset=UTF-8"))
@@ -65,18 +60,18 @@ public class ProductAPI {
 								+ "  </div>\r\n</div>");
 			}
 
-			List<CommentAndRateDTO> commentsByRate = commentAndRateService.findAllByRateAndStatus(rateFilter, null,
+			List<CommentProductDTO> commentsByRate = commentAndRateService.findAllByRateAndStatus(rateFilter, null,
 					null);
 
-			List<CommentAndRateDTO> filteredComments = commentsByRate.stream()
+			List<CommentProductDTO> filteredComments = commentsByRate.stream()
 					.filter(c -> commentByProduct.stream().anyMatch(cm -> cm.getId().equals(c.getId())))
 					.collect(Collectors.toList());
 
-			List<CommentAndRateDTO> sortedComments = filteredComments.stream()
-					.sorted(Comparator.comparing(CommentAndRateDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
+			List<CommentProductDTO> sortedComments = filteredComments.stream()
+					.sorted(Comparator.comparing(CommentProductDTO::getNgayDanhGia).reversed()) // mới nhất lên đầu
 					.collect(Collectors.toList());
 
-			for (CommentAndRateDTO comment : sortedComments) {
+			for (CommentProductDTO comment : sortedComments) {
 				textBuilder.append("<div class='review-item'>").append("<div class='review-name'>")
 						.append(comment.getHoten()).append("</div>").append("<div class='review-rating'>");
 
@@ -197,10 +192,6 @@ public class ProductAPI {
 				cartItemDTO.setMaphienbansp(phienBanSanPhamDTO.getMaPhienbansanpham().intValue());
 				cartItemDTO.setMasp(productDTO.getId().intValue());
 				cartItemDTO.setSoluong(numberPurchase);
-				
-				//update cart in firebase
-//				firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
-//				firebaseService.insertCartItem(idCartIsExist, cartItemDTO);
 				
 				Integer existQuantityVersionProduct=cartService.getQuantityExistInCartByIdVersionAndClientId(phienBanSanPhamDTO.getMaPhienbansanpham().intValue(), userDTO.getId().intValue());
 

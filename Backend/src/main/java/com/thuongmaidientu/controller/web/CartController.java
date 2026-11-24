@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.MomoDTO;
 import com.thuongmaidientu.dto.OrderItem;
@@ -37,18 +37,17 @@ import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.dto.VNPayDTO;
 import com.thuongmaidientu.service.EmailService;
-import com.thuongmaidientu.service.FirebaseService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IMomoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
-import com.thuongmaidientu.service.IVNPayService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.MomoService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
+import com.thuongmaidientu.service.VNPayService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -56,40 +55,37 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/Cart")
 public class CartController {
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private IMomoService momoService;
+	private MomoService momoService;
 
 	@Autowired
-	private IVNPayService vnPayService;
+	private VNPayService vnPayService;
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private IChiTietSPService chiTietSPService;
+	private CTSanPhamService chiTietSPService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
-
-//	@Autowired
-//	private FirebaseService firebaseService;
+	private CTPhieuNhapService chiTietPNService;
 
 	@Autowired
 	private EmailService emailService;
@@ -126,11 +122,6 @@ public class CartController {
 			if (userDTO != null) {
 				mapResultMap.put("result",
 						cartService.deleteByPhienbansanphamAndClientId(maPb, userDTO.getId().intValue()));
-
-				// delete cartItem in Firebase
-				Integer idCartExist = cartService.getIdCartActiveByClient(userDTO.getId().intValue());
-
-//				firebaseService.deleteCartItemByMaphienbansp(idCartExist, maPb);
 			} else {
 				mapResultMap.put("result", false);
 			}
@@ -181,15 +172,6 @@ public class CartController {
 //				cartService.updateCartItem(idCartInteger, cartItemDTO);
 
 				cartService.updateExistProductInCartItem(maPb, userDTO.getId().intValue(), cartItemDTO.getSoluong());
-
-				// after update then select and update in fire base :))
-				// update cart in firebase
-				CartItemDTO cartItemFindById = cartService
-						.getCartItemDTOsByClientIdAndIdVersion(userDTO.getId().intValue(), maPb);
-//			bỏ	firebaseService.insertCartSynchFromMySql(cartService.getCartById(idCartIsExist));
-				cartItemFindById.setSoluong(newQuantity);
-				// firebaseService.insertCartItem(cartItemFindById.getCart_id(),
-				// cartItemFindById);
 
 				mapResultMap.put("result", "Cập nhật giỏ hàng thành công.");
 
@@ -481,11 +463,11 @@ public class CartController {
 
 				vnPayService.insertVNPay(vnPayDTO);
 
-				List<ChiTietPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate.intValue());
+				List<CTPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate.intValue());
 				List<OrderItem> orderItemList = new ArrayList<OrderItem>();
 				// for send email
 				if (chitietPXList != null && !chitietPXList.isEmpty()) {
-					for (ChiTietPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
+					for (CTPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
 						OrderItem orderItem = new OrderItem();
 						orderItem.setPrice(chiTietPhieuXuatDTO.getDonGia());
 						orderItem.setQuantity(chiTietPhieuXuatDTO.getSoLuong());
@@ -608,11 +590,11 @@ public class CartController {
 
 				momoService.insertMomo(momoDTO);
 
-				List<ChiTietPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate);
+				List<CTPhieuXuatDTO> chitietPXList = chiTietPXService.getListCTPX(orderIdUpdate);
 				List<OrderItem> orderItemList = new ArrayList<OrderItem>();
 				// for send email
 				if (chitietPXList != null && !chitietPXList.isEmpty()) {
-					for (ChiTietPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
+					for (CTPhieuXuatDTO chiTietPhieuXuatDTO : chitietPXList) {
 						OrderItem orderItem = new OrderItem();
 						orderItem.setPrice(chiTietPhieuXuatDTO.getDonGia());
 						orderItem.setQuantity(chiTietPhieuXuatDTO.getSoLuong());
@@ -771,9 +753,6 @@ public class CartController {
 
 				cartDTO.setStatus("completed");
 
-				// completed in firebase
-//				firebaseService.updateCartCompleted(cartDTO.getStatus(), cartDTO.getId().toString());
-
 				cartService.updateCart(cartDTO);
 			}
 
@@ -786,7 +765,7 @@ public class CartController {
 
 				list_mapbspIntegers.add(ma_pbsp);
 
-				ChiTietPhieuXuatDTO chiTietPhieuXuatDTO = new ChiTietPhieuXuatDTO();
+				CTPhieuXuatDTO chiTietPhieuXuatDTO = new CTPhieuXuatDTO();
 				if (payment == null) {
 					chiTietPhieuXuatDTO.setCodeCart("");
 				} else {

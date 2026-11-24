@@ -19,36 +19,30 @@ import org.springframework.web.servlet.ModelAndView;
 import com.thuongmaidientu.dto.CategoryDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.SlideDTO;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.ISlideService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.SlideService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller(value = "HomeControllerOfWeb")
 public class HomeController {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbansanphamService;
+	private ProductVariantService phienbansanphamService;
 
 	@Autowired
-	private ISlideService slideService;
+	private SlideService slideService;
 
 	@Autowired
-	private ICategotyService categotyService;
+	private CategoryService categotyService;
 
 	@Autowired
-	private IChiTietSPService chiTietSPService;
-
-//	@Autowired
-//	private ICartService cartService;
-//	
-//	@Autowired
-//	private FirebaseService firebaseService;
+	private CTSanPhamService chiTietSPService;
 
 	// cap nhat lai tat ca so luong cho dong bo **** ok !!
 

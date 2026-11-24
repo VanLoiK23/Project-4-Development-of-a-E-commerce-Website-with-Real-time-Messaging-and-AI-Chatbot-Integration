@@ -22,24 +22,24 @@ public class ArticleEntity {
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 
-    @Column(name = "sort_Desc", length = 255, nullable = false)
+    @Column(name = "sort_desc", columnDefinition = "TEXT", nullable = false)
     private String sortDesc;
 
     @Column(name = "image", length = 100, nullable = false)
     private String image;
 
-    @Column(name = "details", columnDefinition = "LONGTEXT", nullable = false)
+    @Column(name = "details", columnDefinition = "TEXT", nullable = false)
     private String details;
 
     @Column(name = "create_at", nullable = false, updatable = false)
     @Temporal(TemporalType.DATE)
     private Date createAt = new Date();
 
-    @Column(name = "status", columnDefinition = "int(1) DEFAULT 1")
-    private Integer status;
+    @Column(name = "status", nullable = false)
+    private Integer status = 1;
 
-    @Column(name = "trash", length = 10, columnDefinition = "VARCHAR(10) DEFAULT 'active'")
-    private String trash;
+    @Column(name = "trash", length = 10, nullable = false)
+    private String trash = "active";
 
     @Column(name = "deleted_at", nullable = true)
     @Temporal(TemporalType.DATE)

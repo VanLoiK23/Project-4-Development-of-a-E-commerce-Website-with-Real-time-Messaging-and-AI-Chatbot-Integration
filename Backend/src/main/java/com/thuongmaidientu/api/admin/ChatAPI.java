@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.ChatMessageDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IChatMessageService;
-import com.thuongmaidientu.service.impl.ChatMessageService;
+import com.thuongmaidientu.service.ChatMessageService;
+import com.thuongmaidientu.service.impl.ChatMessageServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -22,7 +22,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/quan-tri/chat")
 public class ChatAPI {
 
-	private IChatMessageService chatMessageService = new ChatMessageService();
+	@Autowired
+	private ChatMessageService chatMessageService;
 
 	@GetMapping
 	public ResponseEntity<?> getHistoryMessage() {

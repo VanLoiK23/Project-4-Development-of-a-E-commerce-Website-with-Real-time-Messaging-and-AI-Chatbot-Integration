@@ -28,73 +28,69 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CTSanPhamDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
 import com.thuongmaidientu.dto.ImportProductRequest;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
 import com.thuongmaidientu.dto.ProductDTO;
-import com.thuongmaidientu.dto.ProductVariant;
+import com.thuongmaidientu.dto.ProductVariantDTO;
 import com.thuongmaidientu.dto.PromoDTO;
 import com.thuongmaidientu.dto.RequestProductInteraction;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IKhuVucKhoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
-import com.thuongmaidientu.service.impl.XuatxuService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.KhuVucKhoService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
+import com.thuongmaidientu.service.impl.XuatxuServiceImpl;
 
 import netscape.javascript.JSObject;
 
 @RestController(value = "productApiOfAdmin")
 @RequestMapping("/quan-tri/san-pham")
-//@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
+// @CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class ProductAPI {
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
-	private IChiTietPNService pnService;
+	private CTPhieuNhapService pnService;
 
 	@Autowired
-	private IChiTietPXService pxService;
+	private CTPhieuXuatService pxService;
 
 	@Autowired
-	private IChiTietSPService ctspService;
+	private CTSanPhamService ctspService;
 
 	@Autowired
-	private IPhieuNhapService importService;
+	private PhieuNhapService importService;
 
 	@Autowired
-	private IColorService colorService;
+	private ColorService colorService;
 
 	@Autowired
-	private IRamService ramService;
+	private RamService ramService;
 
 	@Autowired
-	private IRomService romService;
+	private RomService romService;
 
 	@Autowired
-	private IXuatxuService xuatxuService;
+	private XuatxuService xuatxuService;
 
 	@Autowired
-	private ICategotyService categotyService;
+	private CategoryService categotyService;
 
 	@Autowired
-	private IKhuVucKhoService khoService;
-
-	@Autowired
-	private IHedieuhanhService hedieuhanhService;
+	private KhuVucKhoService khoService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteProduct(@RequestParam("id") int id) {
@@ -112,7 +108,7 @@ public class ProductAPI {
 			List<ProductDTO> dtoList = productService.getALlProducts();
 
 			for (ProductDTO dto : dtoList) {
-				List<PhienBanSanPhamDTO> versions = phienbanspService.findAll(dto.getId().intValue());
+				List<PhienBanSanPhamDTO> versions = dto.getPbspList();
 				dto.setPbspList(versions);
 			}
 
@@ -145,7 +141,7 @@ public class ProductAPI {
 			}
 
 			// Lấy danh sách phiên bản sản phẩm
-			List<PhienBanSanPhamDTO> list_pb = phienbanspService.findAll(id);
+			List<PhienBanSanPhamDTO> list_pb = pDto.getPbspList();
 
 			// Đóng gói response thành JSON
 			Map<String, Object> response = new HashMap<>();
@@ -162,14 +158,18 @@ public class ProductAPI {
 	@GetMapping(value = "/show_config_sp", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<String> show_config_sp(@RequestParam("id") int id) {
 		try {
-			List<PhienBanSanPhamDTO> pDto = phienbanspService.findAll(id);
+			ProductDTO pDto = productService.findById(id);
 			if (pDto == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+			List<PhienBanSanPhamDTO> pBanSanPhamDTOs = pDto.getPbspList();
+			if (pBanSanPhamDTOs == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 			String str = "";
 			int i = 0;
 
-			for (PhienBanSanPhamDTO phienBanSanPhamDTO : pDto) {
+			for (PhienBanSanPhamDTO phienBanSanPhamDTO : pBanSanPhamDTOs) {
 				i++;
 				str += "<tr>"; // Mở hàng table
 
@@ -241,8 +241,8 @@ public class ProductAPI {
 
 	@PostMapping("/import")
 	public void importSP(@RequestBody ImportProductRequest importProductRequest) {
-		System.out.println("Import request: "+importProductRequest);
-		
+		System.out.println("Import request: " + importProductRequest);
+
 		List<Integer> id = importProductRequest.getIds();
 		List<Integer> price = importProductRequest.getPrices();
 		List<Integer> number = importProductRequest.getQuantity();
@@ -257,7 +257,7 @@ public class ProductAPI {
 			total += currentNumber * currentPrice;
 		}
 
-//		      $_SESSION['id']
+		// $_SESSION['id']
 
 		PhieuNhapDTO saveImportDto = new PhieuNhapDTO();
 		saveImportDto.setNguoiTaoPhieuId(1);
@@ -272,7 +272,7 @@ public class ProductAPI {
 				int currentNumber = number.get(i);
 				Long currentIMEI = imei.get(i);
 
-				ChiTietPhieuNhapDTO pbpn = new ChiTietPhieuNhapDTO();
+				CTPhieuNhapDTO pbpn = new CTPhieuNhapDTO();
 				pbpn.setPhieunhapId(dto.getId().intValue());
 				pbpn.setDonGia(currentPrice);
 				pbpn.setSoLuong(currentNumber);
@@ -297,23 +297,23 @@ public class ProductAPI {
 		}
 
 		Integer masp = phienbanspService.findMaSP(id.get(0));
-//		int soluongnhap = 0;
-//		int soluongban = 0;
-//
-//		if (productID != null) {
-////			for (int i : id) {
-////				soluongnhap += pnService.countNumberProductNhap(i);
-////				soluongban += pxService.countNumberProductSold(i);
-////			}
-//
-//			for (int i : phienbanspService.selectAllMaPBSPByMaSP(productID)) {
-//				soluongnhap += pnService.countNumberProductNhap(i);
-//				soluongban += pxService.countNumberProductSold(i);
-//			}
-//		}
-//
-//		productService.updateSLProduct(soluongnhap, soluongban, productID);
-		
+		// int soluongnhap = 0;
+		// int soluongban = 0;
+		//
+		// if (productID != null) {
+		//// for (int i : id) {
+		//// soluongnhap += pnService.countNumberProductNhap(i);
+		//// soluongban += pxService.countNumberProductSold(i);
+		//// }
+		//
+		// for (int i : phienbanspService.selectAllMaPBSPByMaSP(productID)) {
+		// soluongnhap += pnService.countNumberProductNhap(i);
+		// soluongban += pxService.countNumberProductSold(i);
+		// }
+		// }
+		//
+		// productService.updateSLProduct(soluongnhap, soluongban, productID);
+
 		Integer quantityInStock = ctspService.getQuantityProductByStatus(masp, 0);
 		Integer quantityExport = ctspService.getQuantityProductByStatus(masp, 1);
 
@@ -332,7 +332,7 @@ public class ProductAPI {
 		dto.setHinhAnh(request.getImg());
 		dto.setTenSanPham(request.getName());
 		dto.setXuatXuId(request.getXuatxu());
-		if (request.getHedieuhanh() == -1) {
+		if (request.getHedieuhanh() != null && request.getHedieuhanh() == -1) {
 			request.setHedieuhanh(null);
 		}
 		dto.setHeDieuHanhId(request.getHedieuhanh());
@@ -341,10 +341,56 @@ public class ProductAPI {
 		dto.setDungLuongPin(request.getDungluongpin());
 		dto.setCameraTruoc(request.getCameratruoc());
 		dto.setCameraSau(request.getCamerasau());
-		dto.setPhienBanHDH(request.getPhienbanHDH().doubleValue());
+		dto.setPhienBanHDH(request.getPhienbanHDH() != null ? request.getPhienbanHDH().doubleValue() : null);
 		dto.setManHinh(request.getManhinh());
 		dto.setSortDesc(request.getTitle());
 		dto.setDetail(request.getDescription());
+
+		// Specs & flat config
+		if (request.getSpecs() != null)
+			dto.setSpecs(request.getSpecs());
+		if (request.getOs() != null)
+			dto.setOs(request.getOs());
+		if (request.getReleaseYear() != null)
+			dto.setReleaseYear(request.getReleaseYear());
+		if (request.getChipset() != null)
+			dto.setChipset(request.getChipset());
+		if (request.getExpandableStorage() != null)
+			dto.setExpandableStorage(request.getExpandableStorage());
+		if (request.getBatteryMah() != null)
+			dto.setBatteryMah(request.getBatteryMah());
+		if (request.getChargeW() != null)
+			dto.setChargeW(request.getChargeW());
+		if (request.getScreenInch() != null)
+			dto.setScreenInch(request.getScreenInch());
+		if (request.getResolutionW() != null)
+			dto.setResolutionW(request.getResolutionW());
+		if (request.getResolutionH() != null)
+			dto.setResolutionH(request.getResolutionH());
+		if (request.getPanel() != null)
+			dto.setPanel(request.getPanel());
+		if (request.getRefreshHz() != null)
+			dto.setRefreshHz(request.getRefreshHz());
+		if (request.getBrightnessNitsPeak() != null)
+			dto.setBrightnessNitsPeak(request.getBrightnessNitsPeak());
+		if (request.getRearMainMp() != null)
+			dto.setRearMainMp(request.getRearMainMp());
+		if (request.getOis() != null)
+			dto.setOis(request.getOis());
+		if (request.getWeightG() != null)
+			dto.setWeightG(request.getWeightG());
+		if (request.getIpRating() != null)
+			dto.setIpRating(request.getIpRating());
+		if (request.getNfc() != null)
+			dto.setNfc(request.getNfc());
+		if (request.getHas5g() != null)
+			dto.setHas5g(request.getHas5g());
+		if (request.getWifiGen() != null)
+			dto.setWifiGen(request.getWifiGen());
+		if (request.getStereoSpeaker() != null)
+			dto.setStereoSpeaker(request.getStereoSpeaker());
+		if (request.getHeadphoneJack() != null)
+			dto.setHeadphoneJack(request.getHeadphoneJack());
 
 		// Xử lý khuyến mãi
 		List<PromoDTO> promoList = new ArrayList<>();
@@ -416,7 +462,7 @@ public class ProductAPI {
 		dto.setHinhAnh(request.getImg());
 		dto.setTenSanPham(request.getName());
 		dto.setXuatXuId(request.getXuatxu());
-		if (request.getHedieuhanh() == -1) {
+		if (request.getHedieuhanh() != null && request.getHedieuhanh() == -1) {
 			request.setHedieuhanh(null);
 		}
 		dto.setHeDieuHanhId(request.getHedieuhanh());
@@ -425,10 +471,56 @@ public class ProductAPI {
 		dto.setDungLuongPin(request.getDungluongpin());
 		dto.setCameraTruoc(request.getCameratruoc());
 		dto.setCameraSau(request.getCamerasau());
-		dto.setPhienBanHDH(request.getPhienbanHDH().doubleValue());
+		dto.setPhienBanHDH(request.getPhienbanHDH() != null ? request.getPhienbanHDH().doubleValue() : null);
 		dto.setManHinh(request.getManhinh());
 		dto.setSortDesc(request.getTitle());
 		dto.setDetail(request.getDescription());
+
+		// Specs & flat config
+		if (request.getSpecs() != null)
+			dto.setSpecs(request.getSpecs());
+		if (request.getOs() != null)
+			dto.setOs(request.getOs());
+		if (request.getReleaseYear() != null)
+			dto.setReleaseYear(request.getReleaseYear());
+		if (request.getChipset() != null)
+			dto.setChipset(request.getChipset());
+		if (request.getExpandableStorage() != null)
+			dto.setExpandableStorage(request.getExpandableStorage());
+		if (request.getBatteryMah() != null)
+			dto.setBatteryMah(request.getBatteryMah());
+		if (request.getChargeW() != null)
+			dto.setChargeW(request.getChargeW());
+		if (request.getScreenInch() != null)
+			dto.setScreenInch(request.getScreenInch());
+		if (request.getResolutionW() != null)
+			dto.setResolutionW(request.getResolutionW());
+		if (request.getResolutionH() != null)
+			dto.setResolutionH(request.getResolutionH());
+		if (request.getPanel() != null)
+			dto.setPanel(request.getPanel());
+		if (request.getRefreshHz() != null)
+			dto.setRefreshHz(request.getRefreshHz());
+		if (request.getBrightnessNitsPeak() != null)
+			dto.setBrightnessNitsPeak(request.getBrightnessNitsPeak());
+		if (request.getRearMainMp() != null)
+			dto.setRearMainMp(request.getRearMainMp());
+		if (request.getOis() != null)
+			dto.setOis(request.getOis());
+		if (request.getWeightG() != null)
+			dto.setWeightG(request.getWeightG());
+		if (request.getIpRating() != null)
+			dto.setIpRating(request.getIpRating());
+		if (request.getNfc() != null)
+			dto.setNfc(request.getNfc());
+		if (request.getHas5g() != null)
+			dto.setHas5g(request.getHas5g());
+		if (request.getWifiGen() != null)
+			dto.setWifiGen(request.getWifiGen());
+		if (request.getStereoSpeaker() != null)
+			dto.setStereoSpeaker(request.getStereoSpeaker());
+		if (request.getHeadphoneJack() != null)
+			dto.setHeadphoneJack(request.getHeadphoneJack());
 		dto.setId(request.getId().longValue());
 
 		// Xử lý khuyến mãi

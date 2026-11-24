@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.KhachHangDTO;
 import com.thuongmaidientu.dto.PaymentStatisticalDTO;
@@ -26,41 +26,41 @@ import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongKeService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongKeService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 @RestController(value = "HomepageApiOfAdmin")
 @RequestMapping("/quan-tri/thong-ke")
 public class HomepageAdminAPI {
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IThongKeService thongKeService;
+	private ThongKeService thongKeService;
 
 	@GetMapping("/orders")
 	public ResponseEntity<?> getOrders() {
@@ -127,7 +127,7 @@ public class HomepageAdminAPI {
 			phieuXuatDTO.setAddress(thongTinGiaoHangDTO.getStreetName() + " " + thongTinGiaoHangDTO.getDistrict() + " "
 					+ thongTinGiaoHangDTO.getCountry());
 
-			List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+			List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 					.getListCTPX(phieuXuatDTO.getId().intValue());
 
 			AtomicInteger totalQuantity = new AtomicInteger(0);
@@ -271,7 +271,6 @@ public class HomepageAdminAPI {
 			ThongkeDTO thongkeDTO = new ThongkeDTO();
 			thongkeDTO.setQuantityProduct(thongKeService.getCountProduct());
 			thongkeDTO.setQuantityPurchase(thongKeService.getCountPurchase());
-			thongkeDTO.setQuantityUser(thongKeService.getCountUser());
 			thongkeDTO.setQuantityWareHouse(thongKeService.getCountWareHouse());
 
 			return ResponseEntity.ok(thongkeDTO);

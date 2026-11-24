@@ -16,19 +16,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
 import com.thuongmaidientu.dto.KhuVucKhoDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
-import com.thuongmaidientu.service.IKhuVucKhoService;
+import com.thuongmaidientu.service.KhuVucKhoService;
 
 @Controller("khoOfController")
 public class KhuVucKhoController {
 
 	@Autowired
-	private IKhuVucKhoService khuVucKhoService;
+	private KhuVucKhoService khuVucKhoService;
 
 	@RequestMapping(value = "/quan-tri/khuvuckho/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") KhuVucKhoDTO model,

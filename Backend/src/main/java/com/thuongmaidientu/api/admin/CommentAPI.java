@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
-import com.thuongmaidientu.service.ICommentAndRateService;
+import com.thuongmaidientu.service.CommentProductService;
 
 @RestController(value = "CommentApiOfAdmin")
 @RequestMapping("/quan-tri/danh-gia")
 public class CommentAPI {
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteComment(@RequestParam("id") int id) {
@@ -36,7 +36,7 @@ public class CommentAPI {
 	@GetMapping
 	public ResponseEntity<?> getAllReviews() {
 	    try {
-	        List<CommentAndRateDTO> dtoList = commentAndRateService.selectAll();
+	        List<CommentProductDTO> dtoList = commentAndRateService.selectAll();
 
 	        return ResponseEntity.ok(dtoList); 
 	    } catch (Exception e) {

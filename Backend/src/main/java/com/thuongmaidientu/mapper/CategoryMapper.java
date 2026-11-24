@@ -1,22 +1,25 @@
 package com.thuongmaidientu.mapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import com.thuongmaidientu.model.CategoryModel;
+import com.thuongmaidientu.dto.CategoryDTO;
+import com.thuongmaidientu.dto.request.CategoryRequest;
+import com.thuongmaidientu.dto.response.CategoryResponse;
+import com.thuongmaidientu.entity.CategoryEntity;
 
-public class CategoryMapper implements RowMapper<CategoryModel> {
+@Mapper(componentModel = "spring")
+public interface CategoryMapper {
 
-	@Override
-	public CategoryModel mapRow(ResultSet resultSet) {
-		try {
-			CategoryModel category = new CategoryModel();
-			category.setId(resultSet.getLong("id"));
-			category.setCode(resultSet.getString("code"));
-			category.setName(resultSet.getString("name"));
-			return category;
-		} catch (SQLException e) {
-			return null;
-		}
-	}
+    @Mapping(target = "brands", ignore = true)
+    CategoryEntity toEntity(CategoryRequest request);
+
+    CategoryResponse toResponse(CategoryEntity entity);
+
+    @Mapping(target = "id", source = "maThuongHieu")
+    CategoryDTO toDTO(CategoryEntity entity);
+
+    @Mapping(target = "maThuongHieu", source = "id")
+    @Mapping(target = "brands", ignore = true)
+    CategoryEntity toEntity(CategoryDTO dto);
 }

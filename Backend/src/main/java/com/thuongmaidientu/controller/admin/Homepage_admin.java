@@ -14,10 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.thuongmaidientu.dto.PaymentStatisticalDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ThongkeDTO;
-import com.thuongmaidientu.service.IChatMessageService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IThongKeService;
-import com.thuongmaidientu.service.impl.ChatMessageService;
+import com.thuongmaidientu.service.ChatMessageService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ThongKeService;
+import com.thuongmaidientu.service.impl.ChatMessageServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,9 +25,9 @@ import jakarta.servlet.http.HttpSession;
 public class Homepage_admin {
 
 	@Autowired
-	private IThongKeService thongKeService;
+	private ThongKeService thongKeService;
 
-	private IChatMessageService chatMessageService = new ChatMessageService();
+	private ChatMessageService chatMessageService = new ChatMessageServiceImpl();
 
 	@RequestMapping(value = "/quan-tri/Homepage_admin", method = RequestMethod.GET)
 	public ModelAndView showlist(HttpSession session) {
@@ -37,7 +37,6 @@ public class Homepage_admin {
 		ThongkeDTO thongkeDTO = new ThongkeDTO();
 		thongkeDTO.setQuantityProduct(thongKeService.getCountProduct());
 		thongkeDTO.setQuantityPurchase(thongKeService.getCountPurchase());
-		thongkeDTO.setQuantityUser(thongKeService.getCountUser());
 		thongkeDTO.setQuantityWareHouse(thongKeService.getCountWareHouse());
 
 		mav.addObject("dto", thongkeDTO);

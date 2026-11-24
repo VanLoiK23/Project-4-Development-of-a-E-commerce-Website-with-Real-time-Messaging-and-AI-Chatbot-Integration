@@ -1,53 +1,59 @@
 package com.thuongmaidientu.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.thuongmaidientu.security.CustomAuthFailureHandler;
-import com.thuongmaidientu.security.CustomAuthenticationProvider;
-import com.thuongmaidientu.security.CustomLoginSuccessHandler;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Autowired
-	private CustomAuthenticationProvider authenticationProvider;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-	@Autowired
-	private CustomLoginSuccessHandler successHandler;
-
-	@Autowired
-	private CustomAuthFailureHandler failureHandler;
+	@Value("${app.cors.allowed-origins:http://localhost:3000}")
+	private String allowedOrigins;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authenticationProvider(authenticationProvider).authorizeHttpRequests(auth -> auth
-				// không cần đối với gọi api
-				.requestMatchers("/quan-tri/don-hang/**").permitAll().requestMatchers("/quan-tri/san-pham/**")
-				.permitAll().requestMatchers("/quan-tri/san-pham").permitAll().requestMatchers("/quan-tri/banner")
-				.permitAll().requestMatchers("/quan-tri/thuoc-tinh").permitAll()
-				.requestMatchers("/quan-tri/thuoc-tinh/**").permitAll().requestMatchers("/quan-tri/khach-hang")
-				.permitAll().requestMatchers("/quan-tri/khach-hang/**").permitAll()
-				.requestMatchers("/quan-tri/danh-gia").permitAll().requestMatchers("/quan-tri/nha-cung-cap").permitAll()
-				.requestMatchers("/quan-tri/khu-vuc-kho").permitAll().requestMatchers("/quan-tri/thong-ke").permitAll()
-				.requestMatchers("/quan-tri/thong-ke/**").permitAll().requestMatchers("/quan-tri/don-hang").permitAll()
-
-				.requestMatchers("/quan-tri/**").hasRole("ADMIN").anyRequest().permitAll())
-				.formLogin(form -> form.loginPage("/dang-nhap").loginProcessingUrl("/process-login")
-						.successHandler(successHandler).failureHandler(failureHandler).permitAll())
-				.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-						.logoutSuccessUrl("/trang-chu"))
-				.csrf(csrf -> csrf.disable());
+		http
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(ex -> ex
+						.authenticationEntryPoint(
+								customAuthenticationEntryPoint != null
+										? customAuthenticationEntryPoint
+										: new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
+						.requestMatchers("/api/**").hasAnyRole("CUSTOMER", "ADMIN")
+						.anyRequest().permitAll())
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
@@ -58,8 +64,21 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
-		return new HandlerMappingIntrospector();
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
 	}
 
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setExposedHeaders(List.of("Authorization"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 }

@@ -18,46 +18,39 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.CategoryDTO;
-import com.thuongmaidientu.dto.HedieuhanhDTO;
-import com.thuongmaidientu.dto.MauSacDTO;
+import com.thuongmaidientu.dto.ColorDTO;
 import com.thuongmaidientu.dto.RamDTO;
 import com.thuongmaidientu.dto.RomDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
-import com.thuongmaidientu.service.ICategotyService;
-import com.thuongmaidientu.service.IColorService;
-import com.thuongmaidientu.service.IHedieuhanhService;
-import com.thuongmaidientu.service.IRamService;
-import com.thuongmaidientu.service.IRomService;
-import com.thuongmaidientu.service.IXuatxuService;
+import com.thuongmaidientu.service.CategoryService;
+import com.thuongmaidientu.service.ColorService;
+import com.thuongmaidientu.service.RamService;
+import com.thuongmaidientu.service.RomService;
+import com.thuongmaidientu.service.XuatxuService;
 
 @RestController(value = "attributeApiOfAdmin")
 @RequestMapping("/quan-tri/thuoc-tinh")
 public class AttributeAPI {
 	@Autowired
-	private ICategotyService categoryService;
+	private CategoryService categoryService;
 
 	@Autowired
-	private IHedieuhanhService hedieuhanhService;
+	private ColorService colorService;
 
 	@Autowired
-	private IColorService colorService;
+	private RamService ramService;
 
 	@Autowired
-	private IRamService ramService;
+	private RomService romService;
 
 	@Autowired
-	private IRomService romService;
-
-	@Autowired
-	private IXuatxuService xuatxuService;
+	private XuatxuService xuatxuService;
 
 	@DeleteMapping
 	public ResponseEntity<String> deleteAttribute(@RequestParam("id") int id, @RequestParam("type") String type) {
 		try {
 			if ("xuatxu".equals(type)) {
 				xuatxuService.updateTrash(id, "disable");
-			} else if ("hedieuhanh".equals(type)) {
-				hedieuhanhService.updateTrash(id, "disable");
 			} else if ("thuonghieu".equals(type)) {
 				categoryService.updateTrash(id, "disable");
 			} else if ("dungluongram".equals(type)) {
@@ -116,9 +109,9 @@ public class AttributeAPI {
 	}
 
 	@GetMapping("/color")
-	public ResponseEntity<List<MauSacDTO>> getColor() {
+	public ResponseEntity<List<ColorDTO>> getColor() {
 		try {
-			List<MauSacDTO> pDto = colorService.selectAll();
+			List<ColorDTO> pDto = colorService.selectAll();
 			if (pDto == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
@@ -133,20 +126,6 @@ public class AttributeAPI {
 	public ResponseEntity<List<XuatXuDTO>> getXX() {
 		try {
 			List<XuatXuDTO> pDto = xuatxuService.selectAll();
-			if (pDto == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-			return ResponseEntity.ok(pDto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}
-
-	@GetMapping("/hedieuhanh")
-	public ResponseEntity<List<HedieuhanhDTO>> getHDH() {
-		try {
-			List<HedieuhanhDTO> pDto = hedieuhanhService.selectAll();
 			if (pDto == null) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
@@ -179,8 +158,6 @@ public class AttributeAPI {
 		boolean exists = false;
 		if ("xuatxu".equals(type)) {
 			exists = xuatxuService.checkNewValue(newValue);
-		} else if ("hedieuhanh".equals(type)) {
-			exists = hedieuhanhService.checkNewValue(newValue);
 		} else if ("thuonghieu".equals(type)) {
 			exists = categoryService.checkNewValue(newValue);
 		} else if ("dungluongram".equals(type)) {
@@ -202,8 +179,6 @@ public class AttributeAPI {
 		Map<String, Object> response = new HashMap<>();
 		if ("xuatxu".equals(type)) {
 			response.put("exists", xuatxuService.findById(id));
-		} else if ("hedieuhanh".equals(type)) {
-			response.put("exists", hedieuhanhService.findById(id));
 		} else if ("thuonghieu".equals(type)) {
 			response.put("exists", categoryService.findById(id));
 		} else if ("dungluongram".equals(type)) {

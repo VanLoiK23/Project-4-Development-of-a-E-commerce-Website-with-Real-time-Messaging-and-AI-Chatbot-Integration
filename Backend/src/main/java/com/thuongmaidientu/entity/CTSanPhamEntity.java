@@ -13,12 +13,13 @@ import lombok.Setter;
 public class CTSanPhamEntity {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "maimei", nullable = false)
 	private Long maImei;
 
 	@ManyToOne
 	@JoinColumn(name = "maphienbansp", nullable = false)
-	private PhienBanSanPhamEntity productVersion;
+	private ProductVariantEntity productVersion;
 
 	@ManyToOne
 	@JoinColumn(name = "maphieunhap", nullable = false)

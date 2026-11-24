@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IPhieuNhapService;
-import com.thuongmaidientu.service.IProductService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.PhieuNhapService;
+import com.thuongmaidientu.service.ProductService;
 
 @RestController(value = "phieuNhapApiOfAdmin")
 @RequestMapping("/quan-tri/phieu-nhap")
 //@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class PhieuNhapAPI {
 	@Autowired
-	private IPhieuNhapService phieuNhapService;
+	private PhieuNhapService phieuNhapService;
 	
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 	
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 
 	@DeleteMapping
@@ -49,11 +49,11 @@ public class PhieuNhapAPI {
 	    try {
 	    	PhieuNhapDTO dto = phieuNhapService.findById(id);
 
-	    	List<ChiTietPhieuNhapDTO> chiTietPhieuNhapDTOs=chiTietPNService.getListCTPN(dto.getId().intValue());
+	    	List<CTPhieuNhapDTO> chiTietPhieuNhapDTOs=chiTietPNService.getListCTPN(dto.getId().intValue());
 	    	
 	    	List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-	    	for (ChiTietPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
+	    	for (CTPhieuNhapDTO it : chiTietPhieuNhapDTOs) {
 	    	    Object[] productData = productService
 	    	        .findChiTietPhienBanSanPhamByPhieuNhap(it.getPhienBanSanPhamNhapId(), dto.getId().intValue())
 	    	        .get(0);

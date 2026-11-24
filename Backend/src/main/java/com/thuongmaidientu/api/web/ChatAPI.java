@@ -11,31 +11,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thuongmaidientu.dto.ChatMessageDTO;
 import com.thuongmaidientu.dto.UserDTO;
-import com.thuongmaidientu.service.IChatMessageService;
-import com.thuongmaidientu.service.impl.ChatMessageService;
+import com.thuongmaidientu.service.ChatMessageService;
 
 import jakarta.servlet.http.HttpSession;
 
 @RestController(value = "chatApiOfWeb")
 @RequestMapping("/chat")
 public class ChatAPI {
-	private IChatMessageService chatMessageService=new ChatMessageService();
+
+	@Autowired
+	private ChatMessageService chatMessageService;
 
 	@GetMapping("/history")
 	public ResponseEntity<?> getHistoryMessage(HttpSession session) {
 		try {
-
 			UserDTO user = (UserDTO) session.getAttribute("user");
 			if (user == null) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không tìm thấy người dùng");
 			}
 
 			List<ChatMessageDTO> chatMessages = chatMessageService.getMessagesBetween(user.getId().toString(), "admin");
-			
 			return ResponseEntity.ok(chatMessages);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy tin nhắn");
 		}
 	}
-
 }

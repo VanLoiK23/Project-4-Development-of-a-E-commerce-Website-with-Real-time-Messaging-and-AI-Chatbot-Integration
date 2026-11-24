@@ -21,16 +21,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.service.CloudinaryService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -42,16 +42,16 @@ public class InfoIndividualAccountAPI {
 	private CloudinaryService cloudinaryService;
 
 	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@PostMapping("/addComment")
 	public ResponseEntity<?> upsertComment(@RequestParam(value = "rating", required = false) Double rating,
@@ -61,11 +61,11 @@ public class InfoIndividualAccountAPI {
 		try {
 			UserDTO userDTO = (UserDTO) session.getAttribute("user");
 
-			CommentAndRateDTO commentAndRateDTO = commentAndRateService.getExistCommentByMaspAndOrderId(masp, orderId,
+			CommentProductDTO commentAndRateDTO = commentAndRateService.getExistCommentByMaspAndOrderId(masp, orderId,
 					userDTO.getId().intValue());
 
 			if (commentAndRateDTO == null) {
-				commentAndRateDTO = new CommentAndRateDTO();
+				commentAndRateDTO = new CommentProductDTO();
 
 				commentAndRateDTO.setNgayDanhGia(new Date());
 				commentAndRateDTO.setFeeback(0);
@@ -89,7 +89,7 @@ public class InfoIndividualAccountAPI {
 			commentAndRateDTO.setOrder_id(orderId);
 			commentAndRateDTO.setId_user(userDTO.getId().intValue());
 
-			CommentAndRateDTO saveCommentAndRateDTO = commentAndRateService.save(commentAndRateDTO);
+			CommentProductDTO saveCommentAndRateDTO = commentAndRateService.save(commentAndRateDTO);
 
 			syncProductRatings();
 
@@ -107,7 +107,7 @@ public class InfoIndividualAccountAPI {
 			@RequestParam("maphieuxuat") Integer orderId, HttpSession session) {
 		try {
 			UserDTO userDTO = (UserDTO) session.getAttribute("user");
-			CommentAndRateDTO commentAndRateDTO = commentAndRateService.getExistCommentByMaspAndOrderId(masp, orderId,
+			CommentProductDTO commentAndRateDTO = commentAndRateService.getExistCommentByMaspAndOrderId(masp, orderId,
 					userDTO.getId().intValue());
 
 			return ResponseEntity.ok((Map.of("rating", commentAndRateDTO.getRate(), "reviewText",
@@ -192,10 +192,10 @@ public class InfoIndividualAccountAPI {
 		List<ProductDTO> allProducts = productService.getALlProducts();
 
 		for (ProductDTO product : allProducts) {
-			List<CommentAndRateDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
+			List<CommentProductDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
 
 			int soLuongDanhGia = ratings.size();
-			double tongSao = ratings.stream().mapToDouble(CommentAndRateDTO::getRate).sum();
+			double tongSao = ratings.stream().mapToDouble(CommentProductDTO::getRate).sum();
 
 			product.setSoLuongDanhGia(soLuongDanhGia);
 			product.setTongSao(tongSao);

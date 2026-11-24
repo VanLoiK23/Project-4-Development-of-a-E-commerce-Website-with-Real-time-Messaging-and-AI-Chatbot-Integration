@@ -37,8 +37,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.thuongmaidientu.dto.CartDTO;
 import com.thuongmaidientu.dto.CartItemDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
-import com.thuongmaidientu.dto.CommentAndRateDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
+import com.thuongmaidientu.dto.CommentProductDTO;
 import com.thuongmaidientu.dto.DiscountDTO;
 import com.thuongmaidientu.dto.EmailRequest;
 import com.thuongmaidientu.dto.MomoDTO;
@@ -50,19 +50,18 @@ import com.thuongmaidientu.dto.ResponseId;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
 import com.thuongmaidientu.dto.UserDTO;
 import com.thuongmaidientu.service.EmailService;
-import com.thuongmaidientu.service.FcmService;
-import com.thuongmaidientu.service.ICartService;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IChiTietSPService;
-import com.thuongmaidientu.service.ICommentAndRateService;
-import com.thuongmaidientu.service.IDiscountService;
-import com.thuongmaidientu.service.IKhachHangService;
-import com.thuongmaidientu.service.IMomoService;
-import com.thuongmaidientu.service.IPhienbanspService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.CartService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.CTSanPhamService;
+import com.thuongmaidientu.service.CommentProductService;
+import com.thuongmaidientu.service.DiscountService;
+import com.thuongmaidientu.service.KhachHangService;
+import com.thuongmaidientu.service.MomoService;
+import com.thuongmaidientu.service.ProductVariantService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -71,43 +70,40 @@ import jakarta.servlet.http.HttpSession;
 //@CrossOrigin(origins = "*") // Cho phép mọi nguồn truy cập
 public class PhieuXuatAPI {
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private IChiTietPNService chiTietPNService;
+	private CTPhieuNhapService chiTietPNService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@Autowired
-	private IMomoService momoService;
+	private MomoService momoService;
 
 	@Autowired
-	private IChiTietSPService chiTietSPService;
+	private CTSanPhamService chiTietSPService;
 
 	@Autowired
-	private IPhienbanspService phienbanspService;
+	private ProductVariantService phienbanspService;
 
 	@Autowired
-	private IDiscountService discountService;
+	private DiscountService discountService;
 
 	@Autowired
-	private ICartService cartService;
+	private CartService cartService;
 
 	@Autowired
-	private IKhachHangService khachHangService;
+	private KhachHangService khachHangService;
 
 	@Autowired
-	private FcmService fcmService;
-
-	@Autowired
-	private ICommentAndRateService commentAndRateService;
+	private CommentProductService commentAndRateService;
 
 	@Autowired
 	private EmailService emailService;
@@ -445,7 +441,7 @@ public class PhieuXuatAPI {
 			List<Integer> list_mapbspIntegers = new ArrayList<Integer>();
 
 			for (Integer i = 0; i < maPBList.size(); i++) {
-				ChiTietPhieuXuatDTO chiTietPhieuXuatDTO = new ChiTietPhieuXuatDTO();
+				CTPhieuXuatDTO chiTietPhieuXuatDTO = new CTPhieuXuatDTO();
 				chiTietPhieuXuatDTO.setCodeCart(codeCart.toString());
 				chiTietPhieuXuatDTO.setPhieuXuatId(savePhieuXuatDTO.getId().intValue());
 				chiTietPhieuXuatDTO.setPhienBanSanPhamXuatId(maPBList.get(i));
@@ -535,11 +531,11 @@ public class PhieuXuatAPI {
 		try {
 			PhieuXuatDTO dto = phieuXuatService.findById(id);
 
-			List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
+			List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
 
 			List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-			for (ChiTietPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
+			for (CTPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
 				Object[] productData = productService
 						.findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())
 						.get(0);
@@ -569,39 +565,12 @@ public class PhieuXuatAPI {
 	public ResponseEntity<String> updateStatus(@PathVariable("id") int id, @PathVariable("status") int status) {
 		try {
 			phieuXuatService.updateStatus(id, status);
-			String token = khachHangService.getTokenUser(phieuXuatService.getUserIdByOrder(id));
-			Map<String, Object> data = new HashMap<>();
-			data.put("order_id", id);
-			data.put("status", status);
-			String result = null;
-			if (token != null) {
-				if (status == 1) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã được duyệt",
-							"Cảm ơn bạn đã mua hàng. Đơn sẽ được giao sớm nhất.", data);
-				} else if (status == 3) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đang được giao",
-							"Cảm ơn bạn đã mua hàng. Đơn sẽ được giao sớm nhất.", data);
-				} else if (status == 4) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã giao",
-							"Cảm ơn bạn đã mua hàng.", data);
-				} else if (status == -1) {
-					result = fcmService.sendNotification(token, "Đơn hàng #" + id + " đã bị nhân viên hủy",
-							"Xin lỗi vì bất tiện này.", data);
-					cancleOrder(id);
-				} else if (status == -3) {
-					result = fcmService.sendNotification(token, "Phiếu hủy của đơn hàng #" + id + " đã được duyệt",
-							"Cảm ơn bạn đã phản hồi chúng tôi sẽ khắc phục.", data);
-					cancleOrder(id);
-				}
-			} else {
-				if (status == -1 || status == -3) {
-					cancleOrder(id);
-				}
+			if (status == -1 || status == -3) {
+				cancleOrder(id);
 			}
-			System.out.println(result);
-			return ResponseEntity.ok("Update success" + token);
+			return ResponseEntity.ok("Update success");
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi xóa sản phẩm");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi cập nhật trạng thái");
 		}
 	}
 
@@ -722,7 +691,7 @@ public class PhieuXuatAPI {
 //			        $sql1 = "INSERT INTO chitietphieuxuat (maphieuxuat, maphienbansp, soluong, dongia,code_cart) VALUES (?, ?, ?, ?, ?)";
 //			        $sql2 = "UPDATE ctsanpham SET maphieuxuat=?, tinhtrang=1 WHERE maphienbansp=? AND maimei=?";
 
-				for (ChiTietPhieuXuatDTO ct : request.getChitietphieuxuatList()) {
+				for (CTPhieuXuatDTO ct : request.getChitietphieuxuatList()) {
 
 					int ma_pbsp = ct.getPhienBanSanPhamXuatId();
 					int num = ct.getSoLuong();
@@ -936,7 +905,7 @@ public class PhieuXuatAPI {
 					phieuxuat.setInfoOrderDiscount(discountService.findById(phieuxuat.getDiscountCode()));
 				}
 
-				List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+				List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 						.getListCTPX(phieuxuat.getId().intValue());
 
 				chiTietPhieuXuatDTOs.forEach(ct -> {
@@ -979,7 +948,7 @@ public class PhieuXuatAPI {
 					phieuxuat.setInfoOrderDiscount(discountService.findById(phieuxuat.getDiscountCode()));
 				}
 
-				List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
+				List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService
 						.getListCTPX(phieuxuat.getId().intValue());
 
 				chiTietPhieuXuatDTOs.forEach(ct -> {
@@ -1011,7 +980,7 @@ public class PhieuXuatAPI {
 	}
 
 	@PostMapping("/review")
-	public ResponseEntity<?> saveReview(@RequestBody CommentAndRateDTO review) {
+	public ResponseEntity<?> saveReview(@RequestBody CommentProductDTO review) {
 		try {
 			ResponseId responseId = new ResponseId();
 			responseId.setId(commentAndRateService.save(review).getId().intValue());
@@ -1030,10 +999,10 @@ public class PhieuXuatAPI {
 		List<ProductDTO> allProducts = productService.getALlProducts();
 
 		for (ProductDTO product : allProducts) {
-			List<CommentAndRateDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
+			List<CommentProductDTO> ratings = commentAndRateService.findByProductId(product.getId().intValue());
 
 			int soLuongDanhGia = ratings.size();
-			double tongSao = ratings.stream().mapToDouble(CommentAndRateDTO::getRate).sum();
+			double tongSao = ratings.stream().mapToDouble(CommentProductDTO::getRate).sum();
 
 			product.setSoLuongDanhGia(soLuongDanhGia);
 			product.setTongSao(tongSao);
@@ -1042,7 +1011,7 @@ public class PhieuXuatAPI {
 	}
 
 	@PutMapping("/review")
-	public void updateReview(@RequestBody CommentAndRateDTO review) {
+	public void updateReview(@RequestBody CommentProductDTO review) {
 		try {
 			commentAndRateService.updateReview(review);
 		} catch (Exception e) {

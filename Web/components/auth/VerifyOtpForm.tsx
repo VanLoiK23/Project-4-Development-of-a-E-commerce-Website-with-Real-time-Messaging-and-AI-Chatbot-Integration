@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { AuthStepper } from "@/components/auth/AuthStepper";
 import { ResendCountdown } from "@/components/auth/ResendCountdown";
-import { verifyOtp, resendOtp } from "@/api/auth";
+import { verifyOtp, resendOtp, register } from "@/api/auth";
 import { maskEmail } from "@/lib/formatters";
 import { ArrowLeft } from "lucide-react";
+import type { RegisterRequest } from "@/types/auth";
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
@@ -29,18 +30,6 @@ function getServerSnapshot() {
   return "";
 }
 
-/**
- * Client Component VerifyOtpForm (Step 2/2).
- * Verifies 6-digit email OTP.
- * Handles all required OTP states:
- * - Sending / loading
- * - Incorrect OTP with remaining attempts
- * - Expired code
- * - Locked after 5 failed attempts
- * - Resend successful
- * - Network error with retry
- * - Success redirect to /login?verified=1
- */
 export function VerifyOtpForm() {
   const router = useRouter();
   const email = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -50,17 +39,18 @@ export function VerifyOtpForm() {
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
   const [feedback, setFeedback] = useState<{
-    type: "danger" | "warn" | "success";
+    type: "danger" | "warn" | "success" | "info";
     message: string;
     isNetwork?: boolean;
   } | null>(null);
 
-  // If on client and no email in sessionStorage, redirect to /register
+  // If on client and no email or pending register data in sessionStorage, redirect to /register
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const stored = sessionStorage.getItem("pending_verify_email");
-        if (!stored) {
+        const storedData = sessionStorage.getItem("pending_register_data");
+        if (!stored || !storedData) {
           router.replace("/register");
         }
       } catch {
@@ -77,69 +67,124 @@ export function VerifyOtpForm() {
     setIsLoading(true);
 
     try {
-      const res = await verifyOtp({ email, code: finalCode });
+      // 1. Xác thực mã OTP trước với backend
+      const res = await verifyOtp({ email, otp: finalCode });
 
-      if (res.ok) {
-        try {
-          sessionStorage.removeItem("pending_verify_email");
-        } catch {
-          // ignore
+      if (!res.ok) {
+        if (res.error.code === "OTP_ATTEMPTS_EXCEEDED") {
+          setIsLocked(true);
+          setCode("");
+          setFeedback({
+            type: "warn",
+            message: res.error.message,
+          });
+          setIsLoading(false);
+          return;
         }
-        router.push("/login?verified=1");
-        return;
-      }
 
-      if (res.error.code === "OTP_ATTEMPTS_EXCEEDED") {
-        setIsLocked(true);
+        if (res.error.code === "OTP_EXPIRED") {
+          setFeedback({
+            type: "danger",
+            message: res.error.message,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        if (res.error.code === "NETWORK_ERROR") {
+          setFeedback({
+            type: "danger",
+            message: res.error.message,
+            isNetwork: true,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Incorrect OTP: clear code, refocus first slot
         setCode("");
         setFeedback({
-          type: "warn",
-          message: res.error.message,
-        });
-        return;
-      }
-
-      if (res.error.code === "OTP_EXPIRED") {
-        setFeedback({
           type: "danger",
           message: res.error.message,
         });
+
+        // Refocus first slot
+        setTimeout(() => {
+          document.getElementById("otp-input-slot-0")?.focus();
+        }, 50);
+        setIsLoading(false);
         return;
       }
 
-      if (res.error.code === "NETWORK_ERROR") {
+      // 2. Khi auth/verify-otp thành công rồi mới lấy dữ liệu và gọi auth/register
+      let pendingRegisterData: string | null = null;
+      try {
+        pendingRegisterData = sessionStorage.getItem("pending_register_data");
+      } catch {
+        // storage blocked
+      }
+
+      if (!pendingRegisterData) {
         setFeedback({
           type: "danger",
-          message: res.error.message,
-          isNetwork: true,
+          message:
+            "Không tìm thấy thông tin đăng ký. Vui lòng quay lại biểu mẫu đăng ký.",
         });
+        setIsLoading(false);
         return;
       }
 
-      // Incorrect OTP: clear code, refocus first slot
-      setCode("");
       setFeedback({
-        type: "danger",
-        message: res.error.message,
+        type: "info",
+        message: "Xác thực email thành công! Đang tiến hành tạo tài khoản...",
       });
 
-      // Refocus first slot
+      const registerPayload: RegisterRequest = JSON.parse(pendingRegisterData);
+      const registerRes = await register(registerPayload);
+
+      if (!registerRes.ok) {
+        setFeedback({
+          type: "danger",
+          message:
+            registerRes.error.message ||
+            "Đăng ký tài khoản không thành công. Vui lòng thử lại.",
+          isNetwork: registerRes.error.code === "NETWORK_ERROR",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. Đăng ký thành công → dọn dẹp sessionStorage và chuyển sang Login
+      try {
+        sessionStorage.removeItem("pending_verify_email");
+        sessionStorage.removeItem("pending_register_data");
+      } catch {
+        // ignore
+      }
+
+      setFeedback({
+        type: "success",
+        message: "Đăng ký thành công! Đang chuyển hướng sang trang Đăng nhập...",
+      });
+
       setTimeout(() => {
-        document.getElementById("otp-input-slot-0")?.focus();
-      }, 50);
+        router.push("/login?registered=1");
+      }, 1000);
     } catch {
       setFeedback({
         type: "danger",
         message: "Không thể kết nối tới máy chủ. Vui lòng thử lại.",
         isNetwork: true,
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleResend = async () => {
-    setFeedback(null);
+    setFeedback({
+      type: "info",
+      message: "Đang tiến hành gửi lại mã xác thực...",
+    });
     try {
       const res = await resendOtp({ email });
       if (res.ok) {

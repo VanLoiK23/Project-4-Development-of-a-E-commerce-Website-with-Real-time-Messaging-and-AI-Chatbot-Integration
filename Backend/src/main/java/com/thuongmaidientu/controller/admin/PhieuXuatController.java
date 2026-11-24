@@ -27,16 +27,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thuongmaidientu.dto.ChiTietPhieuNhapDTO;
-import com.thuongmaidientu.dto.ChiTietPhieuXuatDTO;
+import com.thuongmaidientu.dto.CTPhieuNhapDTO;
+import com.thuongmaidientu.dto.CTPhieuXuatDTO;
 import com.thuongmaidientu.dto.PhieuNhapDTO;
 import com.thuongmaidientu.dto.PhieuXuatDTO;
 import com.thuongmaidientu.dto.ThongTinGiaoHangDTO;
-import com.thuongmaidientu.service.IChiTietPNService;
-import com.thuongmaidientu.service.IChiTietPXService;
-import com.thuongmaidientu.service.IPhieuXuatService;
-import com.thuongmaidientu.service.IProductService;
-import com.thuongmaidientu.service.IThongTinGiaoHangService;
+import com.thuongmaidientu.service.CTPhieuNhapService;
+import com.thuongmaidientu.service.CTPhieuXuatService;
+import com.thuongmaidientu.service.PhieuXuatService;
+import com.thuongmaidientu.service.ProductService;
+import com.thuongmaidientu.service.ThongTinGiaoHangService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -44,16 +44,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PhieuXuatController {
 
 	@Autowired
-	private IPhieuXuatService phieuXuatService;
+	private PhieuXuatService phieuXuatService;
 
 	@Autowired
-	private IChiTietPXService chiTietPXService;
+	private CTPhieuXuatService chiTietPXService;
 
 	@Autowired
-	private IProductService productService;
+	private ProductService productService;
 
 	@Autowired
-	private IThongTinGiaoHangService thongTinGiaoHangService;
+	private ThongTinGiaoHangService thongTinGiaoHangService;
 
 	@RequestMapping(value = "/quan-tri/donhang/danh-sach", method = RequestMethod.GET)
 	public ModelAndView showlist(@ModelAttribute("model") PhieuXuatDTO model,
@@ -168,11 +168,11 @@ public class PhieuXuatController {
 	public void exportPhieuNhap(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
 		PhieuXuatDTO dto = phieuXuatService.findById(id.intValue());
 
-		List<ChiTietPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
+		List<CTPhieuXuatDTO> chiTietPhieuXuatDTOs = chiTietPXService.getListCTPX(dto.getId().intValue());
 
 		List<Map<String, Object>> saveObjects = new ArrayList<>();
 
-		for (ChiTietPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
+		for (CTPhieuXuatDTO it : chiTietPhieuXuatDTOs) {
 			Object[] productData = productService
 					.findChiTietPhienBanSanPhamByPhieuXuat(it.getPhienBanSanPhamXuatId(), dto.getId().intValue())
 					.get(0);

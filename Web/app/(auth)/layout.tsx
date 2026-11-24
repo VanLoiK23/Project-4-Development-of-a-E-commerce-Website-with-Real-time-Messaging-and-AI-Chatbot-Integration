@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { DevHint } from "@/components/auth/DevHint";
 import { ArrowLeft, Smartphone } from "lucide-react";
 
 export default function AuthLayout({
@@ -33,11 +32,10 @@ export default function AuthLayout({
         </div>
       </header>
 
-      {/* Main Centered Content (docs S10-S12 container-sm) */}
+      {/* Main Centered Content (S10/S11 split-card wide, S12 compact) */}
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-[440px] my-auto">
+        <div className="w-full max-w-[960px] my-auto">
           {children}
-          <DevHint />
         </div>
       </main>
 

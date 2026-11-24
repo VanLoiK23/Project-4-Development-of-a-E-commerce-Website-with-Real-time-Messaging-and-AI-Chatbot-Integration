@@ -10,13 +10,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thuongmaidientu.dto.ContactDTO;
-import com.thuongmaidientu.service.IContactService;
+import com.thuongmaidientu.service.ContactService;
 
 @Controller("contactOfWebController")
 public class ContactController {
 
 	@Autowired
-	private IContactService contactService;
+	private ContactService contactService;
 
 	@GetMapping("/contact")
 	public ModelAndView show(@ModelAttribute("message") String message) {

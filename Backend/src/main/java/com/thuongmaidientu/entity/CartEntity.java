@@ -31,9 +31,9 @@ public class CartEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt = new Date();
 
-    @Column(name = "status", columnDefinition = "ENUM('active','completed','abandoned') DEFAULT 'active'")
-    private String status="active";
-    
+    @Column(length = 20)
+    private String status = "active";
+
     @OneToMany(mappedBy = "idCart")
     private List<CartItemEntity> cart = new ArrayList<>();
 }

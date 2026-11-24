@@ -9,5 +9,5 @@ import lombok.Data;
 public class PurchaseRequest {
 	public MomoDTO momo;
 	public PhieuXuatDTO donhang;
-	public List<ChiTietPhieuXuatDTO> chitietphieuxuatList;
+	public List<CTPhieuXuatDTO> chitietphieuxuatList;
 }

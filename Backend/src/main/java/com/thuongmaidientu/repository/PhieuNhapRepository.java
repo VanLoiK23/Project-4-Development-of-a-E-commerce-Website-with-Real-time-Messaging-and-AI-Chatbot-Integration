@@ -35,40 +35,40 @@ public interface PhieuNhapRepository extends JpaRepository<PhieuNhapEntity, Long
 	@Query(value = "SELECT MONTH(p.thoigian), SUM(p.tongtien) FROM phieunhap p WHERE YEAR(p.thoigian) = YEAR(CURRENT_DATE) GROUP BY MONTH(p.thoigian)", nativeQuery = true)
 	List<Object[]> getTongPhieuNhapTheoThang();
 
-	@Query(value = "SELECT QUARTER(thoigian) AS quarter, SUM(tongtien) AS total " + "FROM phieunhap "
-			+ "WHERE YEAR(thoigian) = YEAR(CURDATE()) " + "GROUP BY QUARTER(thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) AS quarter, SUM(tongtien) AS total " + "FROM phieunhap "
+			+ "WHERE EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) " + "GROUP BY CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getPhieuNhapTheoQuy();
 
 	// Import Statistic
-	@Query(value = "   SELECT CASE  WHEN DAYOFWEEK(thoigian) = 1 THEN 'Chủ nhật'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 2 THEN 'Thứ 2'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 3 THEN 'Thứ 3'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 4 THEN 'Thứ 4'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 5 THEN 'Thứ 5'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 6 THEN 'Thứ 6'"
-			+ "                WHEN DAYOFWEEK(thoigian) = 7 THEN 'Thứ 7' END AS day_of_week, "
+	@Query(value = "   SELECT CASE  WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 1 THEN 'Chủ nhật'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 2 THEN 'Thứ 2'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 3 THEN 'Thứ 3'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 4 THEN 'Thứ 4'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 5 THEN 'Thứ 5'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 6 THEN 'Thứ 6'"
+			+ "                WHEN CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER) = 7 THEN 'Thứ 7' END AS day_of_week, "
 			+ "            SUM(tongtien) AS total " + "        FROM phieunhap "
-			+ "        WHERE YEARWEEK(thoigian, 1) = YEARWEEK(CURDATE(), 1) "
-			+ "        GROUP BY DAYOFWEEK(thoigian)", nativeQuery = true)
+			+ "        WHERE to_char(thoigian, 'IYYY-IW') = to_char(CURRENT_DATE, 'IYYY-IW') "
+			+ "        GROUP BY CAST(EXTRACT(DOW FROM thoigian) + 1 AS INTEGER)", nativeQuery = true)
 	List<Object[]> getImportFinancingStatisticalFollowWeek();
 
-	@Query(value = " SELECT  CASE  WHEN CEIL(DAY(thoigian) / 7) = 1 THEN 'Tuần 1'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 2 THEN 'Tuần 2'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 3 THEN 'Tuần 3'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 4 THEN 'Tuần 4'"
-			+ "        WHEN CEIL(DAY(thoigian) / 7) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
-			+ "    SUM(tongtien) AS total " + "FROM phieunhap " + "WHERE  YEAR(thoigian) = YEAR(CURDATE()) " + "  AND MONTH(thoigian) = MONTH(CURDATE()) "
-			+ "GROUP BY CEIL(DAY(thoigian) / 7) " + "ORDER BY CEIL(DAY(thoigian) / 7);", nativeQuery = true)
+	@Query(value = " SELECT  CASE  WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 1 THEN 'Tuần 1'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 2 THEN 'Tuần 2'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 3 THEN 'Tuần 3'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 4 THEN 'Tuần 4'"
+			+ "        WHEN CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) = 5 THEN 'Tuần 5'" + "    END AS week_of_month, "
+			+ "    SUM(tongtien) AS total " + "FROM phieunhap " + "WHERE  EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) " + "  AND EXTRACT(MONTH FROM thoigian) = EXTRACT(MONTH FROM CURRENT_DATE) "
+			+ "GROUP BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER) " + "ORDER BY CAST(CEIL(EXTRACT(DAY FROM thoigian) / 7.0) AS INTEGER);", nativeQuery = true)
 	List<Object[]> getImportFinancingStatisticalFollowMonth();
 
-	@Query(value = "SELECT QUARTER(thoigian) AS quarter, SUM(tongtien) AS total " + "FROM phieunhap "
-			+ "WHERE  YEAR(thoigian) = YEAR(CURDATE()) "
-			+ "GROUP BY QUARTER(thoigian)", nativeQuery = true)
+	@Query(value = "SELECT CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER) AS quarter, SUM(tongtien) AS total " + "FROM phieunhap "
+			+ "WHERE  EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE) "
+			+ "GROUP BY CAST(EXTRACT(QUARTER FROM thoigian) AS INTEGER)", nativeQuery = true)
 	List<Object[]> getImportFinancingStatisticalFollowQuarter();
 
 	@Query(value = """
 			SELECT
-			    CASE MONTH(thoigian)
+			    CASE CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			        WHEN 1 THEN 'Tháng 1'
 			        WHEN 2 THEN 'Tháng 2'
 			        WHEN 3 THEN 'Tháng 3'
@@ -84,9 +84,9 @@ public interface PhieuNhapRepository extends JpaRepository<PhieuNhapEntity, Long
 			    END AS month_of_year,
 			    SUM(tongtien) AS total
 			FROM phieunhap
-			WHERE  YEAR(thoigian) = YEAR(CURDATE())
-			GROUP BY MONTH(thoigian)
-			ORDER BY MONTH(thoigian)
+			WHERE  EXTRACT(YEAR FROM thoigian) = EXTRACT(YEAR FROM CURRENT_DATE)
+			GROUP BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
+			ORDER BY CAST(EXTRACT(MONTH FROM thoigian) AS INTEGER)
 			""", nativeQuery = true)
 	List<Object[]> getImportFinancingStatisticalFollowYear();
 

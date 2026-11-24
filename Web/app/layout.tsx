@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
-// TODO: Switch to next/font/local when custom font files (Plus Jakarta Sans) are added to app/fonts/
+import { AuthWrapper } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">
-        {children}
+        <AuthWrapper>{children}</AuthWrapper>
       </body>
     </html>
   );
