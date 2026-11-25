@@ -16,3 +16,16 @@ export function maskEmail(email: string): string {
   }
   return `${local[0]}***@${domain}`;
 }
+
+/**
+ * Formats date to Vietnamese locale: dd/MM/yyyy
+ */
+export function formatDate(date: string | Date): string {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+}
