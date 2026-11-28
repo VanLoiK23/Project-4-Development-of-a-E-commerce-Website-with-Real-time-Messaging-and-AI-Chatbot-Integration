@@ -2,10 +2,12 @@ package com.thuongmaidientu.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.thuongmaidientu.dto.ArticleDTO;
 import com.thuongmaidientu.dto.RamDTO;
+import com.thuongmaidientu.dto.response.ArticleResponse;
 
 public interface ArticleService {
 	List<ArticleDTO> findAll(Pageable pageable);
@@ -36,4 +38,5 @@ public interface ArticleService {
 	
 	Integer getPreviousId(Integer id);
 
+	Page<ArticleResponse> fetchAritcles(Pageable pageable);
 }

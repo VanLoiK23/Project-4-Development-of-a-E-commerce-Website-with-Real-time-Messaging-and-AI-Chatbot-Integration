@@ -1,143 +1,169 @@
 :root {
-  /* ========================================================================
+   /* ========================================================================
      1. FOUNDATION COLORS (Approved 60% Layer)
      ======================================================================== */
-  --color-bg-base: #FFF8E7;
-  --color-surface-base: #FFFFFF;
-  --color-surface-subtle: #F5EEDB;
-  --color-border-default: #E6DFCE;
+   --color-bg-base: #F3F4F6;
+   --color-surface-base: #FFFFFF;
+   --color-surface-subtle: #EAECEF;
+   --color-border-default: #D8DCE2;
 
-  /* ========================================================================
-     2. BRAND COLORS (Approved 30% & 10% Layers)
-     ======================================================================== */
-  --color-brand-primary: #1E1E24;
-  --color-brand-hover: #32323C;
-  --color-brand-accent: #D97706;
-  --color-brand-accent-soft: #FEF3C7;
-  --color-brand-accent-hover: #F59E0B;  /* Proposed */
-  --color-brand-accent-text: #92400E;   /* Proposed */
+   /* Giữ trục charcoal đồng bộ Header/Footer + điểm nhấn amber tiết chế */
+   --color-brand-primary: #1E1E24;
+   --color-brand-hover: #32323C;
+   --color-brand-accent: #C26D0A;
+   --color-brand-accent-soft: #FDECC8;
+   --color-brand-accent-hover: #D97706;
+   --color-brand-accent-text: #7C3A06;
 
-  /* ========================================================================
+   /* ========================================================================
      3. TYPOGRAPHY COLORS (Approved)
      ======================================================================== */
-  --color-text-primary: #1E1E24;
-  --color-text-secondary: #5A5D68;
-  --color-text-muted: #8E9099;   /* decorative / disabled only */
-  --color-text-subtle: #6B6E78;  /* Proposed: placeholders, struck price, helper text */
-  --color-text-inverse: #FFFFFF;
+   --color-text-primary: #1E1E24;
+   --color-text-secondary: #5A5D68;
+   --color-text-muted: #8E9099;
+   /* decorative / disabled only */
+   --color-text-subtle: #6B6E78;
+   /* Proposed: placeholders, struck price, helper text */
+   --color-text-inverse: #FFFFFF;
 
-  /* ========================================================================
+   /* ========================================================================
      4. ABSA SENTIMENT COLORS (Approved 10% Semantic Layer)
      ======================================================================== */
-  --color-absa-pos: #15803D;
-  --color-absa-pos-soft: #DCFCE7;
-  --color-absa-neu: #0369A1;
-  --color-absa-neu-soft: #E0F2FE;
-  --color-absa-neg: #B91C1C;
-  --color-absa-neg-soft: #FEE2E2;
+   --color-absa-pos: #15803D;
+   --color-absa-pos-soft: #DCFCE7;
+   --color-absa-neu: #0369A1;
+   --color-absa-neu-soft: #E0F2FE;
+   --color-absa-neg: #B91C1C;
+   --color-absa-neg-soft: #FEE2E2;
 
-  /* ========================================================================
+   /* ========================================================================
      5. GENERAL UI FEEDBACK (Proposed)
      ======================================================================== */
-  --color-ui-success: #15803D;  --color-ui-success-soft: #DCFCE7;
-  --color-ui-error: #B91C1C;    --color-ui-error-soft: #FEE2E2;
-  --color-ui-warning: #B45309;  --color-ui-warning-soft: #FFEDD5;
-  --color-ui-info: #0369A1;     --color-ui-info-soft: #E0F2FE;
-  --color-ui-sale: #BE123C;     --color-ui-sale-soft: #FFE4E6;
+   --color-ui-success: #15803D;
+   --color-ui-success-soft: #DCFCE7;
+   --color-ui-error: #B91C1C;
+   --color-ui-error-soft: #FEE2E2;
+   --color-ui-warning: #B45309;
+   --color-ui-warning-soft: #FFEDD5;
+   --color-ui-info: #0369A1;
+   --color-ui-info-soft: #E0F2FE;
+   --color-ui-sale: #BE123C;
+   --color-ui-sale-soft: #FFE4E6;
 
-  /* ========================================================================
+   /* ========================================================================
      6. FOCUS (Proposed)
      ======================================================================== */
-  --color-focus-ring: #1E1E24;
-  --color-focus-ring-inverse: #FFFFFF;
+   --color-focus-ring: #1E1E24;
+   --color-focus-ring-inverse: #FFFFFF;
 
-  /* ========================================================================
+   /* ========================================================================
      7. TYPOGRAPHY
      ======================================================================== */
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+   --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
 
-  --font-size-micro: 0.6875rem; /* 11px */
-  --font-size-caption: 0.75rem;  /* 12px */
-  --font-size-sm: 0.875rem;      /* 14px */
-  --font-size-base: 1rem;        /* 16px */
-  --font-size-lg: 1.125rem;      /* 18px */
-  --font-size-xl: 1.25rem;       /* 20px */
-  --font-size-2xl: 1.5rem;       /* 24px */
-  --font-size-3xl: 2rem;         /* 32px */
-  --font-size-4xl: 2.5rem;       /* 40px */
+   --font-size-micro: 0.6875rem;
+   /* 11px */
+   --font-size-caption: 0.75rem;
+   /* 12px */
+   --font-size-sm: 0.875rem;
+   /* 14px */
+   --font-size-base: 1rem;
+   /* 16px */
+   --font-size-lg: 1.125rem;
+   /* 18px */
+   --font-size-xl: 1.25rem;
+   /* 20px */
+   --font-size-2xl: 1.5rem;
+   /* 24px */
+   --font-size-3xl: 2rem;
+   /* 32px */
+   --font-size-4xl: 2.5rem;
+   /* 40px */
 
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+   --font-weight-regular: 400;
+   --font-weight-medium: 500;
+   --font-weight-semibold: 600;
+   --font-weight-bold: 700;
 
-  --line-height-none: 1;
-  --line-height-tight: 1.25;
-  --line-height-snug: 1.375;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.625;
+   --line-height-none: 1;
+   --line-height-tight: 1.25;
+   --line-height-snug: 1.375;
+   --line-height-normal: 1.5;
+   --line-height-relaxed: 1.625;
 
-  /* ========================================================================
+   /* ========================================================================
      8. SPATIAL SCALE (8pt System)
      ======================================================================== */
-  --space-0: 0px;
-  --space-0-5: 0.125rem; /* 2px */
-  --space-1: 0.25rem;    /* 4px */
-  --space-2: 0.5rem;     /* 8px */
-  --space-3: 0.75rem;    /* 12px */
-  --space-4: 1rem;       /* 16px */
-  --space-5: 1.25rem;    /* 20px */
-  --space-6: 1.5rem;     /* 24px */
-  --space-8: 2rem;       /* 32px */
-  --space-10: 2.5rem;    /* 40px */
-  --space-12: 3rem;      /* 48px */
-  --space-16: 4rem;      /* 64px */
-  --space-20: 5rem;      /* 80px */
+   --space-0: 0px;
+   --space-0-5: 0.125rem;
+   /* 2px */
+   --space-1: 0.25rem;
+   /* 4px */
+   --space-2: 0.5rem;
+   /* 8px */
+   --space-3: 0.75rem;
+   /* 12px */
+   --space-4: 1rem;
+   /* 16px */
+   --space-5: 1.25rem;
+   /* 20px */
+   --space-6: 1.5rem;
+   /* 24px */
+   --space-8: 2rem;
+   /* 32px */
+   --space-10: 2.5rem;
+   /* 40px */
+   --space-12: 3rem;
+   /* 48px */
+   --space-16: 4rem;
+   /* 64px */
+   --space-20: 5rem;
+   /* 80px */
 
-  /* ========================================================================
+   /* ========================================================================
      9. BORDER RADIUS
      ======================================================================== */
-  --radius-none: 0px;
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
+   --radius-none: 0px;
+   --radius-xs: 2px;
+   --radius-sm: 4px;
+   --radius-md: 8px;
+   --radius-lg: 12px;
+   --radius-xl: 16px;
+   --radius-full: 9999px;
 
-  /* ========================================================================
+   /* ========================================================================
      10. ELEVATION & SHADOWS (Warm Charcoal Tint)
      ======================================================================== */
-  --shadow-none: none;
-  --shadow-sm: 0 1px 2px 0 rgba(30, 30, 36, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(30, 30, 36, 0.06), 0 2px 4px -2px rgba(30, 30, 36, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(30, 30, 36, 0.08), 0 4px 6px -4px rgba(30, 30, 36, 0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(30, 30, 36, 0.10), 0 8px 10px -6px rgba(30, 30, 36, 0.04);
-  --shadow-focus: 0 0 0 3px rgba(30, 30, 36, 0.25);
+   --shadow-none: none;
+   --shadow-sm: 0 1px 2px 0 rgba(30, 30, 36, 0.04);
+   --shadow-md: 0 4px 6px -1px rgba(30, 30, 36, 0.06), 0 2px 4px -2px rgba(30, 30, 36, 0.03);
+   --shadow-lg: 0 10px 15px -3px rgba(30, 30, 36, 0.08), 0 4px 6px -4px rgba(30, 30, 36, 0.04);
+   --shadow-xl: 0 20px 25px -5px rgba(30, 30, 36, 0.10), 0 8px 10px -6px rgba(30, 30, 36, 0.04);
+   --shadow-focus: 0 0 0 3px rgba(30, 30, 36, 0.25);
 
-  /* ========================================================================
+   /* ========================================================================
      11. Z-INDEX SCALE
      ======================================================================== */
-  --z-negative: -1;
-  --z-base: 0;
-  --z-raised: 10;
-  --z-dropdown: 1000;
-  --z-sticky: 1100;
-  --z-overlay: 1200;
-  --z-drawer: 1250;
-  --z-modal: 1300;
-  --z-toast: 1400;
-  --z-tooltip: 1500;
+   --z-negative: -1;
+   --z-base: 0;
+   --z-raised: 10;
+   --z-dropdown: 1000;
+   --z-sticky: 1100;
+   --z-overlay: 1200;
+   --z-drawer: 1250;
+   --z-modal: 1300;
+   --z-toast: 1400;
+   --z-tooltip: 1500;
 
-  /* ========================================================================
+   /* ========================================================================
      12. MOTION & TRANSITIONS
      ======================================================================== */
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
-  --duration-slow: 300ms;
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+   --duration-fast: 150ms;
+   --duration-normal: 200ms;
+   --duration-slow: 300ms;
+   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+   --ease-out: cubic-bezier(0, 0, 0.2, 1);
+   --ease-in: cubic-bezier(0.4, 0, 1, 1);
 }

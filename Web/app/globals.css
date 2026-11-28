@@ -19,7 +19,12 @@
   --color-brand-hover: var(--color-brand-hover);
   --color-ai: var(--color-brand-accent);
   --color-ai-soft: var(--color-brand-accent-soft);
+  --color-ai-hover: var(--color-brand-accent-hover);
   --color-ai-ink: var(--color-brand-accent-text);
+
+  /* focus */
+  --color-focus: var(--color-focus-ring);
+  --color-focus-inverse: var(--color-focus-ring-inverse);
 
   /* ABSA sentiment */
   --color-pos: var(--color-absa-pos);
@@ -41,8 +46,24 @@
   --color-sale: var(--color-ui-sale);
   --color-sale-soft: var(--color-ui-sale-soft);
 
+  /* radius */
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* shadows */
+  --shadow-none: var(--shadow-none);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-focus: var(--shadow-focus);
+
   /* fonts */
-  --font-sans: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
 }
 

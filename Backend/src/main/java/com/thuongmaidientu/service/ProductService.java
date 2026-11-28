@@ -2,11 +2,16 @@ package com.thuongmaidientu.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import com.thuongmaidientu.dto.request.ProductFilterRequest;
+import com.thuongmaidientu.dto.response.ProductResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongKeSellingProductDTO;
+import com.thuongmaidientu.dto.request.ProductFilterRequest;
+import com.thuongmaidientu.dto.response.ProductResponse;
 
 public interface ProductService {
 
@@ -73,4 +78,6 @@ public interface ProductService {
 	ProductDTO getProductByIdVersionProduct(Integer maPB);
 	
 	ProductDTO findInfoProductForOrderInWeb(Integer maPB);
+
+	Page<ProductResponse> getProductsPage(ProductFilterRequest filter);
 }

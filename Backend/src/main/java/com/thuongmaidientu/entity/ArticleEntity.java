@@ -22,6 +22,9 @@ public class ArticleEntity {
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 
+    @Column(name = "slug", length = 50, nullable = false)
+    private String slug;
+
     @Column(name = "sort_desc", columnDefinition = "TEXT", nullable = false)
     private String sortDesc;
 

@@ -14,7 +14,6 @@ import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { sendOtpCheckEmail } from "@/api/auth";
 import {
   validateEmail,
-  validateFullName,
   validatePassword,
   validatePasswordMatch,
   validatePhoneVN,

@@ -15,7 +15,7 @@
  *   - Form bên trong crossfade sang Login/Register tương ứng.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -75,11 +75,11 @@ export function AuthCard({
   children,
   className,
 }: AuthCardProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const visual = VISUAL_CONTENT[mode];
 
