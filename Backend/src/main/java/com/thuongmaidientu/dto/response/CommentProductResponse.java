@@ -31,4 +31,8 @@ public class CommentProductResponse {
     private java.util.Date ngayPhanHoi;
     private Integer orderId;
     private java.util.Date ngayDanhGia;
+    private Boolean isValid;
+    private String invalidReason;
+    private String absaModel;
+    private java.util.Date absaAt;
 }

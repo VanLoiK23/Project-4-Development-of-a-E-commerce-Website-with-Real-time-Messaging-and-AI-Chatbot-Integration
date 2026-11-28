@@ -66,6 +66,10 @@ public class ProductEntity {
 	@Column(name = "promo", columnDefinition = "TEXT")
 	private String promo;
 
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "collections", columnDefinition = "jsonb", nullable = false)
+	private List<String> collections = new ArrayList<>();
+
 	@Column(name = "sort_desc", length = 10000, nullable = false)
 	private String sortDesc = "";
 

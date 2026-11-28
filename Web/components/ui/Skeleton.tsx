@@ -5,10 +5,6 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-/**
- * Server-compatible Skeleton loader.
- * Employs warm cream shimmer with bg-surface-subtle (no raw gray or cold white HEX).
- */
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div

@@ -49,6 +49,10 @@ public class SecurityConfig {
 										: new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/blog/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/slide/**").permitAll()
+
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						.requestMatchers("/api/**").hasAnyRole("CUSTOMER", "ADMIN")

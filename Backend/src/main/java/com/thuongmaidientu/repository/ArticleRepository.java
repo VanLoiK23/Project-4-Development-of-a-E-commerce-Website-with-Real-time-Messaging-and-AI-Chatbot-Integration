@@ -51,5 +51,4 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
 	@Query(value = "SELECT MAX(id) FROM articles  WHERE status=1 AND trash='active'", nativeQuery = true)
 	Integer getMaxID();
-
 }

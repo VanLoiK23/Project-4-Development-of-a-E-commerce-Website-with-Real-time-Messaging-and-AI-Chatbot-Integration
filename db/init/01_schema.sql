@@ -171,6 +171,7 @@ CREATE TABLE sanpham (
     soluongnhap     INTEGER DEFAULT 0,
     soluongban      INTEGER DEFAULT 0,
     promo           TEXT,
+    collections     jsonb NOT NULL DEFAULT '[]'::jsonb,
     sort_desc       VARCHAR(10000) NOT NULL DEFAULT '',
     detail          TEXT           NOT NULL DEFAULT '',
     tongsao         DOUBLE PRECISION NOT NULL DEFAULT 0,
@@ -423,6 +424,26 @@ CREATE TABLE IF NOT EXISTS vn_pay (
 );
 
 CREATE INDEX IF NOT EXISTS idx_vn_pay_code_cart ON vn_pay (code_cart);
+
+CREATE TABLE IF NOT EXISTS product_aspect_score (
+  id_sp INTEGER REFERENCES sanpham(masp), aspect VARCHAR(32), model_version VARCHAR(64),
+  n_reviews INT, n_mentions INT, n_pos INT, n_neu INT, n_neg INT, raw_score REAL, smooth_score REAL,
+  updated_at TIMESTAMP DEFAULT now(), PRIMARY KEY (id_sp, aspect, model_version));
+
+CREATE TABLE IF NOT EXISTS product_item_feature (
+  id_sp INTEGER REFERENCES sanpham(masp), aspect VARCHAR(32), config VARCHAR(64),
+  score REAL, source VARCHAR(20), spec_score REAL, absa_score REAL, flag_seeding BOOLEAN DEFAULT FALSE,
+  updated_at TIMESTAMP DEFAULT now(), PRIMARY KEY (id_sp, aspect, config));
+
+CREATE TABLE IF NOT EXISTS user_pref (
+  id_user INTEGER REFERENCES khachhang(makh), aspect VARCHAR(32), weight REAL, PRIMARY KEY (id_user, aspect));
+
+ALTER TABLE comment_and_rate
+  ADD COLUMN IF NOT EXISTS is_valid       BOOLEAN DEFAULT TRUE,
+  ADD COLUMN IF NOT EXISTS invalid_reason VARCHAR(40),
+  ADD COLUMN IF NOT EXISTS absa_model     VARCHAR(64),
+  ADD COLUMN IF NOT EXISTS absa_at        TIMESTAMP;
+CREATE INDEX IF NOT EXISTS ix_car_sp ON comment_and_rate (id_sp);
 -- =====================================================================
 -- 8. Indexes
 -- =====================================================================

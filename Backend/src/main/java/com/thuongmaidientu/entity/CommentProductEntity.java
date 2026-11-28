@@ -99,4 +99,16 @@ public class CommentProductEntity {
 	@Temporal(TemporalType.DATE)
 	private Date ngayDanhGia;
 
+	@Column(name = "is_valid")
+	private Boolean isValid = true;
+
+	@Column(name = "invalid_reason", length = 40)
+	private String invalidReason;
+
+	@Column(name = "absa_model", length = 64)
+	private String absaModel;
+
+	@Column(name = "absa_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date absaAt;
 }

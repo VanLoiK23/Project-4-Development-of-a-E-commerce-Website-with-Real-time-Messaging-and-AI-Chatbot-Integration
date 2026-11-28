@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.thuongmaidientu.dto.SlideDTO;
+import com.thuongmaidientu.dto.response.SlideResponse;
 import com.thuongmaidientu.entity.SlideEntity;
 import com.thuongmaidientu.repository.SlideRepository;
 import com.thuongmaidientu.service.SlideService;
@@ -27,6 +28,12 @@ public class SlideServiceImpl implements SlideService {
 	public List<SlideDTO> findAll(Pageable pageable) {
 		List<SlideEntity> entities = SlideRepository.findByTrash("active", pageable).getContent();
 		return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SlideResponse> fetchSlides() {
+		List<SlideEntity> entities = SlideRepository.findAll();
+		return entities.stream().map(slideMapper::toResponse).collect(Collectors.toList());
 	}
 
 	@Override

@@ -1,38 +1,134 @@
-import Link from "next/link";
-import { Smartphone, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import React, { Suspense } from "react";
+import type { Metadata } from "next";
+import { AppShell } from "@/components/layout/AppShell";
+import { Container } from "@/components/layout/Container";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { HeroSection } from "@/components/home/HeroSection";
+import { CatalogFilterSection } from "@/components/home/CatalogFilterSection";
+import { ForYouSection } from "@/components/home/ForYouSection";
+import { CollectionsSection } from "@/components/home/CollectionsSection";
+import { AbsaHighlightsSection } from "@/components/home/AbsaHighlightsSection";
+import { AbsaExplainerSection } from "@/components/home/AbsaExplainerSection";
+import { LatestPostsSection } from "@/components/home/LatestPostsSection";
+import { GuaranteeStrip } from "@/components/home/GuaranteeStrip";
+import { getHomeData, getRecommendations } from "@/api/home";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Phone Store – Chọn smartphone chuẩn xác từ đánh giá thực tế",
+  description:
+    "Cửa hàng điện thoại thông minh tích hợp gợi ý AI theo nhu cầu và phân tích cảm xúc đánh giá đa khía cạnh (ABSA).",
+};
+
+interface HomePageProps {
+  searchParams: Promise<{
+    profile?: string;
+    state?: string;
+  }>;
+}
+
+function HomeLoadingFallback() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-canvas text-ink px-4 py-16">
-      <main className="w-full max-w-lg p-8 bg-surface rounded-lg border border-line shadow-sm text-center space-y-6">
-        <div className="w-12 h-12 bg-brand text-ink-inverse rounded-lg flex items-center justify-center mx-auto">
-          <Smartphone size={24} aria-hidden="true" />
+    <Container size="xl" className="py-8 space-y-12">
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-1/4 rounded-md" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-surface p-4 rounded-xl border border-line space-y-3">
+              <Skeleton className="aspect-square w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-6 w-1/2" />
+            </div>
+          ))}
         </div>
+      </div>
+    </Container>
+  );
+}
 
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-            Phone Store
-          </h1>
-          <p className="text-sm text-ink-2 leading-relaxed">
-            Hệ thống bán lẻ điện thoại thông minh tích hợp gợi ý cá nhân hóa và phân tích cảm xúc đa khía cạnh (ABSA).
-          </p>
-        </div>
+async function HomeDynamicContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ profile?: string; state?: string }>;
+}) {
+  const params = await searchParams;
+  const profile = (params?.profile === "cold" ? "cold" : "ready") as "ready" | "cold";
+  const state = (params?.state === "loading" || params?.state === "error"
+    ? params.state
+    : "default") as "loading" | "error" | "default";
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
-          <Link href="/login" className="w-full sm:w-auto">
-            <Button variant="primary" className="w-full justify-center gap-1.5">
-              <span>Đăng nhập</span>
-              <ArrowRight size={16} aria-hidden="true" />
-            </Button>
-          </Link>
-          <Link href="/register" className="w-full sm:w-auto">
-            <Button variant="secondary" className="w-full justify-center">
-              <span>Đăng ký tài khoản</span>
-            </Button>
-          </Link>
-        </div>
-      </main>
-    </div>
+  const [homeRes, recRes] = await Promise.all([
+    getHomeData({ state, profile }),
+    getRecommendations({ state, profile }),
+  ]);
+
+  if (!homeRes.ok) {
+    return (
+      <Container size="xl" className="py-16 sm:py-24">
+        <ErrorState
+          title="Không thể tải dữ liệu trang chủ"
+          message={homeRes.error}
+        />
+      </Container>
+    );
+  }
+
+  // Handle Loading preview state (?state=loading)
+  if (state === "loading") {
+    return <HomeLoadingFallback />;
+  }
+
+  const homeData = homeRes.data;
+  const recommendations = recRes.ok ? recRes.data : [];
+
+  return (
+    <>
+      {/* 1. Hero Section */}
+      <HeroSection slides={homeData.slides} />
+
+      {/* 2. Catalog Filtering Section */}
+      <CatalogFilterSection
+        products={homeData.allProducts}
+        filterOptions={homeData.filterOptions}
+      />
+
+      {/* 3. For You Section (Recommendation Rail) */}
+      <ForYouSection
+        recommendations={recommendations}
+        profile={profile}
+      />
+
+      {/* 4. Curated Collections Section */}
+      <CollectionsSection
+        collections={homeData.collections}
+      />
+
+      {/* 5. ABSA Community Highlights Section */}
+      <AbsaHighlightsSection
+        aspectLeaders={homeData.aspectLeaders}
+      />
+
+      {/* 7. Latest Posts Section */}
+      <LatestPostsSection
+        posts={homeData.posts}
+      />
+    </>
+  );
+}
+
+export default function HomePage({ searchParams }: HomePageProps) {
+  return (
+    <AppShell cartItemCount={2}>
+      {/* Dynamic catalog & recommendation stream wrapped in Suspense for prerender safety */}
+      <Suspense fallback={<HomeLoadingFallback />}>
+        <HomeDynamicContent searchParams={searchParams} />
+      </Suspense>
+
+      {/* 6. ABSA Explainer Section (3 steps) */}
+      <AbsaExplainerSection />
+
+      {/* 8. Service Guarantees Footer Strip */}
+      <GuaranteeStrip />
+    </AppShell>
   );
 }

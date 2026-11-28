@@ -18,8 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +31,17 @@ import com.thuongmaidientu.dto.PhienBanSanPhamDTO;
 import com.thuongmaidientu.dto.ProductDTO;
 import com.thuongmaidientu.dto.ThongKeSellingProductDTO;
 import com.thuongmaidientu.dto.XuatXuDTO;
+import com.thuongmaidientu.dto.request.ProductFilterRequest;
+import com.thuongmaidientu.dto.response.ProductResponse;
 import com.thuongmaidientu.entity.ProductVariantEntity;
 import com.thuongmaidientu.entity.XuatXuEntity;
 import com.thuongmaidientu.entity.CategoryEntity;
 import com.thuongmaidientu.entity.KhuVucKhoEntity;
 import com.thuongmaidientu.entity.ProductEntity;
+import com.thuongmaidientu.entity.ProductItemFeatureEntity;
 import com.thuongmaidientu.repository.CategoryRepository;
 import com.thuongmaidientu.repository.KhuVucKhoRepository;
+import com.thuongmaidientu.repository.ProductItemFeatureRepository;
 import com.thuongmaidientu.repository.ProductRepository;
 import com.thuongmaidientu.repository.XuatxuRepository;
 import com.thuongmaidientu.service.CartService;
@@ -48,12 +54,15 @@ import com.thuongmaidientu.service.KhuVucKhoService;
 import com.thuongmaidientu.service.ProductVariantService;
 import com.thuongmaidientu.service.ProductService;
 import com.thuongmaidientu.service.XuatxuService;
+import com.thuongmaidientu.service.spec.ProductSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
+	private static final int PRODUCT_PAGE_SIZE = 8;
 
 	private final ProductMapper productMapper;
 
@@ -78,6 +87,8 @@ public class ProductServiceImpl implements ProductService {
 	private final CategoryRepository categoryRepository;
 
 	private final ProductVariantMapper pBanSanPhamMapper;
+
+	private final ProductItemFeatureRepository productItemFeatureRepository;
 
 	@Override
 	public List<ProductDTO> findAll(Pageable pageable) {
@@ -434,5 +445,32 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		return dto;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ProductResponse> getProductsPage(ProductFilterRequest filter) {
+		Pageable pageable = PageRequest.of(Math.max(filter.getPage(), 0), PRODUCT_PAGE_SIZE,
+				resolveSort(filter.getSort()));
+
+		Page<ProductEntity> page = productRepository.findAll(ProductSpecifications.byFilter(filter), pageable);
+
+		// Lấy điểm ABSA của cả trang bằng 1 query để tránh N+1
+		List<Integer> ids = page.getContent().stream().map(ProductEntity::getId).toList();
+		Map<Integer, List<ProductItemFeatureEntity>> featuresByProduct = ids.isEmpty() ? Map.of()
+				: productItemFeatureRepository.findSmoothByProductIds(ids).stream()
+						.collect(Collectors.groupingBy(f -> f.getId().getIdSp()));
+
+		return page.map(e -> productMapper.toResponse(e, featuresByProduct.getOrDefault(e.getId(), List.of())));
+	}
+
+	private Sort resolveSort(String sort) {
+		String s = sort == null ? "" : sort.trim().toLowerCase();
+		return switch (s) {
+			case ProductSpecifications.SORT_PRICE_ASC, ProductSpecifications.SORT_PRICE_DESC -> Sort.unsorted();
+			case "newest" -> Sort.by(Sort.Direction.DESC, "created").and(Sort.by(Sort.Direction.ASC, "id"));
+			case "reviews" -> Sort.by(Sort.Direction.DESC, "soLuongDanhGia").and(Sort.by(Sort.Direction.ASC, "id"));
+			default -> Sort.by(Sort.Direction.DESC, "soLuongBan").and(Sort.by(Sort.Direction.ASC, "id")); // popular
+		};
 	}
 }

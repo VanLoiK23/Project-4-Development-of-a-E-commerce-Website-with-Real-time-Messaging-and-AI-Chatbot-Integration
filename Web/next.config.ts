@@ -4,12 +4,16 @@ const backendInternalUrl =
   process.env.BACKEND_INTERNAL_URL || "http://backend:8080";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  experimental: {
-    agentFeedback: true,
+  images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.susercontent.com",
+      },
+    ],
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  output: "standalone",
   async rewrites() {
     return [
       {
